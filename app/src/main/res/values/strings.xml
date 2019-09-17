@@ -20,10 +20,6 @@
     <string name="energyLabel1">Energy:</string>
     <string name="energyLabel2">kcal</string>
 
-    <!-- fb app id -->
-    <string name="facebook_app_id">213193922545275</string>
-    <string name="fb_login_protocol_scheme">fb213193922545275</string>
-
     <string name="SettingsActivityTitle" translatable="false">Settings</string>
     <string name="ShowMap" translatable="false">Map</string>
     <string name="action_reset_settings" translatable="false">Reset</string>
