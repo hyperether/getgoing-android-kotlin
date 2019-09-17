@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
 
     <data>
 
         <variable
             name="viewModel"
-            type="com.hyperether.getgoing.ui.activity.MainActivity.ClickHandler"/>
+            type="com.hyperether.getgoing.ui.activity.MainActivity.ClickHandler" />
     </data>
 
     <LinearLayout
@@ -18,7 +17,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/black"/>
+            android:background="@color/black" />
 
         <ImageButton
             android:id="@+id/walk_button"
@@ -29,12 +28,12 @@
             android:contentDescription="@string/button1_normal"
             android:onClick="@{viewModel::onWalk}"
             android:scaleType="fitXY"
-            android:src="@drawable/button_walk"/>
+            android:src="@drawable/button_walk" />
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/black"/>
+            android:background="@color/black" />
 
         <ImageButton
             android:id="@+id/run_button"
@@ -45,12 +44,12 @@
             android:contentDescription="@string/button2_normal"
             android:onClick="@{viewModel::onRun}"
             android:scaleType="fitXY"
-            android:src="@drawable/button_run"/>
+            android:src="@drawable/button_run" />
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/black"/>
+            android:background="@color/black" />
 
         <ImageButton
             android:id="@+id/ride_button"
@@ -61,11 +60,11 @@
             android:contentDescription="@string/button3_normal"
             android:onClick="@{viewModel::onRide}"
             android:scaleType="fitXY"
-            android:src="@drawable/button_ride"/>
+            android:src="@drawable/button_ride" />
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/black"/>
+            android:background="@color/black" />
     </LinearLayout>
 </layout>

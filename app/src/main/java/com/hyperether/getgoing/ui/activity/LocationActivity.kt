@@ -10,6 +10,7 @@ import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
 import android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
@@ -20,6 +21,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.hyperether.getgoing.R
 import com.hyperether.getgoing.databinding.ActivityLocationBinding
+import com.hyperether.getgoing.location.GGLocationService
 
 class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
     val REQUEST_GPS_SETTINGS = 100
@@ -31,6 +33,8 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
             this,
             R.layout.activity_location
         )
+
+        dataBinding.viewModel = ClickHandler()
 
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.show_map_page) as SupportMapFragment
@@ -109,6 +113,18 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
 
             googleMap.moveCamera(center)
             googleMap.animateCamera(zoom)
+        }
+    }
+
+    inner class ClickHandler {
+        fun onStart(view: View) {
+            intent = Intent(this@LocationActivity, GGLocationService::class.java)
+            startService(intent)
+        }
+
+        fun onStop(view: View) {
+            intent = Intent(this@LocationActivity, GGLocationService::class.java)
+            stopService(intent)
         }
     }
 }
