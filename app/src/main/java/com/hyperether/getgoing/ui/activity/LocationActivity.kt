@@ -38,10 +38,11 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
     lateinit var nodeListViewModel: NodeListViewModel
     lateinit var route: Route
     lateinit var nodeList: List<MapNode>
+    lateinit var dataBinding: ActivityLocationBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val dataBinding = DataBindingUtil.setContentView<ActivityLocationBinding>(
+        dataBinding = DataBindingUtil.setContentView<ActivityLocationBinding>(
             this,
             R.layout.activity_location
         )
@@ -190,11 +191,15 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
         fun onStart(view: View) {
             intent = Intent(this@LocationActivity, GGLocationService::class.java)
             startService(intent)
+            dataBinding.startButton.visibility = View.GONE
+            dataBinding.endButton.visibility = View.VISIBLE
         }
 
         fun onStop(view: View) {
             intent = Intent(this@LocationActivity, GGLocationService::class.java)
             stopService(intent)
+            dataBinding.startButton.visibility = View.VISIBLE
+            dataBinding.endButton.visibility = View.GONE
         }
     }
 }
