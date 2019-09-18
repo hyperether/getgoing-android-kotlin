@@ -1,4 +1,4 @@
-package com.hyperether.getgoing.room
+package com.hyperether.getgoing.repository.room
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -10,7 +10,7 @@ import androidx.room.PrimaryKey
 //@ColumnInfo(name = "routeId") val routeId: Long?
 
 @Entity(tableName = "nodes")
-data class Node(
+data class MapNode(
     @PrimaryKey(autoGenerate = true) val id: Long = -1,
     val latitude: Double? = null,
     val longitude: Double? = null,

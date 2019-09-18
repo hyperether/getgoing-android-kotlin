@@ -5,10 +5,9 @@ import android.content.Intent
 import android.location.Location
 import android.os.Handler
 import android.os.HandlerThread
-import android.util.Log
 import com.hyperether.getgoing.R
-import com.hyperether.getgoing.room.AppDatabase
-import com.hyperether.getgoing.room.Node
+import com.hyperether.getgoing.repository.room.AppDatabase
+import com.hyperether.getgoing.repository.room.MapNode
 import com.hyperether.getgoing.ui.activity.LocationActivity
 import com.hyperether.getgoing.utils.Conversion
 import com.hyperether.toolbox.HyperNotification
@@ -76,12 +75,10 @@ class GGLocationService : HyperLocationService() {
             var distance = Conversion.gps2m(latitude, longitude, latitude_old, longitude_old)
             distanceCumulative += distance
 
-            val node = Node(
+            val node = MapNode(
                 0, latitude, longitude, 0.0f, 0, 0
             )
             AppDatabase.getInstance(this).nodeDao().insert(node)
-            val node2 = AppDatabase.getInstance(this).nodeDao().getAll()
-            Log.d("Tag", "test")
         })
     }
 }

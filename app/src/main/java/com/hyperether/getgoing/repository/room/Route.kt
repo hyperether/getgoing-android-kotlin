@@ -1,4 +1,4 @@
-package com.hyperether.getgoing.room
+package com.hyperether.getgoing.repository.room
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

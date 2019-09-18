@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.location.Criteria
 import android.location.Location
 import android.location.LocationManager
@@ -14,18 +15,29 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.PolylineOptions
 import com.hyperether.getgoing.R
 import com.hyperether.getgoing.databinding.ActivityLocationBinding
 import com.hyperether.getgoing.location.GGLocationService
+import com.hyperether.getgoing.repository.room.MapNode
+import com.hyperether.getgoing.repository.room.Route
+import com.hyperether.getgoing.viewmodel.NodeListViewModel
+import com.hyperether.getgoing.viewmodel.RouteViewModel
 
 class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
     val REQUEST_GPS_SETTINGS = 100
     lateinit var mMap: GoogleMap
+    lateinit var routeViewModel: RouteViewModel
+    lateinit var nodeListViewModel: NodeListViewModel
+    lateinit var route: Route
+    lateinit var nodeList: List<MapNode>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,6 +47,19 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
         )
 
         dataBinding.viewModel = ClickHandler()
+
+        routeViewModel = ViewModelProviders.of(this).get(RouteViewModel::class.java)
+        val routeObserver = Observer<Route> { newRoute ->
+            route = newRoute
+        }
+        routeViewModel.currentRoute.observe(this, routeObserver)
+
+        nodeListViewModel = ViewModelProviders.of(this).get(NodeListViewModel::class.java)
+        nodeListViewModel.getNodes().observe(this, Observer { newList ->
+            nodeList = newList
+            mMap.clear()
+            drawRoute(nodeList)
+        })
 
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.show_map_page) as SupportMapFragment
@@ -114,6 +139,51 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
             googleMap.moveCamera(center)
             googleMap.animateCamera(zoom)
         }
+    }
+
+    /**
+     * This method draws a route.
+     *
+     * @param mRoute list of nodes
+     */
+    private fun drawRoute(mRoute: List<MapNode>) {
+        var drFirstPass = true
+        var firstNode: MapNode? = null
+        var secondNode: MapNode? = null
+
+        // Redraw the whole route
+        val it = mRoute.iterator()
+        while (it.hasNext()) {
+            if (drFirstPass) {
+                secondNode = it.next()
+                firstNode = secondNode
+                drFirstPass = false
+            } else {
+                firstNode = secondNode
+                secondNode = it.next()
+            }
+            if (firstNode != null)
+                drawSegment(firstNode, secondNode)
+        }
+    }
+
+    /**
+     * This method draws a segment of the route and coloring it in accordance with the speed
+     *
+     * @param firstNode first point of the rout
+     * @param secondNode second point of the rout
+     */
+    private fun drawSegment(firstNode: MapNode, secondNode: MapNode) {
+        if (firstNode.latitude != null && firstNode.longitude != null &&
+            secondNode.latitude != null && secondNode.longitude != null
+        )
+            mMap.addPolyline(
+                PolylineOptions().geodesic(true)
+                    .add(LatLng(firstNode.latitude, firstNode.longitude))
+                    .add(LatLng(secondNode.latitude, secondNode.longitude))
+                    .width(10f)
+                    .color(Color.rgb(0, 255, 0))
+            )  // Green color
     }
 
     inner class ClickHandler {

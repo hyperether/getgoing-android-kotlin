@@ -1,4 +1,4 @@
-package com.hyperether.getgoing.room
+package com.hyperether.getgoing.repository.room
 
 import androidx.room.Dao
 import androidx.room.Delete
