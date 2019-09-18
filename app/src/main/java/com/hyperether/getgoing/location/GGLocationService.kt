@@ -6,7 +6,7 @@ import android.location.Location
 import android.os.Handler
 import android.os.HandlerThread
 import com.hyperether.getgoing.R
-import com.hyperether.getgoing.repository.room.AppDatabase
+import com.hyperether.getgoing.repository.room.GgRepository
 import com.hyperether.getgoing.repository.room.MapNode
 import com.hyperether.getgoing.ui.activity.LocationActivity
 import com.hyperether.getgoing.utils.Conversion
@@ -78,7 +78,8 @@ class GGLocationService : HyperLocationService() {
             val node = MapNode(
                 0, latitude, longitude, 0.0f, 0, 0
             )
-            AppDatabase.getInstance(this).nodeDao().insert(node)
+
+            GgRepository.insert(node)
         })
     }
 }
