@@ -7,6 +7,8 @@ object GgRepository {
 
     private var appDatabase: AppDatabase
     private var nodeDao: NodeDao
+    private val routeDao: RouteDao? = null
+    private val allNodesById: LiveData<List<MapNode>>? = null
     private var nodeListLiveData: LiveData<List<MapNode>>
 
     init {
@@ -20,7 +22,7 @@ object GgRepository {
     }
 
     fun getNodesLiveData(): LiveData<List<MapNode>> {
-        return nodeListLiveData;
+        return nodeListLiveData
     }
 
 }
