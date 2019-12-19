@@ -2,10 +2,12 @@ package com.hyperether.getgoing.ui.activity
 
 import android.Manifest
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.SparseIntArray
 import android.view.View
+import android.view.ViewGroup.MarginLayoutParams
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -17,8 +19,12 @@ import androidx.recyclerview.widget.OrientationHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.hyperether.getgoing.R
 import com.hyperether.getgoing.databinding.ActivityMainBinding
+import com.hyperether.getgoing.model.CBDataFrame
 import com.hyperether.getgoing.ui.adapter.HorizontalListAdapter
+import com.hyperether.getgoing.ui.fragment.ProfileFragment
+import com.hyperether.getgoing.utils.Constants
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlin.math.roundToInt
 
 
 class MainActivity : AppCompatActivity() {
@@ -30,16 +36,23 @@ class MainActivity : AppCompatActivity() {
     public val TYPE = "type"
     private val PERMISSION_CODE = 1;
 
+    companion object {
+        var ratio: Float = 0f
+    }
+
     private lateinit var mRecyclerView: RecyclerView
     private lateinit var layoutManager: RecyclerView.LayoutManager
     private lateinit var snapHelper: LinearSnapHelper
     private lateinit var mAdapter: HorizontalListAdapter
 
+    private lateinit var currentSettings: SharedPreferences
+    private lateinit var model: CBDataFrame
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val dataBinding =
             DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
-        dataBinding.viewModel = ClickHandler()
+        dataBinding.clickHandler = ClickHandler()
 
         if (ContextCompat.checkSelfPermission(
                 this,
@@ -55,8 +68,25 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
+        currentSettings = getSharedPreferences(Constants.PREF_FILE, 0)
+        model = CBDataFrame.getInstance()!!
+
+        initScreenDimen()
         initRecyclerView()
         initListeners()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        initModel()
+    }
+
+    private fun initModel() {
+        model.measurementSystemId = currentSettings.getInt("measurementSystemId", Constants.METRIC)
+        model.height = currentSettings.getInt("height", 0)
+        model.weight = currentSettings.getInt("weight", 0)
+        model.age = currentSettings.getInt("age", 0)
     }
 
     private fun initRecyclerView() {
@@ -203,6 +233,9 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
+        ib_am_user.setOnClickListener {
+            val profileFragment = ProfileFragment()
+            profileFragment.show(supportFragmentManager, "ProfileFragment") }
     }
 
     private fun findCenterView(layoutManager: RecyclerView.LayoutManager, helper: OrientationHelper): View? {
@@ -236,6 +269,32 @@ class MainActivity : AppCompatActivity() {
         return closestChild
     }
 
+    private fun initScreenDimen() {
+        val metrics = applicationContext.resources.displayMetrics
+        ratio = metrics.heightPixels.toFloat() / metrics.widthPixels.toFloat()
+
+        val unicode = 0x1F605 /* emoji */
+        tv_am_burn.append(" " + String(Character.toChars(unicode)))
+
+        if (ratio >= 1.8) {
+            val params = tv_am_burn.layoutParams as MarginLayoutParams
+            val params1 = iv_am_bluerectangle.layoutParams as MarginLayoutParams
+            val params2 = tv_am_lastexercise.layoutParams as MarginLayoutParams
+
+            iv_am_bluerectangle.layoutParams.height =
+                ((cpb_am_kmgoal.layoutParams.height + cpb_am_kmgoal.layoutParams.height * 0.3).roundToInt())
+            iv_am_bluerectangle.layoutParams.height = 650
+
+            params.bottomMargin = 150
+            params1.topMargin = 30
+            params2.topMargin = 80
+
+            tv_am_burn.layoutParams = params
+            iv_am_bluerectangle.layoutParams = params1
+            tv_am_lastexercise.layoutParams = params2
+        }
+    }
+
     inner class ClickHandler {
         fun onWalk(view: View) {
             val intent = Intent(this@MainActivity, LocationActivity::class.java).apply {
@@ -256,6 +315,11 @@ class MainActivity : AppCompatActivity() {
                 putExtra(TYPE, RIDE_ID)
             }
             startActivity(intent)
+        }
+
+        fun onProfileClick(view: View) {
+            val profileFragment = ProfileFragment()
+            profileFragment.show(supportFragmentManager, "ProfileFragment")
         }
     }
 }

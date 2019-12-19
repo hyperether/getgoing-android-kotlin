@@ -138,6 +138,9 @@
     <string name="reset_progress">Reset progress</string>
     <string name="logo">Logo</string>
     <string name="profile_icon">Profile icon</string>
+    <string name="_0_years">0 years</string>
+    <string name="initval_0_cm">0 cm</string>
+    <string name="initval_0kg">0 kg</string>
 
 </resources>
 

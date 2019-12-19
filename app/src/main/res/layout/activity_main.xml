@@ -4,7 +4,7 @@
 
     <data>
         <variable
-            name="viewModel"
+            name="clickHandler"
             type="com.hyperether.getgoing.ui.activity.MainActivity.ClickHandler" />
     </data>
 
@@ -36,8 +36,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/iv_am_logo"
             app:srcCompat="@drawable/ic_light_user_icon"
-            android:contentDescription="@string/profile_icon"/>
-        <!--android:onClick="@{viewModel.onProfileClick()}"-->
+            android:contentDescription="@string/profile_icon"
+            />
 
         <TextView
             android:id="@+id/tv_am_lastexercise"
@@ -103,7 +103,7 @@
         <com.hyperether.getgoing.ui.dynamicview.CurvedBottomView
             android:id="@+id/customBottomBar"
             android:layout_width="match_parent"
-            android:layout_height="130dp"
+            android:layout_height="140dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
