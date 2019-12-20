@@ -22,6 +22,7 @@ import com.hyperether.getgoing.databinding.ActivityMainBinding
 import com.hyperether.getgoing.model.CBDataFrame
 import com.hyperether.getgoing.ui.adapter.HorizontalListAdapter
 import com.hyperether.getgoing.ui.fragment.ProfileFragment
+import com.hyperether.getgoing.ui.handler.MainActivityClickHandler
 import com.hyperether.getgoing.utils.Constants
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlin.math.roundToInt
@@ -48,11 +49,13 @@ class MainActivity : AppCompatActivity() {
     private lateinit var currentSettings: SharedPreferences
     private lateinit var model: CBDataFrame
 
+    private lateinit var mainBinding: ActivityMainBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val dataBinding =
-            DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
-        dataBinding.clickHandler = ClickHandler()
+
+        mainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        mainBinding.clickHandler = MainActivityClickHandler(supportFragmentManager)
 
         if (ContextCompat.checkSelfPermission(
                 this,
@@ -233,9 +236,9 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        ib_am_user.setOnClickListener {
-            val profileFragment = ProfileFragment()
-            profileFragment.show(supportFragmentManager, "ProfileFragment") }
+//        ib_am_user.setOnClickListener {
+//            val profileFragment = ProfileFragment()
+//            profileFragment.show(supportFragmentManager, "ProfileFragment") }
     }
 
     private fun findCenterView(layoutManager: RecyclerView.LayoutManager, helper: OrientationHelper): View? {

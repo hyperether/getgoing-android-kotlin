@@ -12,14 +12,15 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import com.hyperether.getgoing.R
 import com.hyperether.getgoing.model.CBDataFrame
+import com.hyperether.getgoing.ui.activity.MainActivity
 import com.hyperether.getgoing.utils.Constants
 import com.hyperether.getgoing.utils.Constants.gender
 import kotlinx.android.synthetic.main.fragment_profile.*
 
 
-class ProfileFragment() : DialogFragment() {
+class ProfileFragment : DialogFragment() {
 
-    private var mDataFrame: CBDataFrame? = null
+    private var model: CBDataFrame? = null
     private var rootViewGroup: ViewGroup? = null
     private var settings: SharedPreferences? = null
 
@@ -38,7 +39,7 @@ class ProfileFragment() : DialogFragment() {
 
         setStyle(STYLE_NORMAL, R.style.FullScreenDialogStyle)
         settings = activity?.getSharedPreferences(Constants.PREF_FILE, 0)
-        mDataFrame = CBDataFrame.getInstance()
+        model = CBDataFrame.getInstance()
     }
 
     override fun onCreateView(
@@ -96,16 +97,18 @@ class ProfileFragment() : DialogFragment() {
     }
 
     private fun initScreenDimen() {
-        dataLabel = view!!.findViewById(R.id.tv_fp_mydata)
+        if (MainActivity.ratio > 1.8) {
+            dataLabel = view!!.findViewById(R.id.tv_fp_mydata)
 
-        val params = dataLabel.layoutParams as MarginLayoutParams
-        val params1 = genderBtn.layoutParams as MarginLayoutParams
+            val params = dataLabel.layoutParams as MarginLayoutParams
+            val params1 = genderBtn.layoutParams as MarginLayoutParams
 
-        params.topMargin = 60
-        params1.topMargin = 100
+            params.topMargin = 60
+            params1.topMargin = 100
 
-        dataLabel.layoutParams = params
-        genderBtn.layoutParams = params1
+            dataLabel.layoutParams = params
+            genderBtn.layoutParams = params1
+        }
     }
 
     private fun initDialogs() { //TODO: add data binding here
@@ -152,17 +155,17 @@ class ProfileFragment() : DialogFragment() {
                             0 -> {
                                 newText = "Male"
                                 editor.putInt("gender", 0)
-                                mDataFrame!!.gender = gender.Male
+                                model!!.gender = gender.Male
                             }
                             1 -> {
                                 newText = "Female"
                                 editor.putInt("gender", 1)
-                                mDataFrame!!.gender = gender.Female
+                                model!!.gender = gender.Female
                             }
                             else -> {
                                 newText = "Other"
                                 editor.putInt("gender", 2)
-                                mDataFrame!!.gender = gender.Other
+                                model!!.gender = gender.Other
                             }
                         }
                         editor.apply()
@@ -220,7 +223,7 @@ class ProfileFragment() : DialogFragment() {
                         Integer.valueOf((ageSpinner.selectedItem as String)))
                     editor.apply()
 
-                    mDataFrame!!.age = Integer.valueOf((ageSpinner.selectedItem as String))
+                    model!!.age = Integer.valueOf((ageSpinner.selectedItem as String))
                 }()}
                     .setNegativeButton("Cancel") { dialogInterface, _ ->
                         dialogInterface.cancel()}
@@ -253,7 +256,7 @@ class ProfileFragment() : DialogFragment() {
                     val editor = settings!!.edit()
                     editor.putInt("height", Integer.valueOf(heightSpinner.selectedItem as String))
                     editor.apply()
-                    mDataFrame?.height = Integer.valueOf(heightSpinner.selectedItem as String)
+                    model?.height = Integer.valueOf(heightSpinner.selectedItem as String)
                 }()}
                     .setNegativeButton("Cancel") {dialogInterface, _ -> dialogInterface.cancel()}
                     .setTitle("Enter your height:")
@@ -285,7 +288,7 @@ class ProfileFragment() : DialogFragment() {
                     val editor = settings!!.edit()
                     editor.putInt("weight", Integer.valueOf(weightSpinner.selectedItem as String))
                     editor.apply()
-                    mDataFrame?.weight = Integer.valueOf(weightSpinner.selectedItem as String)
+                    model?.weight = Integer.valueOf(weightSpinner.selectedItem as String)
                 }()}
                     .setNegativeButton("Cancel") { dialogInterface, _ -> dialogInterface.cancel()}
                     .setTitle("Enter your weight:")

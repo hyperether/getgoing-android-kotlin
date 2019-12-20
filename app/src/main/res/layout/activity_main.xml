@@ -5,7 +5,7 @@
     <data>
         <variable
             name="clickHandler"
-            type="com.hyperether.getgoing.ui.activity.MainActivity.ClickHandler" />
+            type="com.hyperether.getgoing.ui.handler.MainActivityClickHandler" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -37,6 +37,7 @@
             app:layout_constraintTop_toTopOf="@+id/iv_am_logo"
             app:srcCompat="@drawable/ic_light_user_icon"
             android:contentDescription="@string/profile_icon"
+            android:onClick="@{clickHandler::onProfileClick}"
             />
 
         <TextView
@@ -62,7 +63,8 @@
             app:layout_constraintBottom_toBottomOf="@+id/tv_am_viewall"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/tv_am_viewall"
-            app:srcCompat="@drawable/ic_light_chevron_icon" />
+            app:srcCompat="@drawable/ic_light_chevron_icon"
+            android:onClick="@{clickHandler::onActivitiesClick}"/>
 
         <TextView
             android:id="@+id/tv_am_viewall"
@@ -74,7 +76,8 @@
             android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="@+id/tv_am_lastexercise"
             app:layout_constraintEnd_toStartOf="@+id/iv_am_arrow2actfrag"
-            app:layout_constraintTop_toTopOf="@+id/tv_am_lastexercise" />
+            app:layout_constraintTop_toTopOf="@+id/tv_am_lastexercise"
+            android:onClick="@{clickHandler::onActivitiesClick}"/>
 
         <TextView
             android:id="@+id/tv_am_choose"
@@ -300,7 +303,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.505"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            android:onClick="@{clickHandler::onReadyClick}"/>
 
         <TextView
             android:id="@+id/tv_ma_mainact"
