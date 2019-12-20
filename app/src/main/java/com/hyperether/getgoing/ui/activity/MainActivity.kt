@@ -235,10 +235,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
-
-//        ib_am_user.setOnClickListener {
-//            val profileFragment = ProfileFragment()
-//            profileFragment.show(supportFragmentManager, "ProfileFragment") }
     }
 
     private fun findCenterView(layoutManager: RecyclerView.LayoutManager, helper: OrientationHelper): View? {
