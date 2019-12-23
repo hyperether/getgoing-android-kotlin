@@ -62,7 +62,7 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
         routeViewModel.currentRoute.observe(this, routeObserver)
 
         nodeListViewModel = ViewModelProviders.of(this).get(NodeListViewModel::class.java)
-        nodeListViewModel.getNodes().observe(this, Observer { newList ->
+        nodeListViewModel.getNodes()?.observe(this, Observer { newList ->
             nodeList = newList
             mMap.clear()
             drawRoute(nodeList)

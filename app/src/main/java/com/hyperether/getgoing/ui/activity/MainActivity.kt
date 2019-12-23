@@ -1,7 +1,6 @@
 package com.hyperether.getgoing.ui.activity
 
 import android.Manifest
-import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -13,6 +12,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.OrientationHelper
@@ -20,10 +21,17 @@ import androidx.recyclerview.widget.RecyclerView
 import com.hyperether.getgoing.R
 import com.hyperether.getgoing.databinding.ActivityMainBinding
 import com.hyperether.getgoing.model.CBDataFrame
+import com.hyperether.getgoing.repository.callback.ZeroNodeInsertCallback
+import com.hyperether.getgoing.repository.room.GgRepository
+import com.hyperether.getgoing.repository.room.MapNode
+import com.hyperether.getgoing.repository.room.Route
 import com.hyperether.getgoing.ui.adapter.HorizontalListAdapter
-import com.hyperether.getgoing.ui.fragment.ProfileFragment
+import com.hyperether.getgoing.ui.adapter.formatter.MyProgressFormatter
+import com.hyperether.getgoing.ui.adapter.formatter.MyProgressFormatter2
+import com.hyperether.getgoing.ui.adapter.formatter.MyProgressFormatter3
 import com.hyperether.getgoing.ui.handler.MainActivityClickHandler
 import com.hyperether.getgoing.utils.Constants
+import com.hyperether.getgoing.viewmodel.RouteViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlin.math.roundToInt
 
@@ -50,9 +58,13 @@ class MainActivity : AppCompatActivity() {
     private lateinit var model: CBDataFrame
 
     private lateinit var mainBinding: ActivityMainBinding
+    private lateinit var rvm: RouteViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        currentSettings = getSharedPreferences(Constants.PREF_FILE, 0)
+        zeroNodeInit()
 
         mainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         mainBinding.clickHandler = MainActivityClickHandler(supportFragmentManager)
@@ -71,12 +83,74 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
-        currentSettings = getSharedPreferences(Constants.PREF_FILE, 0)
         model = CBDataFrame.getInstance()!!
 
         initScreenDimen()
         initRecyclerView()
         initListeners()
+    }
+
+    private fun zeroNodeInit() {
+        if (currentSettings.getBoolean("zeroNode", false) == false) { /*route init*/
+            val tmpRoute: MutableList<MapNode> = ArrayList()
+            val tmpNode = MapNode(0, 0.0, 0.0, 0F, 0, 0)
+
+            tmpRoute.add(tmpNode)
+            val dbRoute = Route(0, 0, 0.0, 0.0, "null", 0.0, 1, 0)
+            GgRepository.insertRouteInit(dbRoute, tmpRoute, object : ZeroNodeInsertCallback {
+                override fun onAdded() {
+                    rvm = ViewModelProviders.of(this@MainActivity).get(RouteViewModel::class.java)
+                    rvm.getLatestRoute()?.observe(this@MainActivity, Observer { initProgressBars(it) })
+                }
+            })
+
+            val edit = currentSettings.edit()
+            edit.putBoolean("zeroNode", true)
+            edit.apply()
+        }
+    }
+
+    private fun initProgressBars(route: Route?) { //isn't tested yet
+        val lastRouteLen = route?.length
+        val lastRouteTime: Int = if (route!!.duration >= 60000)
+            (route.duration.toDouble() / 1000 / 60).roundToInt()
+        else
+            0
+
+        val cpbProgress: Int = if (route.goal != 0)
+            (lastRouteLen!! * 100 / route.goal).roundToInt()
+        else
+            0
+
+        cpb_am_kmgoal.setProgressFormatter(MyProgressFormatter(lastRouteLen!!.toDouble()))
+        cpb_am_kmgoal.progress = cpbProgress
+
+        cpb_am_kmgoal1.setProgressFormatter(MyProgressFormatter2(lastRouteTime))
+        cpb_am_kmgoal1.progress = 100
+
+        cpb_am_kmgoal2.setProgressFormatter(MyProgressFormatter3())
+
+        tv_am_kcalval.text = route.energy.toString()
+
+        when (route.activity_id) {
+            1 -> {
+                tv_am_progbar_act.text = getString(R.string.activity_walking)
+                iv_am_activity.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_walking_icon))
+            }
+            2 -> {
+                tv_am_progbar_act.text = getString(R.string.activity_running)
+                iv_am_activity.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_running_icon))
+            }
+            3 -> {
+                tv_am_progbar_act.text = getString(R.string.activity_cycling)
+                iv_am_activity.setImageDrawable(
+                    ContextCompat.getDrawable(
+                        this,
+                        R.drawable.ic_light_bicycling_icon
+                    )
+                )
+            }
+        }
     }
 
     override fun onResume() {
@@ -100,8 +174,14 @@ class MainActivity : AppCompatActivity() {
         mRecyclerView.layoutManager = layoutManager
 
         val DRAWABLE_MAP = SparseIntArray()
-        DRAWABLE_MAP.append(R.drawable.ic_light_bicycling_icon_inactive, R.drawable.ic_light_bicycling_icon_active)
-        DRAWABLE_MAP.append(R.drawable.ic_light_running_icon_inactive, R.drawable.ic_light_running_icon_active)
+        DRAWABLE_MAP.append(
+            R.drawable.ic_light_bicycling_icon_inactive,
+            R.drawable.ic_light_bicycling_icon_active
+        )
+        DRAWABLE_MAP.append(
+            R.drawable.ic_light_running_icon_inactive,
+            R.drawable.ic_light_running_icon_active
+        )
         DRAWABLE_MAP.append(R.drawable.ic_light_walking_icon, R.drawable.ic_light_walking_icon_active)
 
         mAdapter = HorizontalListAdapter(DRAWABLE_MAP, this)
@@ -122,21 +202,24 @@ class MainActivity : AppCompatActivity() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
 
-                val centralLayout: View? = findCenterView(layoutManager,
-                    OrientationHelper.createOrientationHelper(layoutManager, RecyclerView.HORIZONTAL))
+                val centralLayout: View? = findCenterView(
+                    layoutManager,
+                    OrientationHelper.createOrientationHelper(layoutManager, RecyclerView.HORIZONTAL)
+                )
                 val centralImg = centralLayout?.findViewById<ImageView>(R.id.iv_ri_pic)
                 val k1 = centralLayout?.let { layoutManager.getPosition(it) }
 
                 when {
-                    centralImg?.tag?.equals(R.drawable.ic_light_bicycling_icon_inactive)!! -> tv_ma_mainact.text = "Cycling"
-                    centralImg.tag == R.drawable.ic_light_running_icon_inactive -> tv_ma_mainact.text = "Running"
+                    centralImg?.tag?.equals(R.drawable.ic_light_bicycling_icon_inactive)!! -> tv_ma_mainact.text =
+                        "Cycling"
+                    centralImg.tag == R.drawable.ic_light_running_icon_inactive -> tv_ma_mainact.text =
+                        "Running"
                     centralImg.tag == R.drawable.ic_light_walking_icon -> tv_ma_mainact.text = "Walking"
                 }
 
                 centralImg?.getLocationOnScreen(centralImgPos)
 
-                if (i++ == 0)
-                {
+                if (i++ == 0) {
                     imageView2.getLocationOnScreen(selectorViewPos)
                 }
 
@@ -146,20 +229,29 @@ class MainActivity : AppCompatActivity() {
                     when (centralImg.tag) {
                         R.drawable.ic_light_bicycling_icon_inactive -> {
                             centralImg.setImageDrawable(
-                                ContextCompat.getDrawable(applicationContext,
-                                    R.drawable.ic_light_bicycling_icon_active))
+                                ContextCompat.getDrawable(
+                                    applicationContext,
+                                    R.drawable.ic_light_bicycling_icon_active
+                                )
+                            )
                             centralImg.tag = R.drawable.ic_light_bicycling_icon_active
                         }
                         R.drawable.ic_light_running_icon_inactive -> {
                             centralImg.setImageDrawable(
-                                ContextCompat.getDrawable(applicationContext,
-                                    R.drawable.ic_light_running_icon_active))
+                                ContextCompat.getDrawable(
+                                    applicationContext,
+                                    R.drawable.ic_light_running_icon_active
+                                )
+                            )
                             centralImg.tag = R.drawable.ic_light_running_icon_active
                         }
                         R.drawable.ic_light_walking_icon -> {
                             centralImg.setImageDrawable(
-                                ContextCompat.getDrawable(applicationContext,
-                                    R.drawable.ic_light_walking_icon_active))
+                                ContextCompat.getDrawable(
+                                    applicationContext,
+                                    R.drawable.ic_light_walking_icon_active
+                                )
+                            )
                             centralImg.tag = R.drawable.ic_light_walking_icon_active
                         }
                     }
@@ -174,7 +266,8 @@ class MainActivity : AppCompatActivity() {
                     when (leftImg?.tag) {
                         R.drawable.ic_light_bicycling_icon_active -> {
                             leftImg.setImageDrawable(
-                                ContextCompat.getDrawable(applicationContext,
+                                ContextCompat.getDrawable(
+                                    applicationContext,
                                     R.drawable.ic_light_bicycling_icon_inactive
                                 )
                             )
@@ -182,7 +275,8 @@ class MainActivity : AppCompatActivity() {
                         }
                         R.drawable.ic_light_running_icon_active -> {
                             leftImg.setImageDrawable(
-                                ContextCompat.getDrawable(applicationContext,
+                                ContextCompat.getDrawable(
+                                    applicationContext,
                                     R.drawable.ic_light_running_icon_inactive
                                 )
                             )
@@ -190,7 +284,8 @@ class MainActivity : AppCompatActivity() {
                         }
                         R.drawable.ic_light_walking_icon_active -> {
                             leftImg.setImageDrawable(
-                                ContextCompat.getDrawable(applicationContext,
+                                ContextCompat.getDrawable(
+                                    applicationContext,
                                     R.drawable.ic_light_walking_icon
                                 )
                             )
@@ -207,7 +302,8 @@ class MainActivity : AppCompatActivity() {
                     when (rightImg?.tag) {
                         R.drawable.ic_light_bicycling_icon_active -> {
                             rightImg.setImageDrawable(
-                                ContextCompat.getDrawable(applicationContext,
+                                ContextCompat.getDrawable(
+                                    applicationContext,
                                     R.drawable.ic_light_bicycling_icon_inactive
                                 )
                             )
@@ -215,7 +311,8 @@ class MainActivity : AppCompatActivity() {
                         }
                         R.drawable.ic_light_running_icon_active -> {
                             rightImg.setImageDrawable(
-                                ContextCompat.getDrawable(applicationContext,
+                                ContextCompat.getDrawable(
+                                    applicationContext,
                                     R.drawable.ic_light_running_icon_inactive
                                 )
                             )
@@ -223,7 +320,8 @@ class MainActivity : AppCompatActivity() {
                         }
                         R.drawable.ic_light_walking_icon_active -> {
                             rightImg.setImageDrawable(
-                                ContextCompat.getDrawable(applicationContext,
+                                ContextCompat.getDrawable(
+                                    applicationContext,
                                     R.drawable.ic_light_walking_icon
                                 )
                             )
@@ -291,34 +389,6 @@ class MainActivity : AppCompatActivity() {
             tv_am_burn.layoutParams = params
             iv_am_bluerectangle.layoutParams = params1
             tv_am_lastexercise.layoutParams = params2
-        }
-    }
-
-    inner class ClickHandler {
-        fun onWalk(view: View) {
-            val intent = Intent(this@MainActivity, LocationActivity::class.java).apply {
-                putExtra(TYPE, WALK_ID)
-            }
-            startActivity(intent)
-        }
-
-        fun onRun(view: View) {
-            val intent = Intent(this@MainActivity, LocationActivity::class.java).apply {
-                putExtra(TYPE, RUN_ID)
-            }
-            startActivity(intent)
-        }
-
-        fun onRide(view: View) {
-            val intent = Intent(this@MainActivity, LocationActivity::class.java).apply {
-                putExtra(TYPE, RIDE_ID)
-            }
-            startActivity(intent)
-        }
-
-        fun onProfileClick(view: View) {
-            val profileFragment = ProfileFragment()
-            profileFragment.show(supportFragmentManager, "ProfileFragment")
         }
     }
 }
