@@ -1,6 +1,7 @@
 package com.hyperether.getgoing.ui.activity
 
 import android.Manifest
+import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -8,6 +9,7 @@ import android.util.SparseIntArray
 import android.view.View
 import android.view.ViewGroup.MarginLayoutParams
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -29,19 +31,19 @@ import com.hyperether.getgoing.ui.adapter.HorizontalListAdapter
 import com.hyperether.getgoing.ui.adapter.formatter.MyProgressFormatter
 import com.hyperether.getgoing.ui.adapter.formatter.MyProgressFormatter2
 import com.hyperether.getgoing.ui.adapter.formatter.MyProgressFormatter3
+import com.hyperether.getgoing.ui.fragment.ProfileFragment
 import com.hyperether.getgoing.ui.handler.MainActivityClickHandler
 import com.hyperether.getgoing.utils.Constants
+import com.hyperether.getgoing.utils.Constants.RIDE_ID
+import com.hyperether.getgoing.utils.Constants.RUN_ID
+import com.hyperether.getgoing.utils.Constants.WALK_ID
 import com.hyperether.getgoing.viewmodel.RouteViewModel
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlin.math.abs
 import kotlin.math.roundToInt
 
 
 class MainActivity : AppCompatActivity() {
-
-    private val WALK_ID = 1
-    private val RUN_ID = 2
-    private val RIDE_ID = 3
-
     public val TYPE = "type"
     private val PERMISSION_CODE = 1;
 
@@ -59,6 +61,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var mainBinding: ActivityMainBinding
     private lateinit var rvm: RouteViewModel
+
+    var centralImgTag: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -207,10 +211,11 @@ class MainActivity : AppCompatActivity() {
                     OrientationHelper.createOrientationHelper(layoutManager, RecyclerView.HORIZONTAL)
                 )
                 val centralImg = centralLayout?.findViewById<ImageView>(R.id.iv_ri_pic)
-                val k1 = centralLayout?.let { layoutManager.getPosition(it) }
+                centralImgTag = centralImg?.tag as Int
+                val k1 = centralLayout.let { layoutManager.getPosition(it) }
 
                 when {
-                    centralImg?.tag?.equals(R.drawable.ic_light_bicycling_icon_inactive)!! -> tv_ma_mainact.text =
+                    centralImg.tag?.equals(R.drawable.ic_light_bicycling_icon_inactive)!! -> tv_ma_mainact.text =
                         "Cycling"
                     centralImg.tag == R.drawable.ic_light_running_icon_inactive -> tv_ma_mainact.text =
                         "Running"
@@ -261,7 +266,7 @@ class MainActivity : AppCompatActivity() {
                 val rightImg: ImageView?
 
                 try {
-                    leftImg = layoutManager.findViewByPosition(k1!! - 1)?.findViewById(R.id.iv_ri_pic)
+                    leftImg = layoutManager.findViewByPosition(k1 - 1)?.findViewById(R.id.iv_ri_pic)
 
                     when (leftImg?.tag) {
                         R.drawable.ic_light_bicycling_icon_active -> {
@@ -297,7 +302,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 try {
-                    rightImg = layoutManager.findViewByPosition(k1!! + 1)?.findViewById(R.id.iv_ri_pic)
+                    rightImg = layoutManager.findViewByPosition(k1 + 1)?.findViewById(R.id.iv_ri_pic)
 
                     when (rightImg?.tag) {
                         R.drawable.ic_light_bicycling_icon_active -> {
@@ -333,6 +338,14 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
+
+        materialButton.setOnClickListener {
+            when (centralImgTag) {
+                R.drawable.ic_light_walking_icon_active -> callMeteringActivity(WALK_ID)
+                R.drawable.ic_light_running_icon_active -> callMeteringActivity(RUN_ID)
+                R.drawable.ic_light_bicycling_icon_active -> callMeteringActivity(RIDE_ID)
+            }
+        }
     }
 
     private fun findCenterView(layoutManager: RecyclerView.LayoutManager, helper: OrientationHelper): View? {
@@ -356,7 +369,7 @@ class MainActivity : AppCompatActivity() {
             val child = layoutManager.getChildAt(i)
             val childCenter = (helper.getDecoratedStart(child)
                     + helper.getDecoratedMeasurement(child) / 2)
-            val absDistance = Math.abs(childCenter - center)
+            val absDistance = abs(childCenter - center)
             /** if child center is closer than previous closest, set it as closest   */
             if (absDistance < absClosest) {
                 absClosest = absDistance
@@ -390,5 +403,22 @@ class MainActivity : AppCompatActivity() {
             iv_am_bluerectangle.layoutParams = params1
             tv_am_lastexercise.layoutParams = params2
         }
+    }
+
+    fun callMeteringActivity(id: Int) {
+        if (getParametersStatus(model)) {
+            this.model.profileId = id
+            val intent = Intent(this@MainActivity, LocationActivity::class.java)
+            startActivity(intent)
+        } else {
+            Toast.makeText(this, "You must enter your data first!", Toast.LENGTH_LONG).show()
+            val profileFragment = ProfileFragment()
+            profileFragment.show(supportFragmentManager, "ProfileFragment")
+        }
+    }
+
+    private fun getParametersStatus(cbDataFrameLocal: CBDataFrame): Boolean {
+        return !((cbDataFrameLocal.age == 0)
+                || (cbDataFrameLocal.weight == 0))
     }
 }

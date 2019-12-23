@@ -49,4 +49,8 @@ object Constants {
     enum class gender {
         Male, Female, Other
     }
+
+    const val WALK_ID = 1
+    const val RUN_ID = 2
+    const val RIDE_ID = 3
 }
