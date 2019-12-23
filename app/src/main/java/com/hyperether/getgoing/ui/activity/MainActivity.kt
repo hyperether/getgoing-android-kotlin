@@ -55,14 +55,13 @@ class MainActivity : AppCompatActivity() {
     private lateinit var layoutManager: RecyclerView.LayoutManager
     private lateinit var snapHelper: LinearSnapHelper
     private lateinit var mAdapter: HorizontalListAdapter
+    private lateinit var centralImg: ImageView
 
     private lateinit var currentSettings: SharedPreferences
     private lateinit var model: CBDataFrame
 
     private lateinit var mainBinding: ActivityMainBinding
     private lateinit var rvm: RouteViewModel
-
-    var centralImgTag: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -210,8 +209,7 @@ class MainActivity : AppCompatActivity() {
                     layoutManager,
                     OrientationHelper.createOrientationHelper(layoutManager, RecyclerView.HORIZONTAL)
                 )
-                val centralImg = centralLayout?.findViewById<ImageView>(R.id.iv_ri_pic)
-                centralImgTag = centralImg?.tag as Int
+                centralImg = centralLayout?.findViewById(R.id.iv_ri_pic)!!
                 val k1 = centralLayout.let { layoutManager.getPosition(it) }
 
                 when {
@@ -340,7 +338,7 @@ class MainActivity : AppCompatActivity() {
         })
 
         materialButton.setOnClickListener {
-            when (centralImgTag) {
+            when (centralImg.tag) {
                 R.drawable.ic_light_walking_icon_active -> callMeteringActivity(WALK_ID)
                 R.drawable.ic_light_running_icon_active -> callMeteringActivity(RUN_ID)
                 R.drawable.ic_light_bicycling_icon_active -> callMeteringActivity(RIDE_ID)

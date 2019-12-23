@@ -17,10 +17,7 @@ import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.PolylineOptions
 import com.hyperether.getgoing.App
@@ -68,8 +65,7 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
             drawRoute(nodeList)
         })
 
-        val mapFragment = supportFragmentManager
-            .findFragmentById(R.id.mapView) as SupportMapFragment
+        val mapFragment = supportFragmentManager.findFragmentById(R.id.mapView) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
         cbDataFrameLocal = CBDataFrame.getInstance()!!
