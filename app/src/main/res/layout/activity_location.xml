@@ -2,10 +2,10 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
 
     <data>
-
         <variable
-            name="clickHandler"
-            type="com.hyperether.getgoing.ui.handler.LocationActivityClickHandler" />
+            name="clickHandler" type="com.hyperether.getgoing.ui.handler.LocationActivityClickHandler" />
+        <variable
+            name="locationViewModel" type="com.hyperether.getgoing.ui.handler.LocationActivityClickHandler" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -30,8 +30,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"
-            android:text="@string/walking"
+            android:text="@{locationViewModel.mTitle}"
             android:textColor="@color/mat_gray"
             android:textSize="24sp"
             app:layout_constraintBottom_toBottomOf="@+id/ib_al_backbutton"

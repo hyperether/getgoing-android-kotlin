@@ -176,18 +176,18 @@ class MainActivity : AppCompatActivity() {
         layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         mRecyclerView.layoutManager = layoutManager
 
-        val DRAWABLE_MAP = SparseIntArray()
-        DRAWABLE_MAP.append(
+        val drawableMap = SparseIntArray()
+        drawableMap.append(
             R.drawable.ic_light_bicycling_icon_inactive,
             R.drawable.ic_light_bicycling_icon_active
         )
-        DRAWABLE_MAP.append(
+        drawableMap.append(
             R.drawable.ic_light_running_icon_inactive,
             R.drawable.ic_light_running_icon_active
         )
-        DRAWABLE_MAP.append(R.drawable.ic_light_walking_icon, R.drawable.ic_light_walking_icon_active)
+        drawableMap.append(R.drawable.ic_light_walking_icon, R.drawable.ic_light_walking_icon_active)
 
-        mAdapter = HorizontalListAdapter(DRAWABLE_MAP, this)
+        mAdapter = HorizontalListAdapter(drawableMap, this)
         mRecyclerView.adapter = mAdapter
 
         snapHelper = LinearSnapHelper()
@@ -403,7 +403,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun callMeteringActivity(id: Int) {
+    private fun callMeteringActivity(id: Int) {
         if (getParametersStatus(model)) {
             this.model.profileId = id
             val intent = Intent(this@MainActivity, LocationActivity::class.java)

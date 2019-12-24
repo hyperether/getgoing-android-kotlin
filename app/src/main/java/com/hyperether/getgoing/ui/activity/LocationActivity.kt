@@ -46,11 +46,16 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
     private var mLocTrackingRunning = false
     private var mRouteAlreadySaved = false
 
+    private var cnt = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        cbDataFrameLocal = CBDataFrame.getInstance()!!
 
         dataBinding = DataBindingUtil.setContentView(this, R.layout.activity_location)
-        dataBinding.clickHandler = LocationActivityClickHandler(this)
+        val handler = LocationActivityClickHandler(this)
+        dataBinding.clickHandler = handler
+        dataBinding.locationViewModel = handler
 
         routeViewModel = ViewModelProviders.of(this).get(RouteViewModel::class.java)
         val routeObserver = Observer<Route> { newRoute ->
@@ -67,8 +72,6 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
 
         val mapFragment = supportFragmentManager.findFragmentById(R.id.mapView) as SupportMapFragment
         mapFragment.getMapAsync(this)
-
-        cbDataFrameLocal = CBDataFrame.getInstance()!!
     }
 
     override fun onStart() {
@@ -89,11 +92,11 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
         ) {
 
             mMap = p0
-            mMap.setMyLocationEnabled(true)
-            mMap.setTrafficEnabled(false)
-            mMap.setIndoorEnabled(true)
-            mMap.setBuildingsEnabled(true)
-            mMap.getUiSettings()?.setZoomControlsEnabled(true)
+            mMap.isMyLocationEnabled = true
+            mMap.isTrafficEnabled = false
+            mMap.isIndoorEnabled = true
+            mMap.isBuildingsEnabled = true
+            mMap.uiSettings?.isZoomControlsEnabled = true
 
             val locationManager = getSystemService(
                 Context.LOCATION_SERVICE
@@ -107,18 +110,12 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
                 dialog.setMessage(getString(R.string.alert_dialog_message))
                 dialog.setPositiveButton(
                     R.string.alert_dialog_positive_button
-                ) { paramDialogInterface, paramInt ->
+                ) { _, _ ->
                     val i = Intent(ACTION_LOCATION_SOURCE_SETTINGS)
                     startActivityForResult(i, REQUEST_GPS_SETTINGS)
                 }
 
-                dialog.setNegativeButton(
-                    R.string.alert_dialog_negative_button,
-                    object : DialogInterface.OnClickListener {
-                        override fun onClick(paramDialogInterface: DialogInterface, paramInt: Int) {
-                            finish()
-                        }
-                    })
+                dialog.setNegativeButton(R.string.alert_dialog_negative_button) { _, _ -> finish() }
 
                 dialog.show()
             }
@@ -190,11 +187,8 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
             )  // Green color
     }
 
-    @Suppress("UNUSED_CHANGED_VALUE")
     private fun setVisibilities() {
-        var cnt = 0
-
-        if (cnt++ == 0) {
+        if (!cnt) {
             al_btn_setgoal.visibility = View.VISIBLE
             ib_al_save.visibility = View.GONE
             ib_al_reset.visibility = View.GONE
@@ -206,6 +200,7 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
             tv_al_kcal.visibility = View.GONE
             tv_al_duration.visibility = View.GONE
             tv_al_speed.visibility = View.GONE
+            cnt = true
         } else {
             al_btn_setgoal.visibility = View.GONE
             ib_al_save.visibility = View.VISIBLE
