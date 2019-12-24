@@ -15,4 +15,8 @@ class NodeListViewModel : ViewModel() {
     fun getNodes(): LiveData<List<MapNode>>? {
         return GgRepository.getNodesLiveData()
     }
+
+    fun getNodesById(id: Long): LiveData<List<MapNode>> {
+        return GgRepository.getNodesById(id)
+    }
 }

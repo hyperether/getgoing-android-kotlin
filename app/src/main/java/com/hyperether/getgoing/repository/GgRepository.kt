@@ -15,7 +15,6 @@ object GgRepository {
     private var nodeDao: NodeDao
     private val routeDao: RouteDao
 
-    private val allNodesById: LiveData<List<MapNode>>? = null
     private var nodeListLiveData: LiveData<List<MapNode>>? = null
 
     private var mHandler: Handler? = null
@@ -40,6 +39,10 @@ object GgRepository {
         data?.value = routeDao.getLast()
 
         return data
+    }
+
+    fun getNodesById(id: Long): LiveData<List<MapNode>> {
+        return nodeDao.getAllByRouteId(id)
     }
 
     fun insertRouteInit(dbRoute: Route?, nodeList: List<MapNode>, callback: ZeroNodeInsertCallback) {
