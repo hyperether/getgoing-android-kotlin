@@ -9,10 +9,10 @@ import androidx.room.Query
 @Dao
 interface NodeDao {
     @Query("SELECT * from nodes")
-    abstract fun getAll(): LiveData<List<MapNode>>
+    fun getAll(): LiveData<List<MapNode>>
 
     @Query("SELECT * FROM nodes WHERE routeId = :id")
-    abstract fun getAllByRouteId(id: Long): List<MapNode>
+    fun getAllByRouteId(id: Long): LiveData<List<MapNode>>
 
     @Insert
     fun insert(mapNode: MapNode)
@@ -21,5 +21,5 @@ interface NodeDao {
     fun delete(mapNode: MapNode)
 
     @Delete
-    abstract fun deleteNodes(vararg mapNodes: MapNode)
+    fun deleteNodes(vararg mapNodes: MapNode)
 }

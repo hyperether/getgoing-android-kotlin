@@ -17,19 +17,20 @@ import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.PolylineOptions
+import com.hyperether.getgoing.App
 import com.hyperether.getgoing.R
 import com.hyperether.getgoing.databinding.ActivityLocationBinding
 import com.hyperether.getgoing.location.GGLocationService
+import com.hyperether.getgoing.model.CBDataFrame
 import com.hyperether.getgoing.repository.room.MapNode
 import com.hyperether.getgoing.repository.room.Route
+import com.hyperether.getgoing.ui.handler.LocationActivityClickHandler
 import com.hyperether.getgoing.viewmodel.NodeListViewModel
 import com.hyperether.getgoing.viewmodel.RouteViewModel
+import kotlinx.android.synthetic.main.activity_location.*
 
 class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
     val REQUEST_GPS_SETTINGS = 100
@@ -40,14 +41,21 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
     lateinit var nodeList: List<MapNode>
     lateinit var dataBinding: ActivityLocationBinding
 
+    private lateinit var cbDataFrameLocal: CBDataFrame
+
+    private var mLocTrackingRunning = false
+    private var mRouteAlreadySaved = false
+
+    private var cnt = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        dataBinding = DataBindingUtil.setContentView<ActivityLocationBinding>(
-            this,
-            R.layout.activity_location
-        )
+        cbDataFrameLocal = CBDataFrame.getInstance()!!
 
-        dataBinding.viewModel = ClickHandler()
+        dataBinding = DataBindingUtil.setContentView(this, R.layout.activity_location)
+        val handler = LocationActivityClickHandler(this)
+        dataBinding.clickHandler = handler
+        dataBinding.locationViewModel = handler
 
         routeViewModel = ViewModelProviders.of(this).get(RouteViewModel::class.java)
         val routeObserver = Observer<Route> { newRoute ->
@@ -56,15 +64,21 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
         routeViewModel.currentRoute.observe(this, routeObserver)
 
         nodeListViewModel = ViewModelProviders.of(this).get(NodeListViewModel::class.java)
-        nodeListViewModel.getNodes().observe(this, Observer { newList ->
+        nodeListViewModel.getNodes()?.observe(this, Observer { newList ->
             nodeList = newList
             mMap.clear()
             drawRoute(nodeList)
         })
 
-        val mapFragment = supportFragmentManager
-            .findFragmentById(R.id.show_map_page) as SupportMapFragment
+        val mapFragment = supportFragmentManager.findFragmentById(R.id.mapView) as SupportMapFragment
         mapFragment.getMapAsync(this)
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        setVisibilities()
+        showData(0.0, 0.0, 0.0)
     }
 
     override fun onMapReady(p0: GoogleMap) {
@@ -78,11 +92,11 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
         ) {
 
             mMap = p0
-            mMap.setMyLocationEnabled(true)
-            mMap.setTrafficEnabled(true)
-            mMap.setIndoorEnabled(true)
-            mMap.setBuildingsEnabled(true)
-            mMap.getUiSettings()?.setZoomControlsEnabled(true)
+            mMap.isMyLocationEnabled = true
+            mMap.isTrafficEnabled = false
+            mMap.isIndoorEnabled = true
+            mMap.isBuildingsEnabled = true
+            mMap.uiSettings?.isZoomControlsEnabled = true
 
             val locationManager = getSystemService(
                 Context.LOCATION_SERVICE
@@ -96,18 +110,12 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
                 dialog.setMessage(getString(R.string.alert_dialog_message))
                 dialog.setPositiveButton(
                     R.string.alert_dialog_positive_button
-                ) { paramDialogInterface, paramInt ->
+                ) { _, _ ->
                     val i = Intent(ACTION_LOCATION_SOURCE_SETTINGS)
                     startActivityForResult(i, REQUEST_GPS_SETTINGS)
                 }
 
-                dialog.setNegativeButton(
-                    R.string.alert_dialog_negative_button,
-                    object : DialogInterface.OnClickListener {
-                        override fun onClick(paramDialogInterface: DialogInterface, paramInt: Int) {
-                            finish()
-                        }
-                    })
+                dialog.setNegativeButton(R.string.alert_dialog_negative_button) { _, _ -> finish() }
 
                 dialog.show()
             }
@@ -130,16 +138,8 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
      * @param googleMap google map v2
      */
     private fun zoomOverCurrentLocation(googleMap: GoogleMap, location: Location?) {
-        if (location != null) {
-            val latitude = location.latitude
-            val longitude = location.longitude
-
-            val center = CameraUpdateFactory.newLatLng(LatLng(latitude, longitude))
-            val zoom = CameraUpdateFactory.zoomTo(15f)
-
-            googleMap.moveCamera(center)
-            googleMap.animateCamera(zoom)
-        }
+        val latLng = LatLng(location!!.latitude, location!!.longitude)
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15F))
     }
 
     /**
@@ -187,19 +187,64 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
             )  // Green color
     }
 
-    inner class ClickHandler {
-        fun onStart(view: View) {
-            intent = Intent(this@LocationActivity, GGLocationService::class.java)
-            startService(intent)
-            dataBinding.startButton.visibility = View.GONE
-            dataBinding.endButton.visibility = View.VISIBLE
-        }
-
-        fun onStop(view: View) {
-            intent = Intent(this@LocationActivity, GGLocationService::class.java)
-            stopService(intent)
-            dataBinding.startButton.visibility = View.VISIBLE
-            dataBinding.endButton.visibility = View.GONE
+    private fun setVisibilities() {
+        if (!cnt) {
+            al_btn_setgoal.visibility = View.VISIBLE
+            ib_al_save.visibility = View.GONE
+            ib_al_reset.visibility = View.GONE
+            al_btn_start.isClickable = false
+            chr_al_meters.visibility = View.GONE
+            chr_al_duration.visibility = View.GONE
+            chr_al_kcal.visibility = View.GONE
+            chr_al_speed.visibility = View.GONE
+            tv_al_kcal.visibility = View.GONE
+            tv_al_duration.visibility = View.GONE
+            tv_al_speed.visibility = View.GONE
+            cnt = true
+        } else {
+            al_btn_setgoal.visibility = View.GONE
+            ib_al_save.visibility = View.VISIBLE
+            ib_al_reset.visibility = View.VISIBLE
+            al_btn_start.isClickable = true
+            chr_al_meters.visibility = View.VISIBLE
+            chr_al_duration.visibility = View.VISIBLE
+            chr_al_kcal.visibility = View.VISIBLE
+            chr_al_speed.visibility = View.VISIBLE
+            tv_al_kcal.visibility = View.VISIBLE
+            tv_al_duration.visibility = View.VISIBLE
+            tv_al_speed.visibility = View.VISIBLE
         }
     }
+
+    private fun showData(distance: Double, kcal: Double, vel: Double) {
+        chr_al_kcal.text = String.format("%.02f kcal", kcal)
+        if (cbDataFrameLocal.measurementSystemId == 1 ||
+                cbDataFrameLocal.measurementSystemId == 2)
+            chr_al_meters.text = String.format("%.02f ft", distance * 3.281) // present data in feet
+        else
+            chr_al_meters.text = String.format("%.02f m", distance)
+
+        chr_al_speed.text = String.format("%.02f m/s", vel)
+    }
+
+    override fun onBackPressed() {
+        if (mLocTrackingRunning || !mRouteAlreadySaved) {
+            val dialog = AlertDialog.Builder(this)
+            dialog.setCancelable(false)
+            dialog.setTitle(R.string.alert_dialog_title_back_pressed)
+            dialog.setMessage(getString(R.string.alert_dialog_message_back_pressed))
+            dialog.setPositiveButton(R.string.alert_dialog_positive_back_pressed) { _, _ -> {
+                stopService(Intent(App.appCtxt(), GGLocationService::class.java))
+                //clearCacheData()
+                finish()
+            }()}
+
+            dialog.setNegativeButton(getString(R.string.alert_dialog_negative_back_pressed)) { _, _ -> }
+            dialog.show()
+
+        } else {
+            super.onBackPressed()
+        }
+    }
+
 }

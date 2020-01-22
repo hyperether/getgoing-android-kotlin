@@ -1,5 +1,7 @@
 package com.hyperether.getgoing.utils
 
+import android.content.Context
+
 class Conversion {
     /**
      * Convert number of milliseconds into form HH:mm:ss
@@ -58,6 +60,16 @@ class Conversion {
                 return 6366000 * tt
             }
             return 0.0
+        }
+
+        fun convertDpToPixel(dp: Float, context: Context): Int {
+            val scale: Float = context.resources.displayMetrics.density
+            return (dp * scale + 0.5f).toInt()
+        }
+
+        fun convertPixelToDp(context: Context, pxValue: Float): Int {
+            val scale: Float = context.resources.displayMetrics.density
+            return (pxValue / scale + 0.5f).toInt()
         }
     }
 }

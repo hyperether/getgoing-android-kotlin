@@ -10,7 +10,8 @@ data class Route(
     @ColumnInfo val duration: Long,
     @ColumnInfo val energy: Double,
     @ColumnInfo val length: Double,
-    @ColumnInfo val avgSpeed: Double,
     @ColumnInfo val date: String,
-    @ColumnInfo val activity_id: Int
+    @ColumnInfo val avgSpeed: Double,
+    @ColumnInfo val activity_id: Int,
+    @ColumnInfo val goal: Int
 )

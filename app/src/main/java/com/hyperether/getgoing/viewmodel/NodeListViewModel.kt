@@ -12,7 +12,11 @@ class NodeListViewModel : ViewModel() {
         MutableLiveData<List<MapNode>>()
     }
 
-    fun getNodes(): LiveData<List<MapNode>> {
+    fun getNodes(): LiveData<List<MapNode>>? {
         return GgRepository.getNodesLiveData()
+    }
+
+    fun getNodesById(id: Long): LiveData<List<MapNode>> {
+        return GgRepository.getNodesById(id)
     }
 }
