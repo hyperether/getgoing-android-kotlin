@@ -12,6 +12,8 @@ import android.location.LocationManager
 import android.os.Bundle
 import android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS
 import android.view.View
+import android.widget.Button
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
@@ -28,6 +30,7 @@ import com.hyperether.getgoing.model.CBDataFrame
 import com.hyperether.getgoing.repository.room.MapNode
 import com.hyperether.getgoing.repository.room.Route
 import com.hyperether.getgoing.ui.handler.LocationActivityClickHandler
+import com.hyperether.getgoing.utils.Constants.WALK_ID
 import com.hyperether.getgoing.viewmodel.NodeListViewModel
 import com.hyperether.getgoing.viewmodel.RouteViewModel
 import kotlinx.android.synthetic.main.activity_location.*
@@ -40,8 +43,8 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
     lateinit var route: Route
     lateinit var nodeList: List<MapNode>
     lateinit var dataBinding: ActivityLocationBinding
-
     private lateinit var cbDataFrameLocal: CBDataFrame
+    private lateinit var setGoalButton:Button
 
     private var mLocTrackingRunning = false
     private var mRouteAlreadySaved = false
@@ -56,6 +59,7 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
         val handler = LocationActivityClickHandler(this)
         dataBinding.clickHandler = handler
         dataBinding.locationViewModel = handler
+
 
         routeViewModel = ViewModelProviders.of(this).get(RouteViewModel::class.java)
         val routeObserver = Observer<Route> { newRoute ->
@@ -72,6 +76,14 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
 
         val mapFragment = supportFragmentManager.findFragmentById(R.id.mapView) as SupportMapFragment
         mapFragment.getMapAsync(this)
+
+
+        setGoalButton = dataBinding.alBtnSetgoal
+        setGoalButton.setOnClickListener(View.OnClickListener {
+            //Toast.makeText(this,"i dun been clicked",Toast.LENGTH_SHORT).show()
+            var bundle:Bundle = Bundle()
+            bundle.putInt(WALK_ID)
+        })
     }
 
     override fun onStart() {

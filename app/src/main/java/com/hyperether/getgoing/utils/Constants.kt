@@ -21,8 +21,12 @@ object Constants {
     // A fast frequency ceiling in milliseconds
     const val FASTEST_INTERVAL =
         MILLISECONDS_PER_SECOND * FASTEST_INTERVAL_IN_SECONDS.toLong()
+    const val LOCATION_DISTANCE = 5
     // Preference file
     const val PREF_FILE = "CBUserDataPref.txt"
+    const val PREF_WALK_ROUTE_EXISTING = "walk_route_existing"
+    const val PREF_RUN_ROUTE_EXISTING = "run_route_existing"
+    const val PREF_RIDE_ROUTE_EXISTING = "ride_route_existing"
     const val NODE_ADD_DISTANCE = 10
     const val REQUEST_RESOLVE_ERROR = 1001
     //Permission request TAG
@@ -53,4 +57,19 @@ object Constants {
     const val WALK_ID = 1
     const val RUN_ID = 2
     const val RIDE_ID = 3
+
+    //intent extras
+    const val DATA_DETAILS_LABEL = "data_details_label";
+    const val BUNDLE_PARCELABLE = "bundle_parcelable";
+
+    // activities IDs
+    const val TRACKING_ACTIVITY_KEY = "tracking_activity"
+    const val ACTIVITY_STARTED = 0
+    const val ACTIVITY_WALK_ID = 1
+    const val ACTIVITY_RUN_ID = 2
+    const val ACTIVITY_RIDE_ID = 3
+
+    const val OPENED_FROM_LOCATION_ACT = 501
+    const val OPENED_FROM_GG_ACT = 502
+    const val OPENED_FROM_KEY = "from"
 }
