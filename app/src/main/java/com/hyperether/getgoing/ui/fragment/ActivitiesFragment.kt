@@ -49,12 +49,12 @@ class ActivitiesFragment : DialogFragment() {
     override fun onStart() {
         super.onStart()
 
-        minutesWalking = view!!.findViewById(R.id.tv_fa_minutes)
-        minutesRunning = view!!.findViewById(R.id.tv_fa_min2)
-        minutesCycling = view!!.findViewById(R.id.tv_fa_min3)
-        seekBar = view!!.findViewById(R.id.seekBar)
-        goal = view!!.findViewById(R.id.tv_fa_goal)
-        kcal = view!!.findViewById(R.id.tv_fa_kcal)
+        minutesWalking = requireView().findViewById(R.id.tv_fa_minutes)
+        minutesRunning = requireView().findViewById(R.id.tv_fa_min2)
+        minutesCycling = requireView().findViewById(R.id.tv_fa_min3)
+        seekBar = requireView().findViewById(R.id.seekBar)
+        goal = requireView().findViewById(R.id.tv_fa_goal)
+        kcal = requireView().findViewById(R.id.tv_fa_kcal)
 
         seekBar.incrementProgressBy(10)
 
@@ -71,9 +71,9 @@ class ActivitiesFragment : DialogFragment() {
 
     private fun initScreenDimen() {
         if (MainActivity.ratio > 1.8) {
-            whiteView = view!!.findViewById(R.id.view)
-            goal = view!!.findViewById(R.id.tv_fa_goal)
-            walkingLabel = view!!.findViewById(R.id.tv_fa_pb_walking)
+            whiteView = requireView().findViewById(R.id.view)
+            goal = requireView().findViewById(R.id.tv_fa_goal)
+            walkingLabel = requireView().findViewById(R.id.tv_fa_pb_walking)
 
             whiteView.layoutParams.height = 900
 
@@ -113,13 +113,13 @@ class ActivitiesFragment : DialogFragment() {
         minutesRunning.text = timeEstimates[1].toString() + " min"
         minutesCycling.text = timeEstimates[2].toString() + " min"
 
-        kcal.text = "About " + (progress * 0.00112 * settings!!.getInt("weight", 0)).toShort() +
+        kcal.text = "About " + (progress * 0.00112 * settings!!.getInt("weight", 0)).toInt().toShort() +
                 "kcal"
     }
 
     private fun initListeners() {
-        backBtn = view!!.findViewById(R.id.ib_fa_back)
-        saveChanges = view!!.findViewById(R.id.b_fa_save)
+        backBtn = requireView().findViewById(R.id.ib_fa_back)
+        saveChanges = requireView().findViewById(R.id.b_fa_save)
 
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
@@ -153,7 +153,7 @@ class ActivitiesFragment : DialogFragment() {
                 minutesRunning.text = timeEstimates[1].toString() + " min"
                 minutesCycling.text = timeEstimates[2].toString() + " min"
                 kcal.text = "About " + (progressVar * 0.00112 *
-                        settings!!.getInt("weight", 0)).toShort() + "kcal"
+                        settings!!.getInt("weight", 0)).toInt().toShort() + "kcal"
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}
@@ -176,25 +176,25 @@ class ActivitiesFragment : DialogFragment() {
     private fun initProgressStringColor() {
         val progress = seekBar.progress
 
-        low = view!!.findViewById(R.id.tv_fa_low)
-        medium = view!!.findViewById(R.id.tv_fa_medium)
-        high = view!!.findViewById(R.id.tv_fa_high)
+        low = requireView().findViewById(R.id.tv_fa_low)
+        medium = requireView().findViewById(R.id.tv_fa_medium)
+        high = requireView().findViewById(R.id.tv_fa_high)
 
         when(progress) {
             in 0..3333 -> {
-                low.setTextColor(ContextCompat.getColor(context!!, R.color.light_theme_accent))
-                medium.setTextColor(ContextCompat.getColor(context!!, R.color.mat_gray))
-                high.setTextColor(ContextCompat.getColor(context!!, R.color.mat_gray))
+                low.setTextColor(ContextCompat.getColor(requireContext(), R.color.light_theme_accent))
+                medium.setTextColor(ContextCompat.getColor(requireContext(), R.color.mat_gray))
+                high.setTextColor(ContextCompat.getColor(requireContext(), R.color.mat_gray))
             }
             in 3334..6666 -> {
-                low.setTextColor(ContextCompat.getColor(context!!, R.color.mat_gray))
-                medium.setTextColor(ContextCompat.getColor(context!!, R.color.light_theme_accent))
-                high.setTextColor(ContextCompat.getColor(context!!, R.color.mat_gray))
+                low.setTextColor(ContextCompat.getColor(requireContext(), R.color.mat_gray))
+                medium.setTextColor(ContextCompat.getColor(requireContext(), R.color.light_theme_accent))
+                high.setTextColor(ContextCompat.getColor(requireContext(), R.color.mat_gray))
             }
             in 6667..10000 -> {
-                low.setTextColor(ContextCompat.getColor(context!!, R.color.mat_gray))
-                medium.setTextColor(ContextCompat.getColor(context!!, R.color.mat_gray))
-                high.setTextColor(ContextCompat.getColor(context!!, R.color.light_theme_accent))
+                low.setTextColor(ContextCompat.getColor(requireContext(), R.color.mat_gray))
+                medium.setTextColor(ContextCompat.getColor(requireContext(), R.color.mat_gray))
+                high.setTextColor(ContextCompat.getColor(requireContext(), R.color.light_theme_accent))
             }
         }
     }

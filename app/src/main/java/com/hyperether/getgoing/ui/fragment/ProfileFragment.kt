@@ -56,19 +56,19 @@ class ProfileFragment : DialogFragment() {
         when (settings!!.getInt("gender", 0)) {
             0 -> genderImg.setImageDrawable(
                 ContextCompat.getDrawable(
-                    context!!,
+                    requireContext(),
                     R.drawable.ic_gendersign_male
                 )
             )
             1 -> genderImg.setImageDrawable(
                 ContextCompat.getDrawable(
-                    context!!,
+                    requireContext(),
                     R.drawable.ic_light_gender_female_icon
                 )
             )
             2 -> genderImg.setImageDrawable(
                 ContextCompat.getDrawable(
-                    context!!,
+                    requireContext(),
                     R.drawable.ic_light_gender_icon_trans
                 )
             )
@@ -80,11 +80,11 @@ class ProfileFragment : DialogFragment() {
     override fun onStart() {
         super.onStart()
 
-        genderBtn = view!!.findViewById(R.id.ib_fp_gender)
-        tvGender = view!!.findViewById(R.id.tv_fp_gender)
-        tvAge = view!!.findViewById(R.id.tv_fp_age)
-        tvHeight = view!!.findViewById(R.id.tv_fp_height)
-        tvWeight = view!!.findViewById(R.id.tv_fp_weight)
+        genderBtn = requireView().findViewById(R.id.ib_fp_gender)
+        tvGender = requireView().findViewById(R.id.tv_fp_gender)
+        tvAge = requireView().findViewById(R.id.tv_fp_age)
+        tvHeight = requireView().findViewById(R.id.tv_fp_height)
+        tvWeight = requireView().findViewById(R.id.tv_fp_weight)
 
         val width = ViewGroup.LayoutParams.MATCH_PARENT
         val height = ViewGroup.LayoutParams.MATCH_PARENT
@@ -98,7 +98,7 @@ class ProfileFragment : DialogFragment() {
 
     private fun initScreenDimen() {
         if (MainActivity.ratio > 1.8) {
-            dataLabel = view!!.findViewById(R.id.tv_fp_mydata)
+            dataLabel = requireView().findViewById(R.id.tv_fp_mydata)
 
             val params = dataLabel.layoutParams as MarginLayoutParams
             val params1 = genderBtn.layoutParams as MarginLayoutParams
