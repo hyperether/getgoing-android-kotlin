@@ -33,6 +33,10 @@ class ActivitiesFragment : DialogFragment() {
     private var settings: SharedPreferences? = null
     private lateinit var model: CBDataFrame
 
+    companion object{
+        fun newInstance() = ActivitiesFragment()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

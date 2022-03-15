@@ -30,6 +30,9 @@ import com.hyperether.getgoing.model.CBDataFrame
 import com.hyperether.getgoing.repository.room.MapNode
 import com.hyperether.getgoing.repository.room.Route
 import com.hyperether.getgoing.ui.handler.LocationActivityClickHandler
+import com.hyperether.getgoing.ui.handler.MainActivityClickHandler
+import com.hyperether.getgoing.utils.Constants.OPENED_FROM_KEY
+import com.hyperether.getgoing.utils.Constants.OPENED_FROM_LOCATION_ACT
 import com.hyperether.getgoing.utils.Constants.WALK_ID
 import com.hyperether.getgoing.viewmodel.NodeListViewModel
 import com.hyperether.getgoing.viewmodel.RouteViewModel
@@ -81,8 +84,9 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
         setGoalButton = dataBinding.alBtnSetgoal
         setGoalButton.setOnClickListener(View.OnClickListener {
             //Toast.makeText(this,"i dun been clicked",Toast.LENGTH_SHORT).show()
-            var bundle:Bundle = Bundle()
-            bundle.putInt(WALK_ID)
+            var bundle:Bundle = Bundle()  // put this in editor and send to new fragment
+            bundle.putInt(OPENED_FROM_KEY, OPENED_FROM_LOCATION_ACT)
+            MainActivityClickHandler(supportFragmentManager).onActivitiesClick(it)
         })
     }
 

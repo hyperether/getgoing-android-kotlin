@@ -18,4 +18,6 @@ class MainActivityClickHandler(pManager: FragmentManager) {
         val activitiesFragment = ActivitiesFragment()
         activitiesFragment.show(mManager, "ActivitiesFragment")
     }
+
+
 }
