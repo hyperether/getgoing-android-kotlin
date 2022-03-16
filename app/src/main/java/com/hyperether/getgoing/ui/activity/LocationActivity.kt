@@ -2,7 +2,6 @@ package com.hyperether.getgoing.ui.activity
 
 import android.app.AlertDialog
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
@@ -13,13 +12,15 @@ import android.os.Bundle
 import android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS
 import android.view.View
 import android.widget.Button
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import com.google.android.gms.maps.*
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.PolylineOptions
 import com.hyperether.getgoing.App
@@ -32,9 +33,8 @@ import com.hyperether.getgoing.repository.room.MapNode
 import com.hyperether.getgoing.repository.room.Route
 import com.hyperether.getgoing.ui.handler.LocationActivityClickHandler
 import com.hyperether.getgoing.ui.handler.MainActivityClickHandler
-import com.hyperether.getgoing.utils.Constants.OPENED_FROM_KEY
 import com.hyperether.getgoing.utils.Constants.OPENED_FROM_LOCATION_ACT
-import com.hyperether.getgoing.utils.Constants.WALK_ID
+import com.hyperether.getgoing.utils.TimeUtils
 import com.hyperether.getgoing.viewmodel.NodeListViewModel
 import com.hyperether.getgoing.viewmodel.RouteViewModel
 import kotlinx.android.synthetic.main.activity_location.*
@@ -57,7 +57,6 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         cbDataFrameLocal = CBDataFrame.getInstance()!!
-
         dataBinding = DataBindingUtil.setContentView(this, R.layout.activity_location)
         val handler = LocationActivityClickHandler(this)
         dataBinding.clickHandler = handler
@@ -266,4 +265,10 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
+
+    override fun onDestroy() {
+        nodeListViewModel.setChronometerLastTime(TimeUtils.newInstance().chronometerToMills(dataBinding.chrAlDuration))
+        nodeListViewModel.setBackgroundStartTime(System.currentTimeMillis())
+        super.onDestroy()
+    }
 }
