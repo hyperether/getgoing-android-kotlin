@@ -72,4 +72,6 @@ object Constants {
     const val OPENED_FROM_LOCATION_ACT = 501
     const val OPENED_FROM_GG_ACT = 502
     const val OPENED_FROM_KEY = "from"
+
+    const val SENT_FROM_FRAGMENT = 0
 }

@@ -10,6 +10,7 @@ import android.widget.*
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import com.hyperether.getgoing.R
+import com.hyperether.getgoing.SharedPref
 import com.hyperether.getgoing.model.CBDataFrame
 import com.hyperether.getgoing.ui.activity.MainActivity
 import com.hyperether.getgoing.utils.Constants
@@ -172,7 +173,7 @@ class ActivitiesFragment : DialogFragment() {
             val editor = settings?.edit()
             editor?.putInt("goal", seekBar.progress)
             editor?.apply()
-
+            SharedPref.newInstance().test("test String")
             Toast.makeText(context, "Your goal is updated", Toast.LENGTH_SHORT).show()
         }
     }
