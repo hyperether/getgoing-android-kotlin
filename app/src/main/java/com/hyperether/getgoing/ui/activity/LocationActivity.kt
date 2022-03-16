@@ -53,7 +53,6 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
     private var mLocTrackingRunning = false
     private var mRouteAlreadySaved = false
 
-    private var cnt = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,6 +67,9 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
         routeViewModel = ViewModelProviders.of(this).get(RouteViewModel::class.java)
         val routeObserver = Observer<Route> { newRoute ->
             route = newRoute
+            if (route!=null){
+                showData(route.length,route.energy,route.avgSpeed)
+            }
         }
         routeViewModel.currentRoute.observe(this, routeObserver)
 
@@ -142,7 +144,7 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
             val bestProvider = locationManager.getBestProvider(criteria, false)
             val location = locationManager.getLastKnownLocation(bestProvider!!)
             // throws error because of authorization error had to kill this method
-           // zoomOverCurrentLocation(mMap, location)
+            zoomOverCurrentLocation(mMap, location)
         } else {
             finish()
         }
@@ -205,7 +207,8 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun setVisibilities() {
-        if (!cnt) {
+        val sharedPref = SharedPref.newInstance()
+        if (!sharedPref.isGoalSet()) {
             al_btn_setgoal.visibility = View.VISIBLE
             ib_al_save.visibility = View.GONE
             ib_al_reset.visibility = View.GONE
@@ -217,7 +220,6 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
             tv_al_kcal.visibility = View.GONE
             tv_al_duration.visibility = View.GONE
             tv_al_speed.visibility = View.GONE
-            cnt = true
         } else {
             al_btn_setgoal.visibility = View.GONE
             ib_al_save.visibility = View.VISIBLE
