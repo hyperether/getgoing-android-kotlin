@@ -1,17 +1,22 @@
 package com.hyperether.getgoing.ui.fragment
 
+import android.content.DialogInterface
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import com.hyperether.getgoing.R
 import com.hyperether.getgoing.SharedPref
 import com.hyperether.getgoing.model.CBDataFrame
+import com.hyperether.getgoing.ui.activity.LocationActivity
 import com.hyperether.getgoing.ui.activity.MainActivity
 import com.hyperether.getgoing.utils.Constants
 
@@ -34,7 +39,7 @@ class ActivitiesFragment : DialogFragment() {
     private var settings: SharedPreferences? = null
     private lateinit var model: CBDataFrame
 
-    companion object{
+    companion object {
         fun newInstance() = ActivitiesFragment()
     }
 
@@ -46,8 +51,10 @@ class ActivitiesFragment : DialogFragment() {
         model = CBDataFrame.getInstance()!!
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         return inflater.inflate(R.layout.fragment_activities, container, false)
     }
 
@@ -118,8 +125,9 @@ class ActivitiesFragment : DialogFragment() {
         minutesRunning.text = timeEstimates[1].toString() + " min"
         minutesCycling.text = timeEstimates[2].toString() + " min"
 
-        kcal.text = "About " + (progress * 0.00112 * settings!!.getInt("weight", 0)).toInt().toShort() +
-                "kcal"
+        kcal.text =
+            "About " + (progress * 0.00112 * settings!!.getInt("weight", 0)).toInt().toShort() +
+                    "kcal"
     }
 
     private fun initListeners() {
@@ -136,19 +144,34 @@ class ActivitiesFragment : DialogFragment() {
 
                 when (progressVar) {
                     in 0..3333 -> {
-                        low.setTextColor(ContextCompat.getColor(context!!, R.color.light_theme_accent))
+                        low.setTextColor(
+                            ContextCompat.getColor(
+                                context!!,
+                                R.color.light_theme_accent
+                            )
+                        )
                         medium.setTextColor(ContextCompat.getColor(context!!, R.color.mat_gray))
                         high.setTextColor(ContextCompat.getColor(context!!, R.color.mat_gray))
                     }
                     in 3334..6666 -> {
                         low.setTextColor(ContextCompat.getColor(context!!, R.color.mat_gray))
-                        medium.setTextColor(ContextCompat.getColor(context!!, R.color.light_theme_accent))
+                        medium.setTextColor(
+                            ContextCompat.getColor(
+                                context!!,
+                                R.color.light_theme_accent
+                            )
+                        )
                         high.setTextColor(ContextCompat.getColor(context!!, R.color.mat_gray))
                     }
                     in 6667..10000 -> {
                         low.setTextColor(ContextCompat.getColor(context!!, R.color.mat_gray))
                         medium.setTextColor(ContextCompat.getColor(context!!, R.color.mat_gray))
-                        high.setTextColor(ContextCompat.getColor(context!!, R.color.light_theme_accent))
+                        high.setTextColor(
+                            ContextCompat.getColor(
+                                context!!,
+                                R.color.light_theme_accent
+                            )
+                        )
                     }
                 }
 
@@ -170,11 +193,33 @@ class ActivitiesFragment : DialogFragment() {
         high.setOnClickListener { seekBar.progress = Constants.CONST_HIGH_DIST }
         backBtn.setOnClickListener { this.dialog?.dismiss() }
         saveChanges.setOnClickListener {
-            val editor = settings?.edit()
-            editor?.putInt("goal", seekBar.progress)
-            editor?.apply()
-            SharedPref.newInstance().test("test String")
-            Toast.makeText(context, "Your goal is updated", Toast.LENGTH_SHORT).show()
+            val sharedPref: SharedPref = SharedPref.newInstance()
+            sharedPref.test("test String")
+            val fragmentSentCode = sharedPref.getSentFromFragmentCode()
+            Log.d(ActivitiesFragment::class.simpleName, "initListeners: $fragmentSentCode")
+            if (seekBar.progress == 0){
+                val builder: AlertDialog.Builder? = activity?.let {
+                    AlertDialog.Builder(it)
+                }
+                builder?.setMessage("Goal can not be 0")
+                    ?.setNegativeButton("Ok",
+                        DialogInterface.OnClickListener { dialog, id ->
+                            dialog.dismiss()
+                        })
+                builder?.create()
+                builder?.show() //ok
+            }else{
+                SharedPref.newInstance().setGoal(seekBar.progress)
+                Toast.makeText(context, "Your goal is updated", Toast.LENGTH_SHORT).show()
+                val i:Int = 501
+                if (i == fragmentSentCode){
+                    Log.d(ActivitiesFragment::class.simpleName, "initListeners: $i $fragmentSentCode")
+                    //k switch back to location activity
+                    val intent = Intent(context,LocationActivity::class.java)
+                    startActivity(intent)
+                }
+            }
+
         }
     }
 
@@ -185,21 +230,36 @@ class ActivitiesFragment : DialogFragment() {
         medium = requireView().findViewById(R.id.tv_fa_medium)
         high = requireView().findViewById(R.id.tv_fa_high)
 
-        when(progress) {
+        when (progress) {
             in 0..3333 -> {
-                low.setTextColor(ContextCompat.getColor(requireContext(), R.color.light_theme_accent))
+                low.setTextColor(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        R.color.light_theme_accent
+                    )
+                )
                 medium.setTextColor(ContextCompat.getColor(requireContext(), R.color.mat_gray))
                 high.setTextColor(ContextCompat.getColor(requireContext(), R.color.mat_gray))
             }
             in 3334..6666 -> {
                 low.setTextColor(ContextCompat.getColor(requireContext(), R.color.mat_gray))
-                medium.setTextColor(ContextCompat.getColor(requireContext(), R.color.light_theme_accent))
+                medium.setTextColor(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        R.color.light_theme_accent
+                    )
+                )
                 high.setTextColor(ContextCompat.getColor(requireContext(), R.color.mat_gray))
             }
             in 6667..10000 -> {
                 low.setTextColor(ContextCompat.getColor(requireContext(), R.color.mat_gray))
                 medium.setTextColor(ContextCompat.getColor(requireContext(), R.color.mat_gray))
-                high.setTextColor(ContextCompat.getColor(requireContext(), R.color.light_theme_accent))
+                high.setTextColor(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        R.color.light_theme_accent
+                    )
+                )
             }
         }
     }

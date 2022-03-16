@@ -24,6 +24,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.PolylineOptions
 import com.hyperether.getgoing.App
 import com.hyperether.getgoing.R
+import com.hyperether.getgoing.SharedPref
 import com.hyperether.getgoing.databinding.ActivityLocationBinding
 import com.hyperether.getgoing.location.GGLocationService
 import com.hyperether.getgoing.model.CBDataFrame
@@ -84,8 +85,7 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
         setGoalButton = dataBinding.alBtnSetgoal
         setGoalButton.setOnClickListener(View.OnClickListener {
             //Toast.makeText(this,"i dun been clicked",Toast.LENGTH_SHORT).show()
-            var bundle:Bundle = Bundle()  // put this in editor and send to new fragment
-            bundle.putInt(OPENED_FROM_KEY, OPENED_FROM_LOCATION_ACT)
+            SharedPref.newInstance().setSentFromFragmentCode(OPENED_FROM_LOCATION_ACT)
             MainActivityClickHandler(supportFragmentManager).onActivitiesClick(it)
         })
     }
@@ -141,7 +141,8 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
             criteria.powerRequirement = Criteria.POWER_LOW
             val bestProvider = locationManager.getBestProvider(criteria, false)
             val location = locationManager.getLastKnownLocation(bestProvider!!)
-            zoomOverCurrentLocation(mMap, location)
+            // throws error because of authorization error had to kill this method
+           // zoomOverCurrentLocation(mMap, location)
         } else {
             finish()
         }

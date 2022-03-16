@@ -2,6 +2,7 @@ package com.hyperether.getgoing.ui.handler
 
 import android.view.View
 import androidx.fragment.app.FragmentManager
+import com.hyperether.getgoing.ui.activity.LocationActivity
 import com.hyperether.getgoing.ui.fragment.ActivitiesFragment
 import com.hyperether.getgoing.ui.fragment.ProfileFragment
 
