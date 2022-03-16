@@ -14,7 +14,8 @@ object GgRepository {
 
     private var nodeDao: NodeDao
     private val routeDao: RouteDao
-
+    private lateinit var allNodes:LiveData<List<MapNode>>
+    private lateinit var allNodesById:LiveData<List<MapNode>>
     private var nodeListLiveData: LiveData<List<MapNode>>? = null
 
     private var mHandler: Handler? = null
@@ -73,6 +74,29 @@ object GgRepository {
             mHandler = Handler(mThread.looper)
         }
         return mHandler
+    }
+
+    fun getRouteByIdAsLiveData(id: Long): LiveData<Route?>? {
+        return routeDao.getRouteByIdAsLiveData(id)
+    }
+
+    fun getAllRoutes(): LiveData<List<Route>> {
+        return routeDao.getAll()
+    }
+
+
+    fun getAllNodesById(id:Long):LiveData<List<MapNode>>{
+        allNodesById = nodeDao.getAllByRouteIdAsLiveData(id)
+        return allNodesById
+    }
+
+
+    fun deleteNodesByRouteId(id:Long){
+        getRepoHandler()!!.post(Runnable { nodeDao.deleteAllByRouteId(id) })
+    }
+
+    fun deleteRouteById(id:Long){
+        getRepoHandler()!!.post(Runnable { routeDao.deleteRouteById(id) })
     }
 
 }

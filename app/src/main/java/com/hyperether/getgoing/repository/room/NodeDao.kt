@@ -22,4 +22,10 @@ interface NodeDao {
 
     @Delete
     fun deleteNodes(vararg mapNodes: MapNode)
+
+    @Query("SELECT * FROM nodes WHERE routeId = :id")
+    fun getAllByRouteIdAsLiveData(id: Long): LiveData<List<MapNode>>
+
+    @Query("DELETE FROM nodes WHERE routeId = :id")
+    fun deleteAllByRouteId(id: Long)
 }

@@ -9,7 +9,7 @@ import androidx.room.Query
 @Dao
 interface RouteDao {
     @Query("SELECT * from routes")
-    abstract fun getAll(): List<Route>
+    abstract fun getAll(): LiveData<List<Route>>
 
     @Insert
     abstract fun insertRoute(route: Route): Long
@@ -28,4 +28,5 @@ interface RouteDao {
 
     @Query("SELECT * from routes ORDER BY id DESC LIMIT 1")
     abstract fun getLast(): Route
+
 }
