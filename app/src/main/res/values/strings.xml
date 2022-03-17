@@ -108,8 +108,7 @@
     <string name="running">Running</string>
     <string name="min">min</string>
     <string name="textview_age_end">" years"</string>
-    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyBRAMHwl-f6Agb9iP7wUx5gTuIVjBy5k-Q</string>
-    <string name="facebook_app_id">213193922545275</string>
+
     <string name="com_facebook_share_button_text">Share</string>
     <string name="progress_bar_img">progress bar image</string>
     <string name="progress_bar_goal_img">progress bar goal icon</string>

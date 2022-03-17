@@ -82,7 +82,35 @@ class ActivitiesFragment : DialogFragment() {
     }
 
     private fun fillProgBars(route: List<Route>?) {
-
+        val sharedPref:SharedPref = SharedPref.newInstance()
+        var goal:Int = sharedPref.getGoal()
+        var sumWalk:Double = 0.0
+        var sumRun:Double = 0.0
+        var sumRide:Double = 0.0
+        var walkPercentage:Int = 0
+        var runPercentage:Int = 0
+        var ridePercentage:Int = 0
+        if (route != null) {
+            for (item in route){
+                if (item.activity_id == 1){
+                    sumWalk += item.length
+                }else if (item.activity_id == 2){
+                    sumRun += item.length
+                }else if (item.activity_id == 3){
+                    sumRide += item.length
+                }
+            }
+            if (sumWalk != 0.0){
+                walkPercentage = ((sumWalk*100)/goal).toInt()
+            }else if (sumRun != 0.0){
+                runPercentage = ((sumRun*100)/goal).toInt()
+            }else if (sumRide != 0.0){
+                ridePercentage = ((sumRide*100)/goal).toInt()
+            }
+            prbWalk.progress = walkPercentage
+            prbRun.progress = runPercentage
+            prbRide.progress = ridePercentage
+        }
     }
 
     private fun setButtons(view: View) {
