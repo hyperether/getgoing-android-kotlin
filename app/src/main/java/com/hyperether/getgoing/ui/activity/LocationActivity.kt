@@ -5,17 +5,22 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.location.Criteria
 import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
+import android.os.SystemClock
 import android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS
 import android.util.Log
 import android.view.View
 import android.widget.Button
+import android.widget.Chronometer
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -37,10 +42,12 @@ import com.hyperether.getgoing.repository.room.Route
 import com.hyperether.getgoing.repository.room.RouteAddedCallback
 import com.hyperether.getgoing.ui.handler.LocationActivityClickHandler
 import com.hyperether.getgoing.ui.handler.MainActivityClickHandler
+import com.hyperether.getgoing.utils.Constants
 import com.hyperether.getgoing.utils.Constants.OPENED_FROM_LOCATION_ACT
 import com.hyperether.getgoing.utils.TimeUtils
 import com.hyperether.getgoing.viewmodel.NodeListViewModel
 import com.hyperether.getgoing.viewmodel.RouteViewModel
+import com.hyperether.toolbox.HyperConst
 import kotlinx.android.synthetic.main.activity_location.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -61,6 +68,12 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
     private var sdf:SimpleDateFormat = SimpleDateFormat()
     private var profileId:Int = 0
     private var goalStore:Int = 0
+    private lateinit var chronoMeteres:Chronometer
+    private lateinit var chronoSpeed:Chronometer
+    private lateinit var chronoMeterDuration:Chronometer
+    private lateinit var chronoCalories:Chronometer
+    private var timeWhenStopped:Long = 0
+    private var timeWhenStopedForStorage:Long = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -105,6 +118,32 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
         showData(0.0, 0.0, 0.0)
         setExcercizeType();
         setService()
+        dataBinding.alBtnPause.setOnClickListener(View.OnClickListener {
+            setServiceStopTracking()
+        })
+    }
+
+    private fun setServiceStopTracking() {
+        stopTracking();
+        dataBinding.ibAlReset.isClickable = true
+        val drawable2: Drawable? = AppCompatResources.getDrawable(this,R.drawable.ic_light_replay_icon)
+        dataBinding.ibAlReset.setImageDrawable(drawable2)
+        saveRoute();
+    }
+
+    private fun saveRoute() {
+
+    }
+
+    private fun stopTracking() {
+        val intent:Intent = Intent(this,GGLocationService::class.java)
+        this.stopService(intent)
+        timeWhenStopedForStorage = TimeUtils.newInstance().chronometerToMills(dataBinding.chrAlDuration)
+        timeWhenStopped = dataBinding.chrAlDuration.base - SystemClock.elapsedRealtime()
+        dataBinding.chrAlDuration.stop()
+        dataBinding.alBtnStart.visibility= View.VISIBLE
+        dataBinding.alBtnPause.visibility= View.GONE
+        mLocTrackingRunning = false
     }
 
     private fun setExcercizeType() {
@@ -141,7 +180,32 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
     }
 
     private fun startTrackingService(context: Context){
+        val intent:Intent = Intent(this,GGLocationService::class.java)
+        intent.putExtra(HyperConst.LOC_INTERVAL,Constants.UPDATE_INTERVAL)
+        intent.putExtra(HyperConst.LOC_FASTEST_INTERVAL,Constants.FASTEST_INTERVAL)
+        intent.putExtra(HyperConst.LOC_DISTANCE,Constants.LOCATION_DISTANCE)
+        this.startService(intent)
+        trackingInProgressViewChanges();
+        mLocTrackingRunning = true
+        mRouteAlreadySaved = false
+    }
 
+    private fun trackingInProgressViewChanges() {
+        runOnUiThread(Runnable {
+          chronoMeterDuration = dataBinding.chrAlDuration
+            chronoMeterDuration.base = SystemClock.elapsedRealtime() + timeWhenStopped
+            chronoMeterDuration.start()
+            dataBinding.alBtnStart.visibility = View.GONE
+            dataBinding.alBtnPause.visibility = View.VISIBLE
+            if (mLocTrackingRunning){
+                val drawable1: Drawable? = AppCompatResources.getDrawable(this,R.drawable.ic_light_save_icon)
+                val drawable2: Drawable? = AppCompatResources.getDrawable(this,R.drawable.ic_light_replay_icon)
+                dataBinding.ibAlSave.setImageDrawable(drawable1)
+                dataBinding.ibAlSave.isClickable = false
+                dataBinding.ibAlReset.setImageDrawable(drawable2)
+                dataBinding.ibAlReset.isClickable = false
+            }
+        })
     }
 
     override fun onMapReady(p0: GoogleMap) {
