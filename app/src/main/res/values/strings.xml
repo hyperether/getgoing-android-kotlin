@@ -67,7 +67,7 @@
 
     <!-- Reset button alert dialog -->
     <string name="alert_dialog_title_reset_btn">Clear route data</string>
-    <string name="alert_dialog_message_reset_btn">Clear map and rout data.</string>
+    <string name="alert_dialog_message_reset_btn">Clear map and route data.</string>
     <string name="alert_dialog_positive_reset_save_btn">OK</string>
     <string name="alert_dialog_negative_reset_save_btn">Cancel</string>
 
