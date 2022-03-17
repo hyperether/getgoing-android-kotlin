@@ -22,8 +22,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelStoreOwner
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -84,15 +87,13 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
         dataBinding.clickHandler = handler
         dataBinding.locationViewModel = handler
 
-
         routeViewModel = ViewModelProviders.of(this).get(RouteViewModel::class.java)
         val routeObserver = Observer<Route> { newRoute ->
             route = newRoute
-            if (route != null) {
-                showData(route.length, route.energy, route.avgSpeed)
-            }
+            Log.d("Observer", "$newRoute")
+            showData(route.length, route.energy, route.avgSpeed)
         }
-        routeViewModel.currentRoute.observe(this, routeObserver)
+        routeViewModel.getRouteByIdAsLiveData(routeCurrentID).observe(this, routeObserver)
 
         nodeListViewModel = ViewModelProviders.of(this).get(NodeListViewModel::class.java)
         nodeListViewModel.getNodes()?.observe(this, Observer { newList ->
@@ -446,9 +447,10 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
 
     //ok je ali ce okinuti samo jednom zbog boolean provere.
     override fun onRouteAdded(id: Long) {
+        routeCurrentID = id
         runOnUiThread(Runnable {
-            nodeListViewModel.setRouteId(id)
-            routeViewModel.setRouteID(id)
+            nodeListViewModel.setRouteId(routeCurrentID)
+            routeViewModel.setRouteID(routeCurrentID)
         })
         Log.d(LocationActivity::class.simpleName, "onRouteAdded: from listener")
         startTrackingService(this)

@@ -51,6 +51,16 @@ object GgRepository {
         return data
     }
 
+    fun getLastRoute2(): Route? {
+        return routeDao.getLatestRoute()
+    }
+
+    fun updateRoute(route: Route){
+        getRepoHandler()?.post(Runnable {
+            routeDao.updateRoute(route)
+        })
+    }
+
     fun getNodesById(id: Long): LiveData<List<MapNode>> {
         return nodeDao.getAllByRouteId(id)
     }

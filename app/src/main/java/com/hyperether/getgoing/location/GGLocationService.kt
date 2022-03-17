@@ -5,7 +5,9 @@ import android.content.Intent
 import android.location.Location
 import android.os.Handler
 import android.os.HandlerThread
+import com.hyperether.getgoing.App
 import com.hyperether.getgoing.R
+import com.hyperether.getgoing.SharedPref
 import com.hyperether.getgoing.repository.room.GgRepository
 import com.hyperether.getgoing.repository.room.MapNode
 import com.hyperether.getgoing.ui.activity.LocationActivity
@@ -29,6 +31,25 @@ class GGLocationService : HyperLocationService() {
 
     private lateinit var thread: HandlerThread
     private lateinit var handler: Handler
+    private var weight: Double = 0.0;
+    private var previousTimeStamp: Long = 0;
+    private var routeId: Long = 0
+    private var profileID: Int = 0
+
+    override fun onCreate() {
+        super.onCreate()
+        var sharedPref: SharedPref = SharedPref.newInstance()
+        weight = sharedPref.getWeight().toDouble()
+        previousTimeStamp = System.currentTimeMillis()
+        App().getHandler().post(Runnable {
+            val currentRoute = GgRepository.getLastRoute2()
+            if (currentRoute != null) {
+                routeId = currentRoute.id
+                profileID = currentRoute.activity_id
+
+            }
+        })
+    }
 
     override fun startForeground() {
         super.startForeground()
@@ -80,6 +101,7 @@ class GGLocationService : HyperLocationService() {
             )
 
             GgRepository.insert(node)
+            GgRepository.updateRoute(curre)
         }
     }
 }
