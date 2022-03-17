@@ -28,4 +28,7 @@ interface NodeDao {
 
     @Query("DELETE FROM nodes WHERE routeId = :id")
     fun deleteAllByRouteId(id: Long)
+
+    @Insert
+    fun insertNode(node: MapNode?)
 }

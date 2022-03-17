@@ -31,6 +31,11 @@ object GgRepository {
         nodeDao.insert(mapNode)
     }
 
+
+    fun daoInsertNode(node: MapNode?) {
+        getRepoHandler()!!.post { nodeDao.insertNode(node) }
+    }
+
     fun insertRoute(route:Route,listener:RouteAddedCallback){
         val routeId = AtomicLong()
         getRepoHandler()?.post(Runnable {

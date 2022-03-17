@@ -5,6 +5,7 @@ import android.content.Intent
 import android.location.Location
 import android.os.Handler
 import android.os.HandlerThread
+import android.util.Log
 import com.hyperether.getgoing.App
 import com.hyperether.getgoing.R
 import com.hyperether.getgoing.SharedPref
@@ -22,7 +23,11 @@ class GGLocationService : HyperLocationService() {
     private var longitude_old: Double? = null
     private var latitude: Double? = null
     private var latitude_old: Double? = null
+    private val ACCURACY_MIN = 20.0
+    private var nodeIndex:Long = 0
+    private var routeID: Long = 0
 
+    private var previousLocation:Location? = null
     private var mCurrentLocation: Location? = null
     private var secondsCumulative: Int = 0
     private var oldTime: Long = 0
@@ -87,43 +92,42 @@ class GGLocationService : HyperLocationService() {
 
     override fun onLocationUpdate(location: Location?) {
         handler.post {
-            time = System.currentTimeMillis() - oldTime
-            timeCumulative += System.currentTimeMillis() - oldTime
-            secondsCumulative = timeCumulative.toInt() / 1000
-            oldTime = System.currentTimeMillis()
-
-            val previousTimestamp = System.currentTimeMillis()
-            val elapsedTime: Long = System.currentTimeMillis() - previousTimestamp
-
-            mCurrentLocation = location
-            if (latitude == null)
-                latitude = mCurrentLocation?.latitude
-            if (longitude == null)
-                longitude = mCurrentLocation?.longitude
-            latitude_old = latitude
-            longitude_old = longitude
-            latitude = mCurrentLocation?.latitude
-            longitude = mCurrentLocation?.longitude
-
-            val distance = Conversion.gps2m(latitude, longitude, latitude_old, longitude_old)
-            distanceCumulative += distance
-            velocityAvg = distanceCumulative / secondsCumulative
-
-            //speed is average value from gps and calculated value
-            val velocity: Double = (location!!.speed+(distance/elapsedTime))/2
-            val kcalCurrent: Double = 100.00 // fix this later
+            if (location!=null && location.accuracy < ACCURACY_MIN){
+                if (previousLocation == null){
+                    previousTimeStamp = System.currentTimeMillis()
+                    GgRepository.daoInsertNode(createNode(location)) // ok
+                }else{
+                    var elapsedTime:Long = System.currentTimeMillis() - previousTimeStamp
+                    previousTimeStamp = System.currentTimeMillis()
+                    timeCumulative += elapsedTime
+                    secondsCumulative = timeCumulative.toInt() / 1000
+                    var distance:Float = location.distanceTo(previousLocation)
+                    if (distance > 0){
+                        distanceCumulative += distance
+                        velocityAvg = distanceCumulative / secondsCumulative
+                        var velocity:Float = (location.speed+(distance/elapsedTime))/2
+                        var kcalCurrent:Double = 20.00 // add matrix
+                        kcalCumulative += kcalCurrent
+                        GgRepository.daoInsertNode(createNode(location)) // ok
 
 
-            val node = MapNode(
-                0, latitude, longitude, 0.0f, 0, 0
-            )
+                        currentRoute?.length = distanceCumulative
+                        currentRoute?.energy = kcalCumulative
+                        currentRoute?.currentSpeed = velocity.toDouble()
+                        currentRoute?.avgSpeed = velocityAvg
+                        Log.d("From Service", "vals $distanceCumulative $kcalCumulative ${velocity.toDouble()}: $velocityAvg")
+                        currentRoute?.let { GgRepository.updateRoute(it) }
+                    }
 
-          //  currentRoute!!.currentSpeed = velocity location throws error
-            currentRoute!!.energy = kcalCurrent
-            currentRoute!!.avgSpeed = velocityAvg
-
-            GgRepository.insert(node)
-            GgRepository.updateRoute(currentRoute!!)
+                }
+                previousLocation = location
+            }
         }
     }
+
+
+    fun createNode(location:Location):MapNode{
+        return MapNode(0, location.latitude, location.longitude, location.speed, nodeIndex++,routeID)
+    }
+
 }

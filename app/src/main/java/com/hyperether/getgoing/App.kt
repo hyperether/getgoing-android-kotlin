@@ -19,7 +19,7 @@ class App : Application() {
         }
         fun getHandler():Handler{
             if (handler == null) {
-                val thread = HandlerThread("db-thread")
+                val thread = HandlerThread("ggthread")
                 thread.start()
                 handler = android.os.Handler(thread.looper)
             }
