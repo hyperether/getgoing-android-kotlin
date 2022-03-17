@@ -26,6 +26,7 @@ import com.hyperether.getgoing.ui.activity.ShowDataActivity
 import com.hyperether.getgoing.utils.Constants
 import com.hyperether.getgoing.viewmodel.RouteViewModel
 import kotlinx.android.synthetic.main.fragment_activities.view.*
+import java.text.DecimalFormat
 
 
 class ActivitiesFragment : DialogFragment() {
@@ -53,6 +54,9 @@ class ActivitiesFragment : DialogFragment() {
     private lateinit var prbRun:ProgressBar
     private lateinit var prbRide:ProgressBar
     lateinit var routeViewModel: RouteViewModel
+    private lateinit var mileageWalk:TextView
+    private lateinit var mileageRun:TextView
+    private lateinit var mileageRide:TextView
 
     private var settings: SharedPreferences? = null
     private lateinit var model: CBDataFrame
@@ -110,6 +114,12 @@ class ActivitiesFragment : DialogFragment() {
             prbWalk.progress = walkPercentage
             prbRun.progress = runPercentage
             prbRide.progress = ridePercentage
+            val df:DecimalFormat = DecimalFormat("#.##")
+            mileageWalk.setText(df.format(sumWalk/1000)+"km")
+            mileageRun.setText(df.format(sumRun/1000)+"km")
+            mileageRide.setText(df.format(sumRide/1000)+"km")
+
+
         }
     }
 
@@ -117,6 +127,9 @@ class ActivitiesFragment : DialogFragment() {
         prbWalk = view.findViewById(R.id.progressBar)
         prbRun = view.findViewById(R.id.progressBar2)
         prbRide = view.findViewById(R.id.progressBar3)
+        mileageWalk = view.findViewById(R.id.tv_fa_pb_mileage1)
+        mileageRun = view.findViewById(R.id.tv_fa_pb_mileage2)
+        mileageRide = view.findViewById(R.id.tv_fa_pb_mileage3)
 
     }
 
