@@ -45,7 +45,7 @@ import kotlinx.android.synthetic.main.activity_location.*
 import java.text.SimpleDateFormat
 import java.util.*
 
-class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
+class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCallback {
     val REQUEST_GPS_SETTINGS = 100
     lateinit var mMap: GoogleMap
     lateinit var routeViewModel: RouteViewModel
@@ -58,7 +58,7 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
     private var mLocTrackingRunning = false
     private var mRouteAlreadySaved = false
     private var trackingStarted = false
-    private lateinit var sdf:SimpleDateFormat
+    private var sdf:SimpleDateFormat = SimpleDateFormat()
     private var profileId:Int = 0
     private var goalStore:Int = 0
 
@@ -130,13 +130,18 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun startTracking(context: Context?) {
         if (!trackingStarted){
             trackingStarted = true
-            var date:String = sdf.format(Date())
+            var datef:Date = Date()
+            var date:String = sdf.format(datef)
             val sharedPref:SharedPref = SharedPref.newInstance()
             goalStore = sharedPref.getGoal()
-            GgRepository.insertRoute(Route(0,0,0.0,0.0,date,0.0,0.0,profileId,goalStore), )
-
-
+            GgRepository.insertRoute(Route(0,0,0.0,0.0,date,0.0,0.0,profileId,goalStore), this)
+        }else{
+            startTrackingService(this)
         }
+    }
+
+    private fun startTrackingService(context: Context){
+
     }
 
     override fun onMapReady(p0: GoogleMap) {
@@ -311,5 +316,15 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
         nodeListViewModel.setChronometerLastTime(TimeUtils.newInstance().chronometerToMills(dataBinding.chrAlDuration))
         nodeListViewModel.setBackgroundStartTime(System.currentTimeMillis())
         super.onDestroy()
+    }
+
+    //ok je ali ce okinuti samo jednom zbog boolean provere.
+    override fun onRouteAdded(id: Long) {
+        runOnUiThread(Runnable {
+            nodeListViewModel.setRouteId(id)
+            routeViewModel.setRouteID(id)
+        })
+        Log.d(LocationActivity::class.simpleName, "onRouteAdded: from listener")
+        startTrackingService(this)
     }
 }

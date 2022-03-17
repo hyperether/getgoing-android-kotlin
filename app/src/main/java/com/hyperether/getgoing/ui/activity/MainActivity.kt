@@ -100,7 +100,7 @@ class MainActivity : AppCompatActivity() {
             val tmpNode = MapNode(0, 0.0, 0.0, 0F, 0, 0)
 
             tmpRoute.add(tmpNode)
-            val dbRoute = Route(0, 0, 0.0, 0.0, "null", 0.0, 1, 0)
+            val dbRoute = Route(0, 0, 0.0, 0.0, "null", 0.0, 1.0, 0,0)
             GgRepository.insertRouteInit(dbRoute, tmpRoute, object : ZeroNodeInsertCallback {
                 override fun onAdded() {
                     rvm = ViewModelProviders.of(this@MainActivity).get(RouteViewModel::class.java)
