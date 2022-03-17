@@ -13,11 +13,14 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import com.hyperether.getgoing.R
 import com.hyperether.getgoing.SharedPref
 import com.hyperether.getgoing.model.CBDataFrame
 import com.hyperether.getgoing.ui.activity.LocationActivity
 import com.hyperether.getgoing.ui.activity.MainActivity
+import com.hyperether.getgoing.ui.activity.ShowDataActivity
 import com.hyperether.getgoing.utils.Constants
 
 
@@ -35,6 +38,13 @@ class ActivitiesFragment : DialogFragment() {
     private lateinit var saveChanges: Button
     private lateinit var backBtn: ImageButton
     private lateinit var seekBar: SeekBar
+
+    private lateinit var tv_fa_pb_mileage1:TextView
+    private lateinit var iv_fa_rightarrow1:ImageView
+    private lateinit var tv_fa_pb_mileage2:TextView
+    private lateinit var iv_fa_rightarrow2:ImageView
+    private lateinit var tv_fa_pb_mileage3:TextView
+    private lateinit var iv_fa_rightarrow3:ImageView
 
     private var settings: SharedPreferences? = null
     private lateinit var model: CBDataFrame
@@ -79,7 +89,55 @@ class ActivitiesFragment : DialogFragment() {
         initLabels()
         initProgressStringColor()
         initListeners()
+        initFragmentTranactions(view)
     }
+
+    private fun initFragmentTranactions(view: View?) {
+        val sharedPref:SharedPref = SharedPref.newInstance()
+        if (view != null) {
+            tv_fa_pb_mileage1 = view.findViewById(R.id.tv_fa_pb_mileage1)
+            tv_fa_pb_mileage1.setOnClickListener(View.OnClickListener {
+                sharedPref.setClickedTypeShowData(Constants.WALK_ID)
+                startAct();
+            })
+            iv_fa_rightarrow1 = view.findViewById(R.id.iv_fa_rightarrow1)
+            iv_fa_rightarrow1.setOnClickListener(View.OnClickListener {
+                sharedPref.setClickedTypeShowData(Constants.WALK_ID)
+                startAct();
+            })
+            tv_fa_pb_mileage2 = view.findViewById(R.id.tv_fa_pb_mileage2)
+            tv_fa_pb_mileage2.setOnClickListener(View.OnClickListener {
+                sharedPref.setClickedTypeShowData(Constants.RUN_ID)
+                startAct();
+            })
+            iv_fa_rightarrow2 = view.findViewById(R.id.iv_fa_rightarrow2)
+            iv_fa_rightarrow2.setOnClickListener(View.OnClickListener {
+                sharedPref.setClickedTypeShowData(Constants.RUN_ID)
+                startAct();
+
+            })
+            tv_fa_pb_mileage3 = view.findViewById(R.id.tv_fa_pb_mileage3)
+            tv_fa_pb_mileage3.setOnClickListener(View.OnClickListener {
+                sharedPref.setClickedTypeShowData(Constants.RIDE_ID)
+                startAct();
+
+            })
+            iv_fa_rightarrow3 = view.findViewById(R.id.iv_fa_rightarrow3)
+            iv_fa_rightarrow3.setOnClickListener(View.OnClickListener {
+                sharedPref.setClickedTypeShowData(Constants.RIDE_ID)
+                startAct();
+
+            })
+        }
+    }
+
+    private fun startAct() {
+        activity?.let{
+            val intent = Intent (it, ShowDataActivity::class.java)
+            it.startActivity(intent)
+        }
+    }
+
 
     private fun initScreenDimen() {
         if (MainActivity.ratio > 1.8) {

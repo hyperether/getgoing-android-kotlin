@@ -52,6 +52,9 @@ android {
     dataBinding {
         enabled = true
     }
+    buildFeatures {
+        viewBinding true
+    }
 }
 
 def room_version = '2.4.2'
@@ -64,6 +67,8 @@ dependencies {
     implementation 'com.google.android.gms:play-services-maps:18.0.2'
     implementation 'com.google.android.gms:play-services-location:19.0.1'
     implementation 'com.github.PhilJay:MPAndroidChart:v2.2.4'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.4.1'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.4.1'
 
     kapt 'androidx.lifecycle:lifecycle-compiler:2.5.0-alpha04'
 

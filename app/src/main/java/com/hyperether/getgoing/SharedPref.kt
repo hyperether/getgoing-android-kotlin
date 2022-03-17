@@ -151,5 +151,15 @@ class SharedPref {
         return setting.getInt("fragmentSentCode",Constants.SENT_FROM_FRAGMENT)
     }
 
+    fun setClickedTypeShowData(type:Int){
+        val editor:SharedPreferences.Editor = setting.edit()
+        editor.putInt(Constants.ACTIVITY_SHOW_DATA,type)
+        editor.apply()
+    }
+
+    fun getClickedTypeShowData():Int{
+        return setting.getInt(Constants.ACTIVITY_SHOW_DATA,0)
+    }
+
 
 }
