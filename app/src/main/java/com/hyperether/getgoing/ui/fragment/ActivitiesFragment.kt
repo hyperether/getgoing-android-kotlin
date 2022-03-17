@@ -15,13 +15,17 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.ViewModelProviders
 import com.hyperether.getgoing.R
 import com.hyperether.getgoing.SharedPref
 import com.hyperether.getgoing.model.CBDataFrame
+import com.hyperether.getgoing.repository.room.Route
 import com.hyperether.getgoing.ui.activity.LocationActivity
 import com.hyperether.getgoing.ui.activity.MainActivity
 import com.hyperether.getgoing.ui.activity.ShowDataActivity
 import com.hyperether.getgoing.utils.Constants
+import com.hyperether.getgoing.viewmodel.RouteViewModel
+import kotlinx.android.synthetic.main.fragment_activities.view.*
 
 
 class ActivitiesFragment : DialogFragment() {
@@ -45,9 +49,10 @@ class ActivitiesFragment : DialogFragment() {
     private lateinit var iv_fa_rightarrow2:ImageView
     private lateinit var tv_fa_pb_mileage3:TextView
     private lateinit var iv_fa_rightarrow3:ImageView
-    private lateinit var progBar1:ProgressBar
-    private lateinit var progBar2:ProgressBar
-    private lateinit var progBar3:ProgressBar
+    private lateinit var prbWalk:ProgressBar
+    private lateinit var prbRun:ProgressBar
+    private lateinit var prbRide:ProgressBar
+    lateinit var routeViewModel: RouteViewModel
 
     private var settings: SharedPreferences? = null
     private lateinit var model: CBDataFrame
@@ -58,7 +63,6 @@ class ActivitiesFragment : DialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setStyle(STYLE_NORMAL, R.style.FullScreenDialogStyle)
         settings = activity?.getSharedPreferences(Constants.PREF_FILE, 0)
         model = CBDataFrame.getInstance()!!
@@ -67,8 +71,25 @@ class ActivitiesFragment : DialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_activities, container, false)
+    ): View {
+        val view:View = inflater.inflate(R.layout.fragment_activities,container,false)
+        setButtons(view)
+        routeViewModel = ViewModelProviders.of(this).get(RouteViewModel::class.java)
+        routeViewModel.getAllRoutes().observe(
+            this
+        ) { route -> fillProgBars(route) }
+        return view
+    }
+
+    private fun fillProgBars(route: List<Route>?) {
+
+    }
+
+    private fun setButtons(view: View) {
+        prbWalk = view.findViewById(R.id.progressBar)
+        prbRun = view.findViewById(R.id.progressBar2)
+        prbRide = view.findViewById(R.id.progressBar3)
+
     }
 
     override fun onStart() {
