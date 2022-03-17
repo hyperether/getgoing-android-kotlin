@@ -56,7 +56,7 @@ class GGLocationService : HyperLocationService() {
     }
 
     override fun onLocationUpdate(location: Location?) {
-        handler.post({
+        handler.post {
             time = System.currentTimeMillis() - oldTime
             timeCumulative += System.currentTimeMillis() - oldTime
             secondsCumulative = timeCumulative.toInt() / 1000
@@ -64,15 +64,15 @@ class GGLocationService : HyperLocationService() {
 
             mCurrentLocation = location
             if (latitude == null)
-                latitude = mCurrentLocation?.getLatitude()
+                latitude = mCurrentLocation?.latitude
             if (longitude == null)
-                longitude = mCurrentLocation?.getLongitude()
+                longitude = mCurrentLocation?.longitude
             latitude_old = latitude
             longitude_old = longitude
-            latitude = mCurrentLocation?.getLatitude()
-            longitude = mCurrentLocation?.getLongitude()
+            latitude = mCurrentLocation?.latitude
+            longitude = mCurrentLocation?.longitude
 
-            var distance = Conversion.gps2m(latitude, longitude, latitude_old, longitude_old)
+            val distance = Conversion.gps2m(latitude, longitude, latitude_old, longitude_old)
             distanceCumulative += distance
 
             val node = MapNode(
@@ -80,6 +80,6 @@ class GGLocationService : HyperLocationService() {
             )
 
             GgRepository.insert(node)
-        })
+        }
     }
 }

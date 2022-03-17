@@ -19,7 +19,6 @@
     <string name="metric_spinner">Metric</string>
     <string name="energyLabel1">Energy:</string>
     <string name="energyLabel2">kcal</string>
-
     <string name="SettingsActivityTitle" translatable="false">Settings</string>
     <string name="ShowMap" translatable="false">Map</string>
     <string name="action_reset_settings" translatable="false">Reset</string>
@@ -109,6 +108,16 @@
     <string name="running">Running</string>
     <string name="min">min</string>
     <string name="textview_age_end">" years"</string>
+
+    <string name="com_facebook_share_button_text">Share</string>
+    <string name="progress_bar_img">progress bar image</string>
+    <string name="progress_bar_goal_img">progress bar goal icon</string>
+    <string name="distance">Distance</string>
+    <string name="energy_unit">kcal</string>
+    <string name="speed_unit">m/s</string>
+    <string name="dist_unit">km</string>
+    <string name="toggle_map_button">Toggle map button</string>
+    <string name="goal">Goal</string>
 
     <!-- alertdialog radiogroup-->
     <string-array name="genders">
