@@ -20,7 +20,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
-import androidx.core.content.res.ResourcesCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -132,6 +131,18 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
     }
 
     private fun saveRoute() {
+        mRouteAlreadySaved = true
+        val sharedPref:SharedPref = SharedPref.newInstance()
+        if (profileId == Constants.WALK_ID && !sharedPref.doesWalkRouteExist()){
+            sharedPref.setWalkRouteExisting(true)
+            Log.d(LocationActivity::class.simpleName, "saveRoute: $profileId") // ok
+        } else if (profileId == Constants.RUN_ID && !sharedPref.doesRunRouteExist()){
+            sharedPref.setRunRouteExisting(true)
+            Log.d(LocationActivity::class.simpleName, "saveRoute: $profileId")
+        }else if (profileId == Constants.RIDE_ID && !sharedPref.doesRideRouteExist()){
+            sharedPref.setRideRouteExisting(true)
+            Log.d(LocationActivity::class.simpleName, "saveRoute: $profileId")
+        }
 
     }
 

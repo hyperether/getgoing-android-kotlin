@@ -79,6 +79,12 @@ class SharedPref {
         return setting.getBoolean(Constants.PREF_WALK_ROUTE_EXISTING,walk)
     }
 
+    fun setWalkRouteExisting(walk:Boolean){
+        val editor:SharedPreferences.Editor = setting.edit()
+        editor.putBoolean(Constants.PREF_WALK_ROUTE_EXISTING,walk)
+        editor.apply()
+    }
+
     fun doesWalkRouteExist():Boolean{
         return setting.getBoolean(Constants.PREF_WALK_ROUTE_EXISTING,false)
     }
