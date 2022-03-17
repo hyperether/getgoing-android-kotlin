@@ -1,7 +1,6 @@
 package com.hyperether.getgoing.viewmodel
 
 import android.app.Activity
-import android.app.Application
 import androidx.arch.core.util.Function
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -11,7 +10,6 @@ import com.hyperether.getgoing.App
 import com.hyperether.getgoing.repository.room.GgRepository
 import com.hyperether.getgoing.repository.room.MapNode
 import com.hyperether.getgoing.repository.room.Route
-import org.w3c.dom.Node
 
 class RouteViewModel : ViewModel() {
 
@@ -49,6 +47,24 @@ class RouteViewModel : ViewModel() {
         GgRepository.deleteNodesByRouteId(id)
         GgRepository.deleteRouteById(id)
     }
+    fun continueTracking(activity:Activity){
+        App.getHandler().post(Runnable {
+            val id:Long = GgRepository.getLastRoute2()!!.id
+            activity.runOnUiThread(Runnable {
+                setRouteId(id)
+                getNodesById(id)
+                getRouteByIdAsLiveData(id)
+            })
+        })
+    }
 
+    private fun getNodesById(id: Long):LiveData<List<MapNode>> {
+        return GgRepository.getAllNodesById(id)
+    }
+
+    private fun setRouteId(id: Long) {
+        routeId.value = id
+
+    }
 
 }

@@ -22,11 +22,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
-import androidx.lifecycle.ViewModelStoreOwner
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -47,6 +44,7 @@ import com.hyperether.getgoing.ui.handler.LocationActivityClickHandler
 import com.hyperether.getgoing.ui.handler.MainActivityClickHandler
 import com.hyperether.getgoing.utils.Constants
 import com.hyperether.getgoing.utils.Constants.OPENED_FROM_LOCATION_ACT
+import com.hyperether.getgoing.utils.ServiceUtil
 import com.hyperether.getgoing.utils.TimeUtils
 import com.hyperether.getgoing.viewmodel.NodeListViewModel
 import com.hyperether.getgoing.viewmodel.RouteViewModel
@@ -84,6 +82,11 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
         cbDataFrameLocal = CBDataFrame.getInstance()!!
         dataBinding = DataBindingUtil.setContentView(this, R.layout.activity_location)
         val handler = LocationActivityClickHandler(this)
+        val serviceUtil:ServiceUtil = ServiceUtil.newInstance()
+        mLocTrackingRunning = serviceUtil.isServiceActive(this)
+        trackingStarted = serviceUtil.isServiceActive(this)
+
+        Log.d(ServiceUtil::class.simpleName, "onCreate: $mLocTrackingRunning")
         dataBinding.clickHandler = handler
         dataBinding.locationViewModel = handler
 
@@ -118,6 +121,11 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
     override fun onStart() {
         super.onStart()
         setVisibilities()
+        clearData()
+        val serviceUtil:ServiceUtil = ServiceUtil.newInstance()
+        if (serviceUtil.isServiceActive(this)){
+            continueTracking()
+        }
         showData(0.0, 0.0, 0.0)
         setExcercizeType();
         setService()
@@ -129,6 +137,19 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
         })
 
     }
+
+    private fun continueTracking() {
+        trackingInProgressViewChanges()
+        var time:Long = nodeListViewModel.getChronometerLastTime()
+        var backgroundStartTime:Long = nodeListViewModel.getBackgroundStartTime()
+        dataBinding.chrAlDuration.base = (SystemClock.elapsedRealtime() - time - (System.currentTimeMillis() - backgroundStartTime));
+        dataBinding.chrAlDuration.start()
+        nodeListViewModel.continueTracking(this)
+        routeViewModel.continueTracking(this)
+
+
+    }
+
 
     private fun resetServiceTracking() {
         val dialog = AlertDialog.Builder(this)

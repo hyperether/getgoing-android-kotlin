@@ -1,9 +1,11 @@
 package com.hyperether.getgoing.viewmodel
 
+import android.app.Activity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
+import com.hyperether.getgoing.App
 import com.hyperether.getgoing.SharedPref
 import com.hyperether.getgoing.repository.room.GgRepository
 import com.hyperether.getgoing.repository.room.MapNode
@@ -47,4 +49,15 @@ class NodeListViewModel : ViewModel() {
     fun setRouteId(id:Long){
         routeID.value = id
     }
+
+    fun continueTracking(activity:Activity){
+        App.getHandler().post(Runnable {
+            val id:Long = GgRepository.getLastRoute2()!!.id
+            activity.runOnUiThread(Runnable {
+                setRouteId(id)
+                getNodesById(id)
+            })
+        })
+    }
+
 }
