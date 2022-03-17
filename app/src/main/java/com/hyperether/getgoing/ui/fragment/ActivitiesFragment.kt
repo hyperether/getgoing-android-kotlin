@@ -45,6 +45,9 @@ class ActivitiesFragment : DialogFragment() {
     private lateinit var iv_fa_rightarrow2:ImageView
     private lateinit var tv_fa_pb_mileage3:TextView
     private lateinit var iv_fa_rightarrow3:ImageView
+    private lateinit var progBar1:ProgressBar
+    private lateinit var progBar2:ProgressBar
+    private lateinit var progBar3:ProgressBar
 
     private var settings: SharedPreferences? = null
     private lateinit var model: CBDataFrame
