@@ -10,11 +10,15 @@ import android.view.ViewGroup.MarginLayoutParams
 import android.widget.*
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.ViewModelProviders
+import com.hyperether.getgoing.App
 import com.hyperether.getgoing.R
 import com.hyperether.getgoing.model.CBDataFrame
+import com.hyperether.getgoing.repository.room.Route
 import com.hyperether.getgoing.ui.activity.MainActivity
 import com.hyperether.getgoing.utils.Constants
 import com.hyperether.getgoing.utils.Constants.gender
+import com.hyperether.getgoing.viewmodel.RouteViewModel
 import kotlinx.android.synthetic.main.fragment_profile.*
 
 
@@ -23,16 +27,16 @@ class ProfileFragment : DialogFragment() {
     private var model: CBDataFrame? = null
     private var rootViewGroup: ViewGroup? = null
     private var settings: SharedPreferences? = null
-
     private lateinit var genderImg: ImageView
-
     private lateinit var dataLabel: TextView
     private lateinit var tvGender: TextView
     private lateinit var tvAge: TextView
     private lateinit var tvHeight: TextView
     private lateinit var tvWeight: TextView
-
     private lateinit var genderBtn: ImageButton
+    lateinit var routeViewModel: RouteViewModel
+    lateinit var totalMileage:TextView
+    lateinit var totalCalories:TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,11 +51,12 @@ class ProfileFragment : DialogFragment() {
         savedInstanceState: Bundle?
     ): View? {
         super.onCreateView(inflater, container, savedInstanceState)
-
         rootViewGroup = container
-
         val rootView: View = inflater.inflate(R.layout.fragment_profile, container, false)
         genderImg = rootView.findViewById(R.id.iv_fp_gender)
+        routeViewModel = ViewModelProviders.of(this).get(RouteViewModel::class.java)
+        totalMileage = rootView.findViewById(R.id.tv_fp_mileage)
+        totalCalories = rootView.findViewById(R.id.tv_fp_calories)
 
         when (settings!!.getInt("gender", 0)) {
             0 -> genderImg.setImageDrawable(
@@ -94,6 +99,30 @@ class ProfileFragment : DialogFragment() {
         initScreenDimen()
         initLabels()
         initDialogs()
+        routeViewModel.getAllRoutes().observe(
+            this
+        ) { route -> initTotals(route) }
+    }
+
+    private fun initTotals(route: List<Route>?) {
+        var totalRoute = DoubleArray(1)
+        var totalKcal = DoubleArray(1)
+        App.getHandler().post(Runnable {
+            totalRoute[0] = 0.0
+            totalKcal[0] = 0.0
+            if (route != null) {
+                for (item in route){
+                    totalRoute[0] += item.length /1000
+                    totalKcal[0] += item.energy
+                }
+
+                activity?.runOnUiThread(Runnable {
+                    totalMileage.text = String.format("%.02f km",totalRoute[0])
+                    val s:String = totalKcal[0].toString()
+                    totalCalories.text = "$s Kcal"
+                })
+            }
+        })
     }
 
     private fun initScreenDimen() {
