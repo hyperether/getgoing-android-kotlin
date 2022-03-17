@@ -10,6 +10,7 @@ import com.hyperether.getgoing.R
 import com.hyperether.getgoing.SharedPref
 import com.hyperether.getgoing.repository.room.GgRepository
 import com.hyperether.getgoing.repository.room.MapNode
+import com.hyperether.getgoing.repository.room.Route
 import com.hyperether.getgoing.ui.activity.LocationActivity
 import com.hyperether.getgoing.utils.Conversion
 import com.hyperether.toolbox.HyperNotification
@@ -35,18 +36,26 @@ class GGLocationService : HyperLocationService() {
     private var previousTimeStamp: Long = 0;
     private var routeId: Long = 0
     private var profileID: Int = 0
+    private var kcalCumulative = 0.0
+    private var velocityAvg = 0.0
+    private var currentRoute:Route? = null
+    // add calculator
 
     override fun onCreate() {
         super.onCreate()
         var sharedPref: SharedPref = SharedPref.newInstance()
         weight = sharedPref.getWeight().toDouble()
         previousTimeStamp = System.currentTimeMillis()
-        App().getHandler().post(Runnable {
-            val currentRoute = GgRepository.getLastRoute2()
+        App.getHandler().post(Runnable {
+            currentRoute = GgRepository.getLastRoute2()
             if (currentRoute != null) {
-                routeId = currentRoute.id
-                profileID = currentRoute.activity_id
-
+                routeId = currentRoute!!.id
+                profileID = currentRoute!!.activity_id
+                distanceCumulative = currentRoute!!.length
+                kcalCumulative = currentRoute!!.energy
+                velocityAvg = currentRoute!!.avgSpeed
+                timeCumulative = currentRoute!!.duration
+                secondsCumulative = timeCumulative.toInt()/1000
             }
         })
     }
@@ -83,6 +92,9 @@ class GGLocationService : HyperLocationService() {
             secondsCumulative = timeCumulative.toInt() / 1000
             oldTime = System.currentTimeMillis()
 
+            val previousTimestamp = System.currentTimeMillis()
+            val elapsedTime: Long = System.currentTimeMillis() - previousTimestamp
+
             mCurrentLocation = location
             if (latitude == null)
                 latitude = mCurrentLocation?.latitude
@@ -95,13 +107,23 @@ class GGLocationService : HyperLocationService() {
 
             val distance = Conversion.gps2m(latitude, longitude, latitude_old, longitude_old)
             distanceCumulative += distance
+            velocityAvg = distanceCumulative / secondsCumulative
+
+            //speed is average value from gps and calculated value
+            val velocity: Double = (location!!.speed+(distance/elapsedTime))/2
+            val kcalCurrent: Double = 100.00 // fix this later
+
 
             val node = MapNode(
                 0, latitude, longitude, 0.0f, 0, 0
             )
 
+          //  currentRoute!!.currentSpeed = velocity location throws error
+            currentRoute!!.energy = kcalCurrent
+            currentRoute!!.avgSpeed = velocityAvg
+
             GgRepository.insert(node)
-            GgRepository.updateRoute(curre)
+            GgRepository.updateRoute(currentRoute!!)
         }
     }
 }

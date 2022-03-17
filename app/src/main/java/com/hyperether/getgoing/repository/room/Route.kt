@@ -8,11 +8,11 @@ import androidx.room.PrimaryKey
 data class Route(
     @PrimaryKey(autoGenerate = true) val id: Long,
     @ColumnInfo val duration: Long,
-    @ColumnInfo val energy: Double,
-    @ColumnInfo val length: Double,
+    @ColumnInfo var energy: Double,
+    @ColumnInfo var length: Double,
     @ColumnInfo val date: String,
-    @ColumnInfo val avgSpeed: Double,
-    @ColumnInfo val currentSpeed: Double,
+    @ColumnInfo var avgSpeed: Double,
+    @ColumnInfo var currentSpeed: Double,
     @ColumnInfo val activity_id: Int,
     @ColumnInfo val goal: Int
 )
