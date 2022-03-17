@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.hyperether.getgoing.App
 import com.hyperether.getgoing.repository.callback.ZeroNodeInsertCallback
+import java.util.concurrent.atomic.AtomicLong
 
 
 object GgRepository {
@@ -28,6 +29,14 @@ object GgRepository {
 
     fun insert(mapNode: MapNode) {
         nodeDao.insert(mapNode)
+    }
+
+    fun insertRoute(route:Route,listener:RouteAddedCallback){
+        val routeId = AtomicLong()
+        getRepoHandler()?.post(Runnable {
+            routeId.set((routeDao.insertRoute(route)))
+            listener.onRouteAdded(routeId.get())
+        })
     }
 
     fun getNodesLiveData(): LiveData<List<MapNode>>? {

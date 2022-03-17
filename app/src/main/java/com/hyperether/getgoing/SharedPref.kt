@@ -161,5 +161,15 @@ class SharedPref {
         return setting.getInt(Constants.ACTIVITY_SHOW_DATA,0)
     }
 
+    fun setClickedTypeShowData2(type:Int){
+        val editor:SharedPreferences.Editor = setting.edit()
+        editor.putInt(Constants.ACTIVITY_SHOW_DATA2,type)
+        editor.apply()
+    }
+
+    fun getClickedTypeShowData2():Int{
+        return setting.getInt(Constants.ACTIVITY_SHOW_DATA2,0)
+    }
+
 
 }

@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.OrientationHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.hyperether.getgoing.R
+import com.hyperether.getgoing.SharedPref
 import com.hyperether.getgoing.databinding.ActivityMainBinding
 import com.hyperether.getgoing.model.CBDataFrame
 import com.hyperether.getgoing.repository.callback.ZeroNodeInsertCallback
@@ -405,6 +406,18 @@ class MainActivity : AppCompatActivity() {
 
     private fun callMeteringActivity(id: Int) {
         if (getParametersStatus(model)) {
+
+            val sharedPref:SharedPref = SharedPref.newInstance()
+            if (id == Constants.WALK_ID){
+                sharedPref.setClickedTypeShowData2(id)
+            }else if (id == Constants.RUN_ID){
+                sharedPref.setClickedTypeShowData2(id)
+            }else if (id == Constants.RIDE_ID){
+                sharedPref.setClickedTypeShowData2(id)
+            }else{
+                sharedPref.setClickedTypeShowData2(0)
+            }
+
             this.model.profileId = id
             val intent = Intent(this@MainActivity, LocationActivity::class.java)
             startActivity(intent)

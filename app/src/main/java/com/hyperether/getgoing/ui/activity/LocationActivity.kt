@@ -10,8 +10,10 @@ import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
 import android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS
+import android.util.Log
 import android.view.View
 import android.widget.Button
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
@@ -29,8 +31,10 @@ import com.hyperether.getgoing.SharedPref
 import com.hyperether.getgoing.databinding.ActivityLocationBinding
 import com.hyperether.getgoing.location.GGLocationService
 import com.hyperether.getgoing.model.CBDataFrame
+import com.hyperether.getgoing.repository.room.GgRepository
 import com.hyperether.getgoing.repository.room.MapNode
 import com.hyperether.getgoing.repository.room.Route
+import com.hyperether.getgoing.repository.room.RouteAddedCallback
 import com.hyperether.getgoing.ui.handler.LocationActivityClickHandler
 import com.hyperether.getgoing.ui.handler.MainActivityClickHandler
 import com.hyperether.getgoing.utils.Constants.OPENED_FROM_LOCATION_ACT
@@ -38,6 +42,8 @@ import com.hyperether.getgoing.utils.TimeUtils
 import com.hyperether.getgoing.viewmodel.NodeListViewModel
 import com.hyperether.getgoing.viewmodel.RouteViewModel
 import kotlinx.android.synthetic.main.activity_location.*
+import java.text.SimpleDateFormat
+import java.util.*
 
 class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
     val REQUEST_GPS_SETTINGS = 100
@@ -49,10 +55,12 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
     lateinit var dataBinding: ActivityLocationBinding
     private lateinit var cbDataFrameLocal: CBDataFrame
     private lateinit var setGoalButton:Button
-
     private var mLocTrackingRunning = false
     private var mRouteAlreadySaved = false
-
+    private var trackingStarted = false
+    private lateinit var sdf:SimpleDateFormat
+    private var profileId:Int = 0
+    private var goalStore:Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -93,9 +101,42 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onStart() {
         super.onStart()
-
         setVisibilities()
         showData(0.0, 0.0, 0.0)
+        setExcercizeType();
+        setService()
+    }
+
+    private fun setExcercizeType() {
+        val sharedPref:SharedPref = SharedPref.newInstance()
+        val i:Int = sharedPref.getClickedTypeShowData2()
+        Log.d(LocationActivity::class.simpleName, "setExcercizeType: $i")
+        profileId = i
+    }
+
+    private fun setService() {
+        val sharedPref:SharedPref = SharedPref.newInstance()
+        al_btn_start.setOnClickListener(View.OnClickListener {
+            val goal:Int = sharedPref.getGoal()
+            Log.d(LocationActivity::class.simpleName, "setService: $goal")
+            if (goal > 0){
+                startTracking(applicationContext)
+            }else{
+                Toast.makeText(this,"Set Goal First",Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    private fun startTracking(context: Context?) {
+        if (!trackingStarted){
+            trackingStarted = true
+            var date:String = sdf.format(Date())
+            val sharedPref:SharedPref = SharedPref.newInstance()
+            goalStore = sharedPref.getGoal()
+            GgRepository.insertRoute(Route(0,0,0.0,0.0,date,0.0,0.0,profileId,goalStore), )
+
+
+        }
     }
 
     override fun onMapReady(p0: GoogleMap) {

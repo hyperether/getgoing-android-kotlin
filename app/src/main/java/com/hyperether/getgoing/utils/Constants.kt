@@ -69,7 +69,7 @@ object Constants {
     const val ACTIVITY_RUN_ID = 2
     const val ACTIVITY_RIDE_ID = 3
     const val ACTIVITY_SHOW_DATA = "show_data_activity"
-
+    const val ACTIVITY_SHOW_DATA2 = "show_data_activity"
     const val OPENED_FROM_LOCATION_ACT = 501
     const val OPENED_FROM_GG_ACT = 502
     const val OPENED_FROM_KEY = "from"
