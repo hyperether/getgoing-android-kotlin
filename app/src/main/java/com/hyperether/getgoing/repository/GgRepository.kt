@@ -91,6 +91,20 @@ object GgRepository {
         }
     }
 
+    fun insertRouteInitMainActivity(route: Route,nodeList: List<MapNode>){
+        getRepoHandler()!!.post(Runnable {
+            var routeId:Long
+            routeId = routeDao.insertRoute(route)
+            var route: LiveData<Route?>? = routeDao.getRouteByIdAsLiveData(routeId)
+            if (route!= null){
+                for (item in nodeList){
+                    daoInsertNode(MapNode(0,item.latitude,item.longitude,item.velocity
+                    , item.number,routeId))
+                }
+            }
+        })
+    }
+
     private fun getRepoHandler(): Handler? { //possible refactor
         if (mHandler == null) {
             val mThread = HandlerThread("db-thread")

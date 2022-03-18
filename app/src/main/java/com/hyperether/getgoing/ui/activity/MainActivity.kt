@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -40,6 +41,7 @@ import com.hyperether.getgoing.utils.Constants.RUN_ID
 import com.hyperether.getgoing.utils.Constants.WALK_ID
 import com.hyperether.getgoing.viewmodel.RouteViewModel
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.fragment_activities.*
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
@@ -63,6 +65,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var mainBinding: ActivityMainBinding
     private lateinit var rvm: RouteViewModel
+    private lateinit var blueButton:ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -345,6 +348,11 @@ class MainActivity : AppCompatActivity() {
                 R.drawable.ic_light_bicycling_icon_active -> callMeteringActivity(RIDE_ID)
             }
         }
+
+        blueButton = mainBinding.ivAmBluerectangle
+        blueButton.setOnClickListener(View.OnClickListener {
+            MainActivityClickHandler(supportFragmentManager).onActivitiesClick(it)
+        })
     }
 
     private fun findCenterView(layoutManager: RecyclerView.LayoutManager, helper: OrientationHelper): View? {

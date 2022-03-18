@@ -105,6 +105,8 @@
     <string name="choose_your_exercise">Choose your exercise</string>
     <string name="can_we_burn_our_legs">Can we burn our legs?</string>
     <string name="kcal">kcal</string>
+    <string name="alert_dialog_no_routes">No routes to display</string>
+    <string name="cycling">Bicycling</string>
     <string name="running">Running</string>
     <string name="min">min</string>
     <string name="textview_age_end">" years"</string>

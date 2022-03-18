@@ -22,11 +22,6 @@
             android:name=".ui.activity.ShowDataActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.activity.ShowData"
-            android:exported="false"
-            android:label="@string/title_activity_show_data"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
             android:name=".ui.activity.MainActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:exported="true"

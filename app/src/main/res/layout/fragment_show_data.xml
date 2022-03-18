@@ -3,6 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".ui.fragment.ShowDataFragment">
 
+    <data>
+
+        <variable
+            name="var"
+            type="com.hyperether.getgoing.repository.room.Route" />
+    </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/sd_root_layout"
@@ -152,6 +158,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
+                displayKcal="@{var.energy}"
                 android:textSize="22sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="@id/show_data_cds_info"
@@ -165,6 +172,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
+                displayDistance="@{var.length}"
                 android:textSize="22sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toStartOf="@+id/tv_sd_speed"
@@ -176,7 +184,7 @@
                 android:id="@+id/tv_sd_speed"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text='change'
+                android:text='@{String.format("%.2f", var.avgSpeed)}'
                 android:gravity="center"
                 android:textSize="22sp"
                 android:textStyle="bold"
@@ -202,6 +210,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
+                displayDistanceUnit="@{var.length}"
                 android:textSize="14sp"
                 app:layout_constraintEnd_toStartOf="@+id/tv_sd_speed"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -293,6 +302,7 @@
 
             <TextView
                 android:id="@+id/tv_goal_value"
+                goal="@{var.goal}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
