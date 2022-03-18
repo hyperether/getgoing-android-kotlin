@@ -8,6 +8,7 @@ object Constants {
      * Define a request code to send to Google Play services
 	 * This code is returned in Activity.onActivityResult
 	 */
+
     const val CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000
     // Milliseconds per second
     const val MILLISECONDS_PER_SECOND = 1000
