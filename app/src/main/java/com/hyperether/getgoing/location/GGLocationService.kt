@@ -13,6 +13,7 @@ import com.hyperether.getgoing.repository.room.GgRepository
 import com.hyperether.getgoing.repository.room.MapNode
 import com.hyperether.getgoing.repository.room.Route
 import com.hyperether.getgoing.ui.activity.LocationActivity
+import com.hyperether.getgoing.utils.CaloriesCalculation
 import com.hyperether.getgoing.utils.Conversion
 import com.hyperether.toolbox.HyperNotification
 import com.hyperether.toolbox.location.HyperLocationService
@@ -44,11 +45,13 @@ class GGLocationService : HyperLocationService() {
     private var kcalCumulative = 0.0
     private var velocityAvg = 0.0
     private var currentRoute:Route? = null
+    private lateinit var calculator:CaloriesCalculation
     // add calculator
 
     override fun onCreate() {
         super.onCreate()
         var sharedPref: SharedPref = SharedPref.newInstance()
+        calculator = CaloriesCalculation.newInstance()
         weight = sharedPref.getWeight().toDouble()
         previousTimeStamp = System.currentTimeMillis()
         App.getHandler().post(Runnable {
@@ -63,6 +66,9 @@ class GGLocationService : HyperLocationService() {
                 secondsCumulative = timeCumulative.toInt()/1000
             }
         })
+
+        //calculator.calculate(50.0,15.0,1,15.0) ok checked
+
     }
 
     override fun startForeground() {
@@ -106,10 +112,9 @@ class GGLocationService : HyperLocationService() {
                         distanceCumulative += distance
                         velocityAvg = distanceCumulative / secondsCumulative
                         var velocity:Float = (location.speed+(distance/elapsedTime))/2
-                        var kcalCurrent:Double = 20.00 // add matrix
+                        var kcalCurrent = calculator.calculate(distance.toDouble(),velocity.toDouble(),profileID,weight)
                         kcalCumulative += kcalCurrent
                         GgRepository.daoInsertNode(createNode(location)) // ok
-
 
                         currentRoute?.length = distanceCumulative
                         currentRoute?.energy = kcalCumulative

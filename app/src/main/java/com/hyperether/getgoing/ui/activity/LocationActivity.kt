@@ -330,7 +330,7 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
             criteria.accuracy = Criteria.ACCURACY_FINE
             criteria.powerRequirement = Criteria.POWER_LOW
             val bestProvider = locationManager.getBestProvider(criteria, false)
-            val location = locationManager.getLastKnownLocation(bestProvider!!)
+            val location = bestProvider?.let { locationManager.getLastKnownLocation(it) }
             // throws error because of authorization error had to kill this method
             zoomOverCurrentLocation(mMap, location)
         } else {
@@ -345,8 +345,8 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
      * @param googleMap google map v2
      */
     private fun zoomOverCurrentLocation(googleMap: GoogleMap, location: Location?) {
-        val latLng = LatLng(location!!.latitude, location!!.longitude)
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15F))
+        val latLng = location?.let { LatLng(it.latitude, location.longitude) }
+        latLng?.let { CameraUpdateFactory.newLatLngZoom(it, 15F) }?.let { googleMap.moveCamera(it) }
     }
 
     /**
