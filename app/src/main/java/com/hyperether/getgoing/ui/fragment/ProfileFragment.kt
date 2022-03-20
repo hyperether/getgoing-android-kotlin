@@ -118,7 +118,7 @@ class ProfileFragment : DialogFragment() {
 
                 activity?.runOnUiThread(Runnable {
                     totalMileage.text = String.format("%.02f km",totalRoute[0])
-                    val s:String = totalKcal[0].toString()
+                    val s:Double = Math.round(totalKcal[0]*100.0)/100.0.toDouble()
                     totalCalories.text = "$s Kcal"
                 })
             }

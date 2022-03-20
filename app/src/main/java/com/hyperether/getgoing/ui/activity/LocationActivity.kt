@@ -209,6 +209,7 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
     }
 
     private fun stopTracking() {
+        Log.d(LocationActivity::class.simpleName, "$route")
         val intent: Intent = Intent(this, GGLocationService::class.java)
         this.stopService(intent)
         timeWhenStopedForStorage =
