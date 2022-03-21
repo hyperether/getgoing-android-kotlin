@@ -163,7 +163,6 @@
         <com.dinuscxj.progressbar.CircleProgressBar
             android:id="@+id/cpb_am_kmgoal"
             android:layout_width="115dp"
-            progress_activity="@{lastRoute}"
             android:layout_height="115dp"
             android:layout_marginStart="16dp"
             app:progress_background_color="#9fffffff"

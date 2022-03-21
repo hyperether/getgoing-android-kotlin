@@ -12,6 +12,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapFragment
@@ -26,6 +28,7 @@ import com.hyperether.getgoing.databinding.FragmentShowDataBinding
 import com.hyperether.getgoing.listeners.GgOnClickListener
 import com.hyperether.getgoing.repository.room.MapNode
 import com.hyperether.getgoing.repository.room.Route
+import com.hyperether.getgoing.ui.adapter.DbRecyclerAdapter
 import com.hyperether.getgoing.utils.Constants
 import com.hyperether.getgoing.utils.ProgressBarBitmap
 import com.hyperether.getgoing.viewmodel.RouteViewModel
@@ -47,6 +50,7 @@ class ShowDataActivity : AppCompatActivity(),OnMapReadyCallback,GgOnClickListene
     private var routeRun = mutableListOf<Route>()
     private var routeWalk = mutableListOf<Route>()
     private var routeCycle = mutableListOf<Route>()
+    private lateinit var recyclerView: RecyclerView
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,7 +68,27 @@ class ShowDataActivity : AppCompatActivity(),OnMapReadyCallback,GgOnClickListene
     }
 
     private fun populateListView() {
-        
+        recyclerView = binding.recyclerList
+        val sharedPref:SharedPref = SharedPref.newInstance()
+        val type = sharedPref.getClickedTypeShowData2()
+        Log.d(ShowDataActivity::class.simpleName, "type: $type")
+        if (type == Constants.WALK_ID){
+            recyclerView.adapter = DbRecyclerAdapter(routeWalk)
+            recyclerView.layoutManager = LinearLayoutManager(this)
+            recyclerView.setHasFixedSize(true)
+        }
+        if (type == Constants.RUN_ID){
+            recyclerView.adapter = DbRecyclerAdapter(routeRun)
+            recyclerView.layoutManager = LinearLayoutManager(this)
+            recyclerView.setHasFixedSize(true)
+
+        }
+        if (type == Constants.RIDE_ID){
+            recyclerView.adapter = DbRecyclerAdapter(routeCycle)
+            recyclerView.layoutManager = LinearLayoutManager(this)
+            recyclerView.setHasFixedSize(true)
+
+        }
     }
 
     private fun initializeViewModel() {
@@ -135,7 +159,7 @@ class ShowDataActivity : AppCompatActivity(),OnMapReadyCallback,GgOnClickListene
                     showNoRoutesDialog()
                 }else{
                     var bm: Bitmap = ProgressBarBitmap.newInstance().getWidgetBitmap(
-                        applicationContext,  // theres an error here check it latter
+                        applicationContext,
                         routeCycle[routeCycle.size-1].goal.toLong(),
                         routeCycle[routeCycle.size-1].length,
                         400, 400, 160f, 220f,
@@ -292,11 +316,9 @@ class ShowDataActivity : AppCompatActivity(),OnMapReadyCallback,GgOnClickListene
         mMap.uiSettings.isZoomControlsEnabled = true
     }
 
-    override fun onClick(x1: Bundle) {
-        //val route: Route? = x1.getParcelable<Route>(Constants.BUNDLE_PARCELABLE)
-      //  binding.setVar(route)
-        // add click event from cycler here
-        drawSavedRoute()
+    override fun onClick(route: Route) {
+        Log.d(ShowDataActivity::class.simpleName, "fromAdapter: $route")
+     //   drawSavedRoute()
     }
 
 

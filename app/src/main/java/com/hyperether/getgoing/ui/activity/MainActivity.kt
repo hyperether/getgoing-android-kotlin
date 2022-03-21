@@ -149,18 +149,15 @@ class MainActivity : AppCompatActivity() {
             }
         } // ok
         mainBinding.lastRoute = r
-        val lastRouteLen = r.length
-        val lastRouteTime: Int = if (r.duration >= 60000)
-            (r.duration.toDouble() / 1000 / 60).roundToInt()
-        else
-            0
+        //y =P% *y P% = y/x
+        val lenght =r.length
+        val goal = r.goal.toDouble()
+        val p = lenght/goal
+        val percentageDistance = p * 100
+        Log.d(MainActivity::class.simpleName, "Left_Circle: $r")
+        Log.d(MainActivity::class.simpleName, "Left_Circle: $lenght $goal $percentageDistance")
+        mainBinding.cpbAmKmgoal.progress = percentageDistance.toInt() // ok
 
-        val cpbProgress: Int = if (r.goal != 0)
-            (lastRouteLen * 100 / r.goal).roundToInt()
-        else
-            0
-
-        // fix this circle
     }
 
     override fun onResume() {
