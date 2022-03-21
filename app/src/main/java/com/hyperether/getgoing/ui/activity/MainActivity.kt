@@ -30,6 +30,7 @@ import com.hyperether.getgoing.repository.room.GgRepository
 import com.hyperether.getgoing.repository.room.MapNode
 import com.hyperether.getgoing.repository.room.Route
 import com.hyperether.getgoing.ui.adapter.HorizontalListAdapter
+import com.hyperether.getgoing.ui.adapter.formatter.TimeProgressFormatter
 import com.hyperether.getgoing.ui.fragment.ProfileFragment
 import com.hyperether.getgoing.ui.handler.MainActivityClickHandler
 import com.hyperether.getgoing.utils.Constants
@@ -148,6 +149,18 @@ class MainActivity : AppCompatActivity() {
             }
         } // ok
         mainBinding.lastRoute = r
+        val lastRouteLen = r.length
+        val lastRouteTime: Int = if (r.duration >= 60000)
+            (r.duration.toDouble() / 1000 / 60).roundToInt()
+        else
+            0
+
+        val cpbProgress: Int = if (r.goal != 0)
+            (lastRouteLen * 100 / r.goal).roundToInt()
+        else
+            0
+
+        // fix this circle
     }
 
     override fun onResume() {

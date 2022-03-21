@@ -1,7 +1,6 @@
 package com.hyperether.getgoing.ui.adapter
 
 import android.graphics.drawable.Drawable
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -65,13 +64,11 @@ fun displayActivityProgress(view: View, lastRoute: Route?) {
         (view as CircleProgressBar).progress = progress
 
     }
-
 }
 
-@BindingAdapter("progress_time")  // uses a diff formatter
+
+@BindingAdapter("progress_time")
 fun displayTimeProgress(view: View, pDuration: Long) {
-    val progressFormatter = TimeProgressFormatter.newInstance(pDuration).format(pDuration.toInt(),60000)
-    Log.d("Last", "displayTimeProgress: ${progressFormatter}")
-    //(view as CircleProgressBar).setProgressFormatter(progressFormatter)
-    //todo room is lacking duration values for routes
+    (view as CircleProgressBar).setProgressFormatter(TimeProgressFormatter(pDuration))
 }
+

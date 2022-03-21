@@ -163,6 +163,7 @@
         <com.dinuscxj.progressbar.CircleProgressBar
             android:id="@+id/cpb_am_kmgoal"
             android:layout_width="115dp"
+            progress_activity="@{lastRoute}"
             android:layout_height="115dp"
             android:layout_marginStart="16dp"
             app:progress_background_color="#9fffffff"
@@ -177,7 +178,6 @@
             app:progress_text_color="@android:color/white"
             app:progress_text_size="18sp"
             app:style="solid_line"
-            progress_activity="@{lastRoute}"
             />
 
         <com.dinuscxj.progressbar.CircleProgressBar
@@ -199,7 +199,6 @@
 
         <com.dinuscxj.progressbar.CircleProgressBar
             android:id="@+id/cpb_am_kmgoal1"
-            progress_time="@{lastRoute.duration}"
             android:layout_width="115dp"
             android:layout_height="115dp"
             android:layout_marginEnd="16dp"

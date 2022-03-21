@@ -44,6 +44,10 @@ class ShowDataActivity : AppCompatActivity(),OnMapReadyCallback,GgOnClickListene
     private lateinit var label: TextView
     private lateinit var binding: FragmentShowDataBinding
     private var mapToggleDown:Boolean = false
+    private var routeRun = mutableListOf<Route>()
+    private var routeWalk = mutableListOf<Route>()
+    private var routeCycle = mutableListOf<Route>()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,29 +72,79 @@ class ShowDataActivity : AppCompatActivity(),OnMapReadyCallback,GgOnClickListene
         routeViewModel.getAllRoutes().observe(
             this
         ) { it ->
-            routes.clear()
-            var route: List<Route> = it
-            if (route.size > 1) {
-                for (item in route) {
-                    if (item.activity_id == activityId) {
-                        routes.add(item)
-                    }
+            if (!routeWalk.isEmpty()){
+                routeWalk.clear()
+            }
+            if (!routeRun.isEmpty()){
+                routeRun.clear()
+            }
+            if (!routeCycle.isEmpty()){
+                routeCycle.clear()
+            }
+            for (x in it){
+                if (x.activity_id == Constants.WALK_ID){
+                    routeWalk.add(x)
+                }
+                if (x.activity_id == Constants.RUN_ID){
+                    routeRun.add(x)
+                }
+                if (x.activity_id == Constants.ACTIVITY_RIDE_ID){
+                    routeCycle.add(x)
                 }
             }
-            if (route.size == 1) {
-                showNoRoutesDialog()
-            } else {
-                var bm: Bitmap = ProgressBarBitmap.newInstance().getWidgetBitmap(
-                    applicationContext,  // theres an error here check it latter
-                    route[route.size - 1].goal.toLong(),
-                    route[0].length,
-                    400, 400, 160f, 220f,
-                    20, 0
-                )
-                binding.`var` = route.get(route.size - 1)
-                binding.progress.setImageBitmap(bm)
-                binding.recyclerList.smoothScrollToPosition(route.size-1)
-
+            val sharedPref:SharedPref = SharedPref.newInstance()
+            Log.d(ShowDataActivity::class.simpleName, "Type: ${sharedPref.getClickedTypeShowData2()}")
+            Log.d(ShowDataActivity::class.simpleName, "Walk: $routeWalk\n\n")
+            Log.d(ShowDataActivity::class.simpleName, "Run: $routeRun\n\n")
+            Log.d(ShowDataActivity::class.simpleName, "Cycle: $routeCycle\n\n")
+            val type = sharedPref.getClickedTypeShowData2()
+            if (type == Constants.WALK_ID){
+                if (routeWalk.isEmpty()){
+                    showNoRoutesDialog()
+                }else{
+                    var bm: Bitmap = ProgressBarBitmap.newInstance().getWidgetBitmap(
+                        applicationContext,  // theres an error here check it latter
+                        routeWalk[routeWalk.size-1].goal.toLong(),
+                        routeWalk[routeWalk.size-1].length,
+                        400, 400, 160f, 220f,
+                        20, 0
+                    )
+                    binding.`var` = routeWalk.get(routeWalk.size-1)
+                    binding.progress.setImageBitmap(bm)
+                    binding.recyclerList.smoothScrollToPosition(routeWalk.size-1)
+                }
+            }
+            if (type == Constants.RUN_ID){
+                if (routeRun.isEmpty()){
+                    showNoRoutesDialog()
+                }else{
+                    var bm: Bitmap = ProgressBarBitmap.newInstance().getWidgetBitmap(
+                        applicationContext,  // theres an error here check it latter
+                        routeRun[routeRun.size-1].goal.toLong(),
+                        routeRun[routeRun.size-1].length,
+                        400, 400, 160f, 220f,
+                        20, 0
+                    )
+                    binding.`var` = routeRun.get(routeRun.size-1)
+                    binding.progress.setImageBitmap(bm)
+                    binding.recyclerList.smoothScrollToPosition(routeRun.size-1)
+                }
+            }
+            if (type == Constants.RIDE_ID){
+                if (routeCycle.isEmpty()){
+                    showNoRoutesDialog()
+                }else{
+                    var bm: Bitmap = ProgressBarBitmap.newInstance().getWidgetBitmap(
+                        applicationContext,  // theres an error here check it latter
+                        routeCycle[routeCycle.size-1].goal.toLong(),
+                        routeCycle[routeCycle.size-1].length,
+                        400, 400, 160f, 220f,
+                        20, 0
+                    )
+                    binding.`var` = routeCycle.get(routeCycle.size-1)
+                    binding.progress.setImageBitmap(bm)
+                    binding.recyclerList.smoothScrollToPosition(routeCycle.size-1)
+                }
             }
         }
     }
