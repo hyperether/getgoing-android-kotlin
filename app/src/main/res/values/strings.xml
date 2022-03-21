@@ -110,7 +110,7 @@
     <string name="running">Running</string>
     <string name="min">min</string>
     <string name="textview_age_end">" years"</string>
-   
+
     <string name="com_facebook_share_button_text">Share</string>
     <string name="progress_bar_img">progress bar image</string>
     <string name="progress_bar_goal_img">progress bar goal icon</string>
@@ -120,7 +120,8 @@
     <string name="dist_unit">km</string>
     <string name="toggle_map_button">Toggle map button</string>
     <string name="goal">Goal</string>
-
+    <string name="alert_dialog_delete_route">Delete permanently this route?</string>
+    <string name="route_deleted_msg">Route deleted</string>
     <!-- alertdialog radiogroup-->
     <string-array name="genders">
         <item>Male</item>
@@ -164,6 +165,8 @@
 
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="card_icon_for_recycler">card icon for recycler</string>
+    <string name="image_to_show_the_type_of_activity">image to show the type of activity</string>
 
 </resources>
 

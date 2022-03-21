@@ -7,9 +7,12 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -33,25 +36,24 @@ import com.hyperether.getgoing.utils.Constants
 import com.hyperether.getgoing.utils.ProgressBarBitmap
 import com.hyperether.getgoing.viewmodel.RouteViewModel
 
-class ShowDataActivity : AppCompatActivity(),OnMapReadyCallback,GgOnClickListener {
+class ShowDataActivity : AppCompatActivity(), OnMapReadyCallback, GgOnClickListener {
 
     private var typeClicked: Int = 0
     private lateinit var sharedPref: SharedPref
     private lateinit var mMap: GoogleMap
-    private var routes = ArrayList<Route>()
-    private lateinit var dataLabel: String
     private var activityId = 0
     private lateinit var routeViewModel: RouteViewModel
     private lateinit var mapFragment: MapFragment
     private lateinit var backButton: ImageButton
     private lateinit var label: TextView
     private lateinit var binding: FragmentShowDataBinding
-    private var mapToggleDown:Boolean = false
+    private var mapToggleDown: Boolean = false
     private var routeRun = mutableListOf<Route>()
     private var routeWalk = mutableListOf<Route>()
     private var routeCycle = mutableListOf<Route>()
     private lateinit var recyclerView: RecyclerView
-
+    private lateinit var adapter: DbRecyclerAdapter
+    private lateinit var imageViewType:ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,29 +66,45 @@ class ShowDataActivity : AppCompatActivity(),OnMapReadyCallback,GgOnClickListene
         initializeViewModel()
         initializeViews()
         populateListView()
-
     }
 
     private fun populateListView() {
         recyclerView = binding.recyclerList
-        val sharedPref:SharedPref = SharedPref.newInstance()
+        val sharedPref: SharedPref = SharedPref.newInstance()
         val type = sharedPref.getClickedTypeShowData2()
+        setIconType(type);
         Log.d(ShowDataActivity::class.simpleName, "type: $type")
-        if (type == Constants.WALK_ID){
-            recyclerView.adapter = DbRecyclerAdapter(routeWalk)
+        if (type == Constants.WALK_ID) {
+            adapter = DbRecyclerAdapter(routeWalk,this)
+            recyclerView.adapter = adapter
             recyclerView.layoutManager = LinearLayoutManager(this)
             recyclerView.setHasFixedSize(true)
         }
-        if (type == Constants.RUN_ID){
-            recyclerView.adapter = DbRecyclerAdapter(routeRun)
+        if (type == Constants.RUN_ID) {
+            adapter = DbRecyclerAdapter(routeRun,this)
+            recyclerView.adapter = adapter
             recyclerView.layoutManager = LinearLayoutManager(this)
             recyclerView.setHasFixedSize(true)
+        }
+        if (type == Constants.RIDE_ID) {
+            adapter = DbRecyclerAdapter(routeCycle,this)
+            recyclerView.adapter = adapter
+            recyclerView.layoutManager = LinearLayoutManager(this)
+            recyclerView.setHasFixedSize(true)
+        }
+    }
+
+    private fun setIconType(type: Int) {
+        imageViewType = binding.typeImage
+        if (type == Constants.WALK_ID){
+            imageViewType.background =(AppCompatResources.getDrawable(this,R.drawable.ic_light_walking_icon_active))
+        }
+        if (type == Constants.RUN_ID){
+            imageViewType.background = (AppCompatResources.getDrawable(this,R.drawable.ic_light_running_icon_active))
 
         }
         if (type == Constants.RIDE_ID){
-            recyclerView.adapter = DbRecyclerAdapter(routeCycle)
-            recyclerView.layoutManager = LinearLayoutManager(this)
-            recyclerView.setHasFixedSize(true)
+            imageViewType.background = (AppCompatResources.getDrawable(this,R.drawable.ic_light_bicycling_icon_active))
 
         }
     }
@@ -96,81 +114,98 @@ class ShowDataActivity : AppCompatActivity(),OnMapReadyCallback,GgOnClickListene
         routeViewModel.getAllRoutes().observe(
             this
         ) { it ->
-            if (!routeWalk.isEmpty()){
+            if (!routeWalk.isEmpty()) {
                 routeWalk.clear()
             }
-            if (!routeRun.isEmpty()){
+            if (!routeRun.isEmpty()) {
                 routeRun.clear()
             }
-            if (!routeCycle.isEmpty()){
+            if (!routeCycle.isEmpty()) {
                 routeCycle.clear()
             }
-            for (x in it){
-                if (x.activity_id == Constants.WALK_ID){
+            for (x in it) {
+                if (x.activity_id == Constants.WALK_ID) {
                     routeWalk.add(x)
                 }
-                if (x.activity_id == Constants.RUN_ID){
+                if (x.activity_id == Constants.RUN_ID) {
                     routeRun.add(x)
                 }
-                if (x.activity_id == Constants.ACTIVITY_RIDE_ID){
+                if (x.activity_id == Constants.ACTIVITY_RIDE_ID) {
                     routeCycle.add(x)
                 }
             }
-            val sharedPref:SharedPref = SharedPref.newInstance()
-            Log.d(ShowDataActivity::class.simpleName, "Type: ${sharedPref.getClickedTypeShowData2()}")
+            val sharedPref: SharedPref = SharedPref.newInstance()
+            Log.d(
+                ShowDataActivity::class.simpleName,
+                "Type: ${sharedPref.getClickedTypeShowData2()}"
+            )
             Log.d(ShowDataActivity::class.simpleName, "Walk: $routeWalk\n\n")
             Log.d(ShowDataActivity::class.simpleName, "Run: $routeRun\n\n")
             Log.d(ShowDataActivity::class.simpleName, "Cycle: $routeCycle\n\n")
             val type = sharedPref.getClickedTypeShowData2()
-            if (type == Constants.WALK_ID){
-                if (routeWalk.isEmpty()){
+            if (type == Constants.WALK_ID) {
+                if (routeWalk.isEmpty()) {
                     showNoRoutesDialog()
-                }else{
+                } else {
                     var bm: Bitmap = ProgressBarBitmap.newInstance().getWidgetBitmap(
                         applicationContext,  // theres an error here check it latter
-                        routeWalk[routeWalk.size-1].goal.toLong(),
-                        routeWalk[routeWalk.size-1].length,
+                        routeWalk[routeWalk.size - 1].goal.toLong(),
+                        routeWalk[routeWalk.size - 1].length,
                         400, 400, 160f, 220f,
                         20, 0
                     )
-                    binding.`var` = routeWalk.get(routeWalk.size-1)
+                    binding.data = routeWalk.get(routeWalk.size - 1)
                     binding.progress.setImageBitmap(bm)
-                    binding.recyclerList.smoothScrollToPosition(routeWalk.size-1)
+                    binding.recyclerList.smoothScrollToPosition(routeWalk.size - 1)
                 }
             }
-            if (type == Constants.RUN_ID){
-                if (routeRun.isEmpty()){
+            if (type == Constants.RUN_ID) {
+                if (routeRun.isEmpty()) {
                     showNoRoutesDialog()
-                }else{
+                } else {
                     var bm: Bitmap = ProgressBarBitmap.newInstance().getWidgetBitmap(
                         applicationContext,  // theres an error here check it latter
-                        routeRun[routeRun.size-1].goal.toLong(),
-                        routeRun[routeRun.size-1].length,
+                        routeRun[routeRun.size - 1].goal.toLong(),
+                        routeRun[routeRun.size - 1].length,
                         400, 400, 160f, 220f,
                         20, 0
                     )
-                    binding.`var` = routeRun.get(routeRun.size-1)
+                    binding.data = routeRun.get(routeRun.size - 1)
                     binding.progress.setImageBitmap(bm)
-                    binding.recyclerList.smoothScrollToPosition(routeRun.size-1)
+                    binding.recyclerList.smoothScrollToPosition(routeRun.size - 1)
                 }
             }
-            if (type == Constants.RIDE_ID){
-                if (routeCycle.isEmpty()){
+            if (type == Constants.RIDE_ID) {
+                if (routeCycle.isEmpty()) {
                     showNoRoutesDialog()
-                }else{
+                } else {
                     var bm: Bitmap = ProgressBarBitmap.newInstance().getWidgetBitmap(
                         applicationContext,
-                        routeCycle[routeCycle.size-1].goal.toLong(),
-                        routeCycle[routeCycle.size-1].length,
+                        routeCycle[routeCycle.size - 1].goal.toLong(),
+                        routeCycle[routeCycle.size - 1].length,
                         400, 400, 160f, 220f,
                         20, 0
                     )
-                    binding.`var` = routeCycle.get(routeCycle.size-1)
+                    binding.data = routeCycle.get(routeCycle.size - 1)
                     binding.progress.setImageBitmap(bm)
-                    binding.recyclerList.smoothScrollToPosition(routeCycle.size-1)
+                    binding.recyclerList.smoothScrollToPosition(routeCycle.size - 1)
                 }
             }
         }
+    }
+
+    private fun deleteRoute(id:Long){
+        val dialog = AlertDialog.Builder(this)
+        dialog.setCancelable(false)
+        dialog.setMessage(resources.getString(R.string.alert_dialog_delete_route))
+        dialog.setPositiveButton(resources.getString(R.string.alert_dialog_positive_button_save_btn), DialogInterface.OnClickListener { dialog, which ->
+            routeViewModel.removeRouteById(id)
+            Toast.makeText(this,resources.getString(R.string.route_deleted_msg),Toast.LENGTH_SHORT).show()
+        })
+        dialog.setNegativeButton(resources.getString(R.string.alert_dialog_negative_button_save_btn), DialogInterface.OnClickListener { dialog, which ->
+            dialog.dismiss()
+        })
+        dialog.show()
     }
 
     private fun showNoRoutesDialog() {
@@ -195,19 +230,21 @@ class ShowDataActivity : AppCompatActivity(),OnMapReadyCallback,GgOnClickListene
         binding.ibSdBackBtn.setOnClickListener(View.OnClickListener {
             super.onBackPressed()
         })
-        binding.btnToggleMap.setOnClickListener(View.OnClickListener {
-            it -> toggleMap()
+        binding.btnToggleMap.setOnClickListener(View.OnClickListener { it ->
+            toggleMap()
         })
+
     }
 
     private fun toggleMap() {
-        if (!mapToggleDown){
+        if (!mapToggleDown) {
             binding.btnToggleMap.animate().rotationBy(180F).setDuration(500)
             mapToggleDown = true
             binding.mapFragmentHolder.animate().scaleYBy(1f).setStartDelay(200).setDuration(500)
-            binding.displayMap.animate().y((70f * (Resources.getSystem().displayMetrics.density))).setDuration(500)
+            binding.displayMap.animate().y((70f * (Resources.getSystem().displayMetrics.density)))
+                .setDuration(500)
             drawSavedRoute();
-        }else{
+        } else {
             binding.btnToggleMap.animate().rotationBy(180F).setDuration(500)
             mapToggleDown = true
             binding.mapFragmentHolder.animate().scaleYBy(-1f).setDuration(500)
@@ -218,54 +255,87 @@ class ShowDataActivity : AppCompatActivity(),OnMapReadyCallback,GgOnClickListene
 
     private fun drawSavedRoute() {
         mMap.clear()
-        var route = binding.`var`
+        var route = binding.data
         routeViewModel.getNodeListById(route!!.id).observe(this, Observer { it ->
             var listNodes = it
-            if (!listNodes.isEmpty()){
-                var iterator:Iterator<MapNode> = listNodes.iterator()
-                while (iterator.hasNext()){
-                    var pOptions:PolylineOptions = PolylineOptions()
+            if (!listNodes.isEmpty()) {
+                var iterator: Iterator<MapNode> = listNodes.iterator()
+                while (iterator.hasNext()) {
+                    var pOptions: PolylineOptions = PolylineOptions()
                     pOptions.width(10f)
                         .color(resources.getColor(R.color.light_theme_accent))
                         .geodesic(true)  // kill me now
-                    var first:Boolean = true
+                    var first: Boolean = true
                     var mapNode: MapNode? = null
-                    while (iterator.hasNext()){
+                    while (iterator.hasNext()) {
                         mapNode = iterator.next()
-                        if (first){
-                            mMap.addCircle(CircleOptions()
-                                .center(LatLng(mapNode.latitude!!.toDouble(), mapNode.longitude!!.toDouble()))
-                                .radius(5.0)
-                                .fillColor(resources.getColor(R.color.light_theme_accent))
-                                .strokeColor(resources.getColor(R.color.transparent_light_theme_accent))
-                                .strokeWidth(20f))
+                        if (first) {
+                            mMap.addCircle(
+                                CircleOptions()
+                                    .center(
+                                        LatLng(
+                                            mapNode.latitude!!.toDouble(),
+                                            mapNode.longitude!!.toDouble()
+                                        )
+                                    )
+                                    .radius(5.0)
+                                    .fillColor(resources.getColor(R.color.light_theme_accent))
+                                    .strokeColor(resources.getColor(R.color.transparent_light_theme_accent))
+                                    .strokeWidth(20f)
+                            )
                             first = false
                         }
-                        pOptions.add(LatLng(mapNode.latitude!!.toDouble(),mapNode.longitude!!.toDouble()))
+                        pOptions.add(
+                            LatLng(
+                                mapNode.latitude!!.toDouble(),
+                                mapNode.longitude!!.toDouble()
+                            )
+                        )
 
                     }
                     mMap.addPolyline(pOptions)
-                    mMap.addCircle(CircleOptions()
-                        .center(LatLng(mapNode?.latitude!!.toDouble(), mapNode.longitude!!.toDouble()))
+                    mMap.addCircle(
+                        CircleOptions()
+                            .center(
+                                LatLng(
+                                    mapNode?.latitude!!.toDouble(),
+                                    mapNode.longitude!!.toDouble()
+                                )
+                            )
+                            .radius(5.0)
+                            .fillColor(resources.getColor(R.color.light_theme_accent))
+                            .strokeColor(resources.getColor(R.color.transparent_light_theme_accent))
+                            .strokeWidth(20f)
+                    )
+                }
+
+                mMap.addCircle(
+                    CircleOptions()
+                        .center(
+                            LatLng(
+                                listNodes.get(0).latitude!!.toDouble(),
+                                listNodes.get(0).longitude!!.toDouble()
+                            )
+                        )
                         .radius(5.0)
                         .fillColor(resources.getColor(R.color.light_theme_accent))
                         .strokeColor(resources.getColor(R.color.transparent_light_theme_accent))
-                        .strokeWidth(20f))
-                }
+                        .strokeWidth(20f)
+                )
 
-                mMap.addCircle(CircleOptions()
-                    .center(LatLng(listNodes.get(0).latitude!!.toDouble(), listNodes.get(0).longitude!!.toDouble()))
-                    .radius(5.0)
-                    .fillColor(resources.getColor(R.color.light_theme_accent))
-                    .strokeColor(resources.getColor(R.color.transparent_light_theme_accent))
-                    .strokeWidth(20f))
-
-                mMap.addCircle(CircleOptions()
-                    .center(LatLng(listNodes.get(listNodes.size -1 ).latitude!!.toDouble(), listNodes.get(listNodes.size -1).longitude!!.toDouble()))
-                    .radius(5.0)
-                    .fillColor(resources.getColor(R.color.light_theme_accent))
-                    .strokeColor(resources.getColor(R.color.transparent_light_theme_accent))
-                    .strokeWidth(20f))
+                mMap.addCircle(
+                    CircleOptions()
+                        .center(
+                            LatLng(
+                                listNodes.get(listNodes.size - 1).latitude!!.toDouble(),
+                                listNodes.get(listNodes.size - 1).longitude!!.toDouble()
+                            )
+                        )
+                        .radius(5.0)
+                        .fillColor(resources.getColor(R.color.light_theme_accent))
+                        .strokeColor(resources.getColor(R.color.transparent_light_theme_accent))
+                        .strokeWidth(20f)
+                )
                 setCameraView(listNodes)
 
             }
@@ -273,12 +343,12 @@ class ShowDataActivity : AppCompatActivity(),OnMapReadyCallback,GgOnClickListene
     }
 
     private fun setCameraView(listNodes: List<MapNode>) {
-        var builder:LatLngBounds.Builder = LatLngBounds.Builder()
-        for (node in listNodes){
-            builder.include(LatLng(node.latitude!!.toDouble(),node.longitude!!.toDouble()))
+        var builder: LatLngBounds.Builder = LatLngBounds.Builder()
+        for (node in listNodes) {
+            builder.include(LatLng(node.latitude!!.toDouble(), node.longitude!!.toDouble()))
         }
-        var center:LatLng = builder.build().center
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(center,16f))
+        var center: LatLng = builder.build().center
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(center, 16f))
     }
 
     private fun setBackButton() {
@@ -294,16 +364,16 @@ class ShowDataActivity : AppCompatActivity(),OnMapReadyCallback,GgOnClickListene
         if (typeClicked == Constants.WALK_ID) {
             label.text = getText(R.string.walking)
             activityId = Constants.WALK_ID
-            binding.tvSdLabel.text= getText(R.string.walking)
+            binding.tvSdLabel.text = getText(R.string.walking)
         } else if (typeClicked == Constants.RIDE_ID) {
             label.text = getText(R.string.activity_cycling)
             activityId = Constants.RIDE_ID
-            binding.tvSdLabel.text= getText(R.string.rider_text)
+            binding.tvSdLabel.text = getText(R.string.rider_text)
 
         } else if (typeClicked == Constants.RUN_ID) {
             label.text = getText(R.string.running)
             activityId = Constants.RUN_ID
-            binding.tvSdLabel.text= getText(R.string.running)
+            binding.tvSdLabel.text = getText(R.string.running)
 
         } else {
             label.text = ""
@@ -318,7 +388,7 @@ class ShowDataActivity : AppCompatActivity(),OnMapReadyCallback,GgOnClickListene
 
     override fun onClick(route: Route) {
         Log.d(ShowDataActivity::class.simpleName, "fromAdapter: $route")
-     //   drawSavedRoute()
+        //   drawSavedRoute()
     }
 
 
