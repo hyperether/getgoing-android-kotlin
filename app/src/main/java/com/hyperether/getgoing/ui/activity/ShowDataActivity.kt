@@ -68,11 +68,24 @@ class ShowDataActivity : AppCompatActivity(), OnMapReadyCallback, AdapterOnItemC
         populateListView()
     }
 
-    override fun onClick(route: Route) {  // well this was easy // if the user respond to dialog with ok in adapter i pipe the route here and delete with view model
+    override fun onClick(route: Route,i:Int) {  // well this was easy // if the user respond to dialog with ok in adapter i pipe the route here and delete with view model
         Log.d(ShowDataActivity::class.simpleName, "FromAdapter $route")
         Toast.makeText(this,"Its happy to be gone!",Toast.LENGTH_SHORT).show()
         routeViewModel.removeRouteById(route.id)
-        adapter.notifyDataSetChanged()
+        adapter.notifyItemRemoved(i)
+    }
+
+    override fun onClickText(route: Route) {
+        Log.d(ShowDataActivity::class.simpleName, "FromAdapter $route")
+        val bm: Bitmap = ProgressBarBitmap.newInstance().getWidgetBitmap(
+            applicationContext,  // theres an error here check it latter
+            route.goal.toLong(),
+            route.length,
+            400, 400, 160f, 220f,
+            20, 0
+        )
+        binding.data = route
+        binding.progress.setImageBitmap(bm)
     }
 
     private fun populateListView() {
@@ -199,20 +212,6 @@ class ShowDataActivity : AppCompatActivity(), OnMapReadyCallback, AdapterOnItemC
                 }
             }
         }
-    }
-
-    private fun deleteRoute(id:Long){
-        val dialog = AlertDialog.Builder(this)
-        dialog.setCancelable(false)
-        dialog.setMessage(resources.getString(R.string.alert_dialog_delete_route))
-        dialog.setPositiveButton(resources.getString(R.string.alert_dialog_positive_button_save_btn), DialogInterface.OnClickListener { dialog, which ->
-            routeViewModel.removeRouteById(id)
-            Toast.makeText(this,resources.getString(R.string.route_deleted_msg),Toast.LENGTH_SHORT).show()
-        })
-        dialog.setNegativeButton(resources.getString(R.string.alert_dialog_negative_button_save_btn), DialogInterface.OnClickListener { dialog, which ->
-            dialog.dismiss()
-        })
-        dialog.show()
     }
 
     private fun showNoRoutesDialog() {

@@ -71,7 +71,7 @@ class DbRecyclerAdapter(
             dialog.setCancelable(false)
             dialog.setMessage("Delete this route ?")
             dialog.setPositiveButton("Yes", DialogInterface.OnClickListener { dialog, which ->
-                adapterOnItemClickListener.onClick(route)
+                adapterOnItemClickListener.onClick(route,position)
             })
             dialog.setNegativeButton("No", DialogInterface.OnClickListener { dialog, which ->
                 dialog.dismiss()
@@ -79,7 +79,9 @@ class DbRecyclerAdapter(
             dialog.create()
             dialog.show()
         }
-        //todo add another interface for switching progress to adapter
+        holder.txtCard.setOnClickListener {
+            adapterOnItemClickListener.onClickText(route)
+        }
     }
 
     override fun getItemCount(): Int {

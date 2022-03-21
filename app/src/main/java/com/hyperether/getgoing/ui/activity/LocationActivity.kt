@@ -140,8 +140,8 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
 
     private fun continueTracking() {
         trackingInProgressViewChanges()
-        var time:Long = nodeListViewModel.getChronometerLastTime()
-        var backgroundStartTime:Long = nodeListViewModel.getBackgroundStartTime()
+        val time:Long = nodeListViewModel.getChronometerLastTime()
+        val backgroundStartTime:Long = nodeListViewModel.getBackgroundStartTime()
         dataBinding.chrAlDuration.base = (SystemClock.elapsedRealtime() - time - (System.currentTimeMillis() - backgroundStartTime));
         dataBinding.chrAlDuration.start()
         nodeListViewModel.continueTracking(this)
@@ -244,8 +244,8 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
     private fun startTracking(context: Context?) {
         if (!trackingStarted) {
             trackingStarted = true
-            var datef: Date = Date()
-            var date: String = sdf.format(datef)
+            val datef: Date = Date()
+            val date: String = sdf.format(datef)
             val sharedPref: SharedPref = SharedPref.newInstance()
             goalStore = sharedPref.getGoal()
             GgRepository.insertRoute(
@@ -303,7 +303,7 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
             mMap.isTrafficEnabled = false
             mMap.isIndoorEnabled = true
             mMap.isBuildingsEnabled = true
-            mMap.uiSettings?.isZoomControlsEnabled = true
+            mMap.uiSettings.isZoomControlsEnabled = true
 
             val locationManager = getSystemService(
                 Context.LOCATION_SERVICE
@@ -352,7 +352,6 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
 
     /**
      * This method draws a route.
-     *
      * @param mRoute list of nodes
      */
     private fun drawRoute(mRoute: List<MapNode>) {
@@ -378,7 +377,6 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
 
     /**
      * This method draws a segment of the route and coloring it in accordance with the speed
-     *
      * @param firstNode first point of the rout
      * @param secondNode second point of the rout
      */
@@ -392,7 +390,7 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
                     .add(LatLng(secondNode.latitude, secondNode.longitude))
                     .width(10f)
                     .color(Color.rgb(0, 255, 0))
-            )  // Green color
+            )
     }
 
     private fun setVisibilities() {
@@ -411,7 +409,7 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
             tv_al_speed.visibility = View.GONE
         } else {
             al_btn_setgoal.visibility = View.GONE
-            ib_al_save.visibility = View.VISIBLE
+            ib_al_save.visibility = View.INVISIBLE
             ib_al_reset.visibility = View.VISIBLE
             al_btn_start.isClickable = true
             chr_al_meters.visibility = View.VISIBLE
@@ -467,7 +465,6 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
         super.onDestroy()
     }
 
-    //ok je ali ce okinuti samo jednom zbog boolean provere.
     override fun onRouteAdded(id: Long) {
         routeCurrentID = id
         runOnUiThread(Runnable {
