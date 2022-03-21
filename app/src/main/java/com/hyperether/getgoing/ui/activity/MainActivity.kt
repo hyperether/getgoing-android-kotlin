@@ -158,6 +158,32 @@ class MainActivity : AppCompatActivity() {
         Log.d(MainActivity::class.simpleName, "Left_Circle: $lenght $goal $percentageDistance")
         mainBinding.cpbAmKmgoal.progress = percentageDistance.toInt() // ok
 
+        val sharedPref:SharedPref = SharedPref.newInstance()
+        var x:Int = 0
+        var secondX:Int
+        //i already have time spent in seconds
+        var timeSpent = r.duration.toInt()
+        if (r.activity_id == Constants.WALK_ID){
+            x = sharedPref.getTimeEstimateWalk()
+            secondX = x * 60
+            val percentage = (timeSpent/secondX)*100
+            Log.d(MainActivity::class.simpleName, "estimateTime: $x $secondX $percentage")
+        }
+        if (r.activity_id == Constants.RUN_ID){
+            x = sharedPref.getTimeEstimateRun()
+            secondX = x * 60
+            val percentage = (timeSpent/secondX)*100
+            Log.d(MainActivity::class.simpleName, "estimateTime: $x $secondX $percentage")
+
+        }
+        if (r.activity_id == Constants.RIDE_ID){
+            x = sharedPref.getTimeEstimateCycle()
+            secondX = x * 60
+            val percentage = (timeSpent.toDouble()/secondX.toDouble())*100 // checked ok
+            Log.d(MainActivity::class.simpleName, "estimateTime: $x $secondX $percentage")
+            Log.d(MainActivity::class.simpleName, "estimateTime: $timeSpent $secondX")
+            mainBinding.cpbAmKmgoal2.progress = percentage.toInt()
+        }
     }
 
     override fun onResume() {

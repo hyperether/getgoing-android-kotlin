@@ -312,6 +312,11 @@ class ActivitiesFragment : DialogFragment() {
         minutesRunning.text = timeEstimates[1].toString() + " min"
         minutesCycling.text = timeEstimates[2].toString() + " min"
 
+        val sharedPref:SharedPref = SharedPref.newInstance()
+        sharedPref.setTimeEstimateWalk(timeEstimates[0])
+        sharedPref.setTimeEstimateRun(timeEstimates[1])
+        sharedPref.setTimeEstimateCycle(timeEstimates[2])
+
         kcal.text =
             "About " + (progress * 0.00112 * settings!!.getInt("weight", 0)).toInt().toShort() +
                     "kcal"

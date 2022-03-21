@@ -110,7 +110,7 @@
     <string name="running">Running</string>
     <string name="min">min</string>
     <string name="textview_age_end">" years"</string>
-
+   
     <string name="com_facebook_share_button_text">Share</string>
     <string name="progress_bar_img">progress bar image</string>
     <string name="progress_bar_goal_img">progress bar goal icon</string>

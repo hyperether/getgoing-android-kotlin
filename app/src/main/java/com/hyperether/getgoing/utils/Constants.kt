@@ -74,6 +74,9 @@ object Constants {
     const val OPENED_FROM_LOCATION_ACT = 501
     const val OPENED_FROM_GG_ACT = 502
     const val OPENED_FROM_KEY = "from"
+    const val WALK_TIME_ESTIMATE = "walk_time_estimate"
+    const val RUN_TIME_ESTIMATE = "run_time_estimate"
+    const val CYCLE_TIME_ESTIMATE = "cycle_time_estimate"
 
     const val SENT_FROM_FRAGMENT = 0
 }

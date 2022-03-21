@@ -177,5 +177,31 @@ class SharedPref {
         return setting.getInt(Constants.ACTIVITY_SHOW_DATA2,0)
     }
 
+    fun setTimeEstimateWalk(i:Int){
+        val editor:SharedPreferences.Editor = setting.edit()
+        editor.putInt(Constants.WALK_TIME_ESTIMATE, i)
+        editor.apply()
+    }
+    fun setTimeEstimateRun(i:Int){
+        val editor:SharedPreferences.Editor = setting.edit()
+        editor.putInt(Constants.RUN_TIME_ESTIMATE, i)
+        editor.apply()
+    }
+    fun setTimeEstimateCycle(i:Int){
+        val editor:SharedPreferences.Editor = setting.edit()
+        editor.putInt(Constants.CYCLE_TIME_ESTIMATE, i)
+        editor.apply()
+    }
+
+    fun getTimeEstimateWalk():Int{
+        return setting.getInt(Constants.WALK_TIME_ESTIMATE,0)
+    }
+    fun getTimeEstimateRun():Int{
+        return setting.getInt(Constants.RUN_TIME_ESTIMATE,0)
+    }
+    fun getTimeEstimateCycle():Int{
+        return setting.getInt(Constants.CYCLE_TIME_ESTIMATE,0)
+    }
+
 
 }
