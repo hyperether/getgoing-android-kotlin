@@ -4,6 +4,9 @@
 
     <data>
         <variable
+            name="lastRoute"
+            type="com.hyperether.getgoing.repository.room.Route" />
+        <variable
             name="clickHandler"
             type="com.hyperether.getgoing.ui.handler.MainActivityClickHandler" />
     </data>
@@ -162,7 +165,6 @@
             android:layout_width="115dp"
             android:layout_height="115dp"
             android:layout_marginStart="16dp"
-            android:layout_marginLeft="16dp"
             app:progress_background_color="#9fffffff"
             app:layout_constraintBottom_toBottomOf="@+id/iv_am_bluerectangle"
             app:layout_constraintStart_toStartOf="@+id/iv_am_bluerectangle"
@@ -174,7 +176,9 @@
             app:progress_stroke_width="5dp"
             app:progress_text_color="@android:color/white"
             app:progress_text_size="18sp"
-            app:style="solid_line" />
+            app:style="solid_line"
+            progress_activity="@{lastRoute}"
+            />
 
         <com.dinuscxj.progressbar.CircleProgressBar
             android:id="@+id/cpb_am_kmgoal2"
@@ -195,6 +199,7 @@
 
         <com.dinuscxj.progressbar.CircleProgressBar
             android:id="@+id/cpb_am_kmgoal1"
+            progress_time="@{lastRoute.duration}"
             android:layout_width="115dp"
             android:layout_height="115dp"
             android:layout_marginEnd="16dp"
@@ -230,6 +235,7 @@
 
         <TextView
             android:id="@+id/tv_am_kcalval"
+            displayKcal="@{lastRoute.energy}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -248,6 +254,7 @@
 
         <TextView
             android:id="@+id/tv_am_progbar_act"
+            progress_activity_name="@{lastRoute.activity_id}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"

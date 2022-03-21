@@ -1,6 +1,7 @@
 package com.hyperether.getgoing.ui.adapter
 
 import android.graphics.drawable.Drawable
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -8,6 +9,8 @@ import androidx.databinding.BindingAdapter
 import com.dinuscxj.progressbar.CircleProgressBar
 import com.hyperether.getgoing.R
 import com.hyperether.getgoing.repository.room.Route
+import com.hyperether.getgoing.ui.adapter.formatter.DistanceProgressFormatter
+import com.hyperether.getgoing.ui.adapter.formatter.TimeProgressFormatter
 import com.hyperether.getgoing.utils.Constants
 
 @BindingAdapter("progress_activity_icon")
@@ -40,4 +43,35 @@ fun displayActivityProgressName(view: View, pAcId: Int) {
         Constants.ACTIVITY_RIDE_ID -> acName = view.resources.getString(R.string.cycling)
     }
     (view as TextView).text = acName
+}
+
+
+@BindingAdapter("progress_activity")
+fun displayActivityProgress(view: View, lastRoute: Route?) {
+    var progress = 0
+    var distance = 0.0
+    if (lastRoute != null) {
+        if (lastRoute.length >= 0) {
+            distance = lastRoute.length
+        }
+        if (lastRoute.goal > 0){
+            progress = (distance/(lastRoute.goal*100)).toInt()
+        }else{
+            progress = 100
+        }
+
+        val dpf:DistanceProgressFormatter = DistanceProgressFormatter.newInstance(distance)
+        (view as CircleProgressBar).setProgressFormatter(dpf)
+        (view as CircleProgressBar).progress = progress
+
+    }
+
+}
+
+@BindingAdapter("progress_time")  // uses a diff formatter
+fun displayTimeProgress(view: View, pDuration: Long) {
+    val progressFormatter = TimeProgressFormatter.newInstance(pDuration).format(pDuration.toInt(),60000)
+    Log.d("Last", "displayTimeProgress: ${progressFormatter}")
+    //(view as CircleProgressBar).setProgressFormatter(progressFormatter)
+    //todo room is lacking duration values for routes
 }

@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.util.SparseIntArray
 import android.view.View
 import android.view.ViewGroup.MarginLayoutParams
@@ -14,7 +15,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -30,9 +30,6 @@ import com.hyperether.getgoing.repository.room.GgRepository
 import com.hyperether.getgoing.repository.room.MapNode
 import com.hyperether.getgoing.repository.room.Route
 import com.hyperether.getgoing.ui.adapter.HorizontalListAdapter
-import com.hyperether.getgoing.ui.adapter.formatter.MyProgressFormatter
-import com.hyperether.getgoing.ui.adapter.formatter.MyProgressFormatter2
-import com.hyperether.getgoing.ui.adapter.formatter.MyProgressFormatter3
 import com.hyperether.getgoing.ui.fragment.ProfileFragment
 import com.hyperether.getgoing.ui.handler.MainActivityClickHandler
 import com.hyperether.getgoing.utils.Constants
@@ -41,7 +38,6 @@ import com.hyperether.getgoing.utils.Constants.RUN_ID
 import com.hyperether.getgoing.utils.Constants.WALK_ID
 import com.hyperether.getgoing.viewmodel.RouteViewModel
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.fragment_activities.*
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
@@ -66,6 +62,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mainBinding: ActivityMainBinding
     private lateinit var rvm: RouteViewModel
     private lateinit var blueButton:ImageView
+    private lateinit var routeViewModel: RouteViewModel
+    private lateinit var route:List<Route>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,6 +73,12 @@ class MainActivity : AppCompatActivity() {
 
         mainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         mainBinding.clickHandler = MainActivityClickHandler(supportFragmentManager)
+
+        routeViewModel = ViewModelProviders.of(this).get(RouteViewModel::class.java)
+        routeViewModel.getAllRoutes().observe(this, Observer { it->
+            route = it
+            initProgressBars()
+        })
 
         if (ContextCompat.checkSelfPermission(
                 this,
@@ -107,7 +111,6 @@ class MainActivity : AppCompatActivity() {
             GgRepository.insertRouteInit(dbRoute, tmpRoute, object : ZeroNodeInsertCallback {
                 override fun onAdded() {
                     rvm = ViewModelProviders.of(this@MainActivity).get(RouteViewModel::class.java)
-                    rvm.getLatestRoute()?.observe(this@MainActivity, Observer { initProgressBars(it) })
                 }
             })
 
@@ -117,29 +120,15 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun initProgressBars(route: Route?) { //isn't tested yet
-        val lastRouteLen = route?.length
-        val lastRouteTime: Int = if (route!!.duration >= 60000)
-            (route.duration.toDouble() / 1000 / 60).roundToInt()
-        else
-            0
+    private fun initProgressBars() { //changed this heavily was not working how it was written
+        Log.d(MainActivity::class.simpleName, "initProgressBars: $route ${route.size}")
 
-        val cpbProgress: Int = if (route.goal != 0)
-            (lastRouteLen!! * 100 / route.goal).roundToInt()
-        else
-            0
-
-        cpb_am_kmgoal.setProgressFormatter(MyProgressFormatter(lastRouteLen!!.toDouble()))
-        cpb_am_kmgoal.progress = cpbProgress
-
-        cpb_am_kmgoal1.setProgressFormatter(MyProgressFormatter2(lastRouteTime))
-        cpb_am_kmgoal1.progress = 100
-
-        cpb_am_kmgoal2.setProgressFormatter(MyProgressFormatter3())
-
-        tv_am_kcalval.text = route.energy.toString()
-
-        when (route.activity_id) {
+        lateinit var r:Route // last value will be the last route
+        for (x in route){
+            r = x
+        }
+        Log.d(MainActivity::class.simpleName, "initProgressBars: $r")
+        when (r.activity_id) {
             1 -> {
                 tv_am_progbar_act.text = getString(R.string.activity_walking)
                 iv_am_activity.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_walking_icon))
@@ -157,7 +146,8 @@ class MainActivity : AppCompatActivity() {
                     )
                 )
             }
-        }
+        } // ok
+        mainBinding.lastRoute = r
     }
 
     override fun onResume() {

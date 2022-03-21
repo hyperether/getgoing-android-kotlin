@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "routes")
 data class Route(
     @PrimaryKey(autoGenerate = true) val id: Long,
-    @ColumnInfo val duration: Long,
+    @ColumnInfo var duration: Long,
     @ColumnInfo var energy: Double,
     @ColumnInfo var length: Double,
     @ColumnInfo val date: String,
