@@ -28,7 +28,7 @@ import com.google.android.gms.maps.model.PolylineOptions
 import com.hyperether.getgoing.R
 import com.hyperether.getgoing.SharedPref
 import com.hyperether.getgoing.databinding.FragmentShowDataBinding
-import com.hyperether.getgoing.listeners.GgOnClickListener
+import com.hyperether.getgoing.listeners.AdapterOnItemClickListener
 import com.hyperether.getgoing.repository.room.MapNode
 import com.hyperether.getgoing.repository.room.Route
 import com.hyperether.getgoing.ui.adapter.DbRecyclerAdapter
@@ -36,7 +36,7 @@ import com.hyperether.getgoing.utils.Constants
 import com.hyperether.getgoing.utils.ProgressBarBitmap
 import com.hyperether.getgoing.viewmodel.RouteViewModel
 
-class ShowDataActivity : AppCompatActivity(), OnMapReadyCallback, GgOnClickListener {
+class ShowDataActivity : AppCompatActivity(), OnMapReadyCallback, AdapterOnItemClickListener {
 
     private var typeClicked: Int = 0
     private lateinit var sharedPref: SharedPref
@@ -68,6 +68,13 @@ class ShowDataActivity : AppCompatActivity(), OnMapReadyCallback, GgOnClickListe
         populateListView()
     }
 
+    override fun onClick(route: Route) {  // well this was easy // if the user respond to dialog with ok in adapter i pipe the route here and delete with view model
+        Log.d(ShowDataActivity::class.simpleName, "FromAdapter $route")
+        Toast.makeText(this,"Its happy to be gone!",Toast.LENGTH_SHORT).show()
+        routeViewModel.removeRouteById(route.id)
+        adapter.notifyDataSetChanged()
+    }
+
     private fun populateListView() {
         recyclerView = binding.recyclerList
         val sharedPref: SharedPref = SharedPref.newInstance()
@@ -75,19 +82,19 @@ class ShowDataActivity : AppCompatActivity(), OnMapReadyCallback, GgOnClickListe
         setIconType(type);
         Log.d(ShowDataActivity::class.simpleName, "type: $type")
         if (type == Constants.WALK_ID) {
-            adapter = DbRecyclerAdapter(routeWalk,this)
+            adapter = DbRecyclerAdapter(routeWalk,this,this)
             recyclerView.adapter = adapter
             recyclerView.layoutManager = LinearLayoutManager(this)
             recyclerView.setHasFixedSize(true)
         }
         if (type == Constants.RUN_ID) {
-            adapter = DbRecyclerAdapter(routeRun,this)
+            adapter = DbRecyclerAdapter(routeRun,this,this)
             recyclerView.adapter = adapter
             recyclerView.layoutManager = LinearLayoutManager(this)
             recyclerView.setHasFixedSize(true)
         }
         if (type == Constants.RIDE_ID) {
-            adapter = DbRecyclerAdapter(routeCycle,this)
+            adapter = DbRecyclerAdapter(routeCycle,this,this)
             recyclerView.adapter = adapter
             recyclerView.layoutManager = LinearLayoutManager(this)
             recyclerView.setHasFixedSize(true)
@@ -386,10 +393,7 @@ class ShowDataActivity : AppCompatActivity(), OnMapReadyCallback, GgOnClickListe
         mMap.uiSettings.isZoomControlsEnabled = true
     }
 
-    override fun onClick(route: Route) {
-        Log.d(ShowDataActivity::class.simpleName, "fromAdapter: $route")
-        //   drawSavedRoute()
-    }
+
 
 
 }
