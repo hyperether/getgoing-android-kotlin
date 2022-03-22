@@ -45,9 +45,11 @@ import kotlin.math.roundToInt
 class MainActivity : AppCompatActivity() {
     public val TYPE = "type"
     private val PERMISSION_CODE = 1;
+
     companion object {
         var ratio: Float = 0f
     }
+
     private lateinit var mRecyclerView: RecyclerView
     private lateinit var layoutManager: RecyclerView.LayoutManager
     private lateinit var snapHelper: LinearSnapHelper
@@ -57,9 +59,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var model: CBDataFrame
     private lateinit var mainBinding: ActivityMainBinding
     private lateinit var rvm: RouteViewModel
-    private lateinit var blueButton:ImageView
+    private lateinit var blueButton: ImageView
     private lateinit var routeViewModel: RouteViewModel
-    private lateinit var route:List<Route>
+    private lateinit var route: List<Route>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,7 +70,7 @@ class MainActivity : AppCompatActivity() {
         mainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         mainBinding.clickHandler = MainActivityClickHandler(supportFragmentManager)
         routeViewModel = ViewModelProviders.of(this).get(RouteViewModel::class.java)
-        routeViewModel.getAllRoutes().observe(this, Observer { it->
+        routeViewModel.getAllRoutes().observe(this, Observer { it ->
             route = it
             initProgressBars()
         })
@@ -96,7 +98,7 @@ class MainActivity : AppCompatActivity() {
             val tmpRoute: MutableList<MapNode> = ArrayList()
             val tmpNode = MapNode(0, 0.0, 0.0, 0F, 0, 0)
             tmpRoute.add(tmpNode)
-            val dbRoute = Route(0, 0, 0.0, 0.0, "null", 0.0, 1.0, 0,0)
+            val dbRoute = Route(0, 0, 0.0, 0.0, "null", 0.0, 1.0, 0, 0)
             GgRepository.insertRouteInit(dbRoute, tmpRoute, object : ZeroNodeInsertCallback {
                 override fun onAdded() {
                     rvm = ViewModelProviders.of(this@MainActivity).get(RouteViewModel::class.java)
@@ -110,19 +112,29 @@ class MainActivity : AppCompatActivity() {
 
     private fun initProgressBars() { //changed this heavily was not working how it was written
         Log.d(MainActivity::class.simpleName, "initProgressBars: $route ${route.size}")
-        lateinit var r:Route // last value will be the last route
-        for (x in route){
+        lateinit var r: Route // last value will be the last route
+        for (x in route) {
             r = x
         }
         Log.d(MainActivity::class.simpleName, "initProgressBars: $r")
         when (r.activity_id) {
             1 -> {
                 tv_am_progbar_act.text = getString(R.string.activity_walking)
-                iv_am_activity.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_walking_icon))
+                iv_am_activity.setImageDrawable(
+                    ContextCompat.getDrawable(
+                        this,
+                        R.drawable.ic_walking_icon
+                    )
+                )
             }
             2 -> {
                 tv_am_progbar_act.text = getString(R.string.activity_running)
-                iv_am_activity.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_running_icon))
+                iv_am_activity.setImageDrawable(
+                    ContextCompat.getDrawable(
+                        this,
+                        R.drawable.ic_running_icon
+                    )
+                )
             }
             3 -> {
                 tv_am_progbar_act.text = getString(R.string.activity_cycling)
@@ -135,42 +147,42 @@ class MainActivity : AppCompatActivity() {
             }
         } // ok
         mainBinding.lastRoute = r
-        val lenght =r.length
+        val lenght = r.length
         val goal = r.goal.toDouble()
-        val p = lenght/goal
+        val p = lenght / goal
         val percentageDistance = p * 100
         Log.d(MainActivity::class.simpleName, "Left_Circle: $r")
         Log.d(MainActivity::class.simpleName, "Left_Circle: $lenght $goal $percentageDistance")
         mainBinding.cpbAmKmgoal.progress = percentageDistance.toInt() // ok
-        val sharedPref:SharedPref = SharedPref.newInstance()
-        var x:Int = 0
-        var secondX:Int = 0
+        val sharedPref: SharedPref = SharedPref.newInstance()
+        var x: Int = 0
+        var secondX: Int = 0
         val timeSpent = r.duration.toInt()
-        if (r.activity_id == Constants.WALK_ID){
+        if (r.activity_id == Constants.WALK_ID) {
             x = sharedPref.getTimeEstimateWalk()
             secondX = x * 60
-            if (secondX == 0){
+            if (secondX == 0) {
                 secondX = 1
             }
-            val percentage = (timeSpent/secondX)*100
+            val percentage = (timeSpent / secondX) * 100
             Log.d(MainActivity::class.simpleName, "estimateTime: $x $secondX $percentage")
         }
-        if (r.activity_id == Constants.RUN_ID){
+        if (r.activity_id == Constants.RUN_ID) {
             x = sharedPref.getTimeEstimateRun()
             secondX = x * 60
-            if (secondX == 0){
+            if (secondX == 0) {
                 secondX = 1
             }
-            val percentage = (timeSpent/secondX)*100
+            val percentage = (timeSpent / secondX) * 100
             Log.d(MainActivity::class.simpleName, "estimateTime: $x $secondX $percentage")
         }
-        if (r.activity_id == Constants.RIDE_ID){
+        if (r.activity_id == Constants.RIDE_ID) {
             x = sharedPref.getTimeEstimateCycle()
             secondX = x * 60
-            if (secondX == 0){
+            if (secondX == 0) {
                 secondX = 1
             }
-            val percentage = (timeSpent.toDouble()/secondX.toDouble())*100 // checked ok
+            val percentage = (timeSpent.toDouble() / secondX.toDouble()) * 100 // checked ok
             Log.d(MainActivity::class.simpleName, "estimateTime: $x $secondX $percentage")
             Log.d(MainActivity::class.simpleName, "estimateTime: $timeSpent $secondX")
             mainBinding.cpbAmKmgoal2.progress = percentage.toInt()
@@ -203,12 +215,18 @@ class MainActivity : AppCompatActivity() {
             R.drawable.ic_light_running_icon_inactive,
             R.drawable.ic_light_running_icon_active
         )
-        drawableMap.append(R.drawable.ic_light_walking_icon, R.drawable.ic_light_walking_icon_active)
+        drawableMap.append(
+            R.drawable.ic_light_walking_icon,
+            R.drawable.ic_light_walking_icon_active
+        )
         mAdapter = HorizontalListAdapter(drawableMap, this)
         mRecyclerView.adapter = mAdapter
         snapHelper = LinearSnapHelper()
         snapHelper.attachToRecyclerView(mRecyclerView)
-        (layoutManager as LinearLayoutManager).scrollToPositionWithOffset(layoutManager.itemCount / 2, -1)
+        (layoutManager as LinearLayoutManager).scrollToPositionWithOffset(
+            layoutManager.itemCount / 2,
+            -1
+        )
     }
 
     private fun initListeners() {
@@ -221,7 +239,10 @@ class MainActivity : AppCompatActivity() {
 
                 val centralLayout: View? = findCenterView(
                     layoutManager,
-                    OrientationHelper.createOrientationHelper(layoutManager, RecyclerView.HORIZONTAL)
+                    OrientationHelper.createOrientationHelper(
+                        layoutManager,
+                        RecyclerView.HORIZONTAL
+                    )
                 )
                 centralImg = centralLayout?.findViewById(R.id.iv_ri_pic)!!
                 val k1 = centralLayout.let { layoutManager.getPosition(it) }
@@ -231,7 +252,8 @@ class MainActivity : AppCompatActivity() {
                         "Cycling"
                     centralImg.tag == R.drawable.ic_light_running_icon_inactive -> tv_ma_mainact.text =
                         "Running"
-                    centralImg.tag == R.drawable.ic_light_walking_icon -> tv_ma_mainact.text = "Walking"
+                    centralImg.tag == R.drawable.ic_light_walking_icon -> tv_ma_mainact.text =
+                        "Walking"
                 }
                 centralImg?.getLocationOnScreen(centralImgPos)
                 if (i++ == 0) {
@@ -307,7 +329,8 @@ class MainActivity : AppCompatActivity() {
                     e.printStackTrace()
                 }
                 try {
-                    rightImg = layoutManager.findViewByPosition(k1 + 1)?.findViewById(R.id.iv_ri_pic)
+                    rightImg =
+                        layoutManager.findViewByPosition(k1 + 1)?.findViewById(R.id.iv_ri_pic)
 
                     when (rightImg?.tag) {
                         R.drawable.ic_light_bicycling_icon_active -> {
@@ -356,7 +379,10 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    private fun findCenterView(layoutManager: RecyclerView.LayoutManager, helper: OrientationHelper): View? {
+    private fun findCenterView(
+        layoutManager: RecyclerView.LayoutManager,
+        helper: OrientationHelper
+    ): View? {
         val childCount = layoutManager.childCount
         if (childCount == 0) {
             return null
@@ -405,14 +431,14 @@ class MainActivity : AppCompatActivity() {
 
     private fun callMeteringActivity(id: Int) {
         if (getParametersStatus(model)) {
-            val sharedPref:SharedPref = SharedPref.newInstance()
-            if (id == Constants.WALK_ID){
+            val sharedPref: SharedPref = SharedPref.newInstance()
+            if (id == Constants.WALK_ID) {
                 sharedPref.setClickedTypeShowData2(id)
-            }else if (id == Constants.RUN_ID){
+            } else if (id == Constants.RUN_ID) {
                 sharedPref.setClickedTypeShowData2(id)
-            }else if (id == Constants.RIDE_ID){
+            } else if (id == Constants.RIDE_ID) {
                 sharedPref.setClickedTypeShowData2(id)
-            }else{
+            } else {
                 sharedPref.setClickedTypeShowData2(0)
             }
             this.model.profileId = id

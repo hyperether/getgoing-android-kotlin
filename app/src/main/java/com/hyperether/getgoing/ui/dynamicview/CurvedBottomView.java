@@ -11,14 +11,11 @@ import android.view.View;
 
 public class CurvedBottomView extends View {
 
+    private final int BUTTON_CURVE_RADIUS = 110;
     private Path mPath;
     private Paint mPaint;
-
     private int mNavBarWidth;
     private int mNavBarHeight;
-
-    private final int BUTTON_CURVE_RADIUS = 110;
-
     private Point mFirstCurveStart = new Point();
     private Point mFirstCurveEnd = new Point();
     private Point mFirstCurveControl1 = new Point();
@@ -33,17 +30,18 @@ public class CurvedBottomView extends View {
         super(context);
         init();
     }
+
     public CurvedBottomView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
     }
+
     public CurvedBottomView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }
 
-    private void init()
-    {
+    private void init() {
         mPath = new Path();
         mPaint = new Paint();
 

@@ -19,7 +19,7 @@ class CaloriesCalculation {
         doubleArrayOf(4.47, 0.00112)
     )
 
-    companion object{
+    companion object {
         fun newInstance() = CaloriesCalculation()
     }
 
@@ -29,28 +29,28 @@ class CaloriesCalculation {
      * @param vel    velocity
      * @param weight user weight
      */
-    fun calculate(dis:Double,vel:Double,pId:Int,weight:Double):Double{
-        var energySpent:Double = 0.0
+    fun calculate(dis: Double, vel: Double, pId: Int, weight: Double): Double {
+        var energySpent: Double = 0.0
         Log.d(CaloriesCalculation::class.java.simpleName, "calculate: $dis $vel $pId $weight")
-        val sharedPref:SharedPref = SharedPref.newInstance()
+        val sharedPref: SharedPref = SharedPref.newInstance()
         val weight2 = weight * 0.4536
-        if (pId == 1 || pId == 2){
-            if (vel < kcalMatrix[0][0]){
-                energySpent = dis * (kcalMatrix[0][1]*weight2)
+        if (pId == 1 || pId == 2) {
+            if (vel < kcalMatrix[0][0]) {
+                energySpent = dis * (kcalMatrix[0][1] * weight2)
                 Log.d(CaloriesCalculation::class.java.simpleName, "velocity less: $energySpent")
-            }else if(vel > kcalMatrix[11][0]){
-                energySpent = dis * (kcalMatrix[11][1]*weight2)
+            } else if (vel > kcalMatrix[11][0]) {
+                energySpent = dis * (kcalMatrix[11][1] * weight2)
                 Log.d(CaloriesCalculation::class.java.simpleName, "velocity more: $energySpent")
-            }else{
-                for (i in 1..12 step 1){
-                    if (vel < kcalMatrix[i][0]){
-                        energySpent = dis * (kcalMatrix[i][1]*weight2)
+            } else {
+                for (i in 1..12 step 1) {
+                    if (vel < kcalMatrix[i][0]) {
+                        energySpent = dis * (kcalMatrix[i][1] * weight2)
                         break
                     }
                 }
             }
 
-        }else{
+        } else {
             energySpent = if (vel < 4.47) {
                 dis * (0.000779 * weight) // riding velocity lower than 16 km/h
             } else {

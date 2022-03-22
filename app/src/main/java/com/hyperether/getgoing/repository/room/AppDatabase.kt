@@ -18,6 +18,7 @@ abstract class AppDatabase : RoomDatabase() {
                 instance ?: buildDb(context).also { instance = it }
             }
         }
+
         private fun buildDb(context: Context): AppDatabase {
             return Room.databaseBuilder(context, AppDatabase::class.java, "ggDb")
                 .fallbackToDestructiveMigration().build()

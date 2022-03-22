@@ -53,12 +53,12 @@ fun displayActivityProgress(view: View, lastRoute: Route?) {
         if (lastRoute.length >= 0) {
             distance = lastRoute.length
         }
-        if (lastRoute.goal > 0){
-            progress = (distance/(lastRoute.goal*100)).toInt()
-        }else{
+        if (lastRoute.goal > 0) {
+            progress = (distance / (lastRoute.goal * 100)).toInt()
+        } else {
             progress = 100
         }
-        val dpf:DistanceProgressFormatter = DistanceProgressFormatter.newInstance(distance)
+        val dpf: DistanceProgressFormatter = DistanceProgressFormatter.newInstance(distance)
         (view as CircleProgressBar).setProgressFormatter(dpf)
         (view as CircleProgressBar).progress = progress
     }

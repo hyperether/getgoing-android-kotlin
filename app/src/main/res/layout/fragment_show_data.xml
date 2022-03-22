@@ -97,9 +97,9 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginTop="24dp"
+            android:elevation="1dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/goal_img"
-            android:elevation="1dp">
+            app:layout_constraintTop_toBottomOf="@id/goal_img">
 
             <View
                 android:id="@+id/show_data_cds_info"
@@ -152,10 +152,10 @@
 
             <TextView
                 android:id="@+id/tv_sd_kcal"
+                displayKcal="@{data.energy}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                displayKcal="@{data.energy}"
                 android:textSize="22sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="@id/show_data_cds_info"
@@ -166,10 +166,10 @@
 
             <TextView
                 android:id="@+id/tv_sd_dist"
+                displayDistance="@{data.length}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                displayDistance="@{data.length}"
                 android:textSize="22sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toStartOf="@+id/tv_sd_speed"
@@ -181,8 +181,8 @@
                 android:id="@+id/tv_sd_speed"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text='@{String.format("%.2f", data.avgSpeed)}'
                 android:gravity="center"
+                android:text='@{String.format("%.2f", data.avgSpeed)}'
                 android:textSize="22sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="@id/show_data_cds_info"
@@ -204,10 +204,10 @@
 
             <TextView
                 android:id="@+id/tv_sd_dist_unit"
+                displayDistanceUnit="@{data.length}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                displayDistanceUnit="@{data.length}"
                 android:textSize="14sp"
                 app:layout_constraintEnd_toStartOf="@+id/tv_sd_speed"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -247,15 +247,13 @@
                 android:id="@+id/sd_chart_bg"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
+                android:layout_marginBottom="32dp"
                 android:background="@drawable/rounded_top_data_background"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/show_data_cds_info"
-                android:layout_marginBottom="32dp"/>
-
-
+                app:layout_constraintTop_toBottomOf="@+id/show_data_cds_info" />
 
 
             <TextView
@@ -267,7 +265,7 @@
                 android:textSize="12sp"
                 app:layout_constraintBottom_toTopOf="@+id/sd_dashed_line"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/sd_dashed_line"/>
+                app:layout_constraintTop_toBottomOf="@+id/sd_dashed_line" />
 
             <View
                 android:id="@+id/sd_dashed_line"
@@ -281,7 +279,7 @@
                 app:layout_constraintEnd_toStartOf="@+id/tv_goal_value"
                 app:layout_constraintHorizontal_bias="0.453"
                 app:layout_constraintStart_toEndOf="@+id/tv_goal"
-                app:layout_constraintTop_toTopOf="@+id/tv_sd_dist_unit"/>
+                app:layout_constraintTop_toTopOf="@+id/tv_sd_dist_unit" />
 
             <TextView
                 android:id="@+id/tv_goal_value"
@@ -292,19 +290,18 @@
                 android:textSize="12sp"
                 app:layout_constraintBottom_toTopOf="@+id/sd_dashed_line"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/sd_dashed_line"/>
+                app:layout_constraintTop_toBottomOf="@+id/sd_dashed_line" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerList"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_margin="30dp"
-                app:layout_constraintTop_toBottomOf="@+id/tv_goal_value"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                tools:listitem="@layout/card_show_data_fragment"
-                >
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_goal_value"
+                tools:listitem="@layout/card_show_data_fragment">
 
             </androidx.recyclerview.widget.RecyclerView>
 
@@ -358,14 +355,14 @@
             android:id="@+id/typeImage"
             android:layout_width="100dp"
             android:layout_height="100dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintVertical_bias="0.24"
             android:layout_marginBottom="20dp"
+            android:contentDescription="@string/image_to_show_the_type_of_activity"
             android:elevation="4dp"
-            android:contentDescription="@string/image_to_show_the_type_of_activity" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.24" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

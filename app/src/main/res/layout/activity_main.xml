@@ -3,9 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+
         <variable
             name="lastRoute"
             type="com.hyperether.getgoing.repository.room.Route" />
+
         <variable
             name="clickHandler"
             type="com.hyperether.getgoing.ui.handler.MainActivityClickHandler" />
@@ -23,10 +25,10 @@
             android:layout_marginStart="16dp"
             android:layout_marginLeft="16dp"
             android:layout_marginTop="8dp"
+            android:contentDescription="@string/logo"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_logo_small"
-            android:contentDescription="@string/logo"/>
+            app:srcCompat="@drawable/ic_logo_small" />
 
         <ImageButton
             android:id="@+id/ib_am_user"
@@ -35,13 +37,12 @@
             android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp"
             android:background="@android:color/transparent"
+            android:contentDescription="@string/profile_icon"
+            android:onClick="@{clickHandler::onProfileClick}"
             app:layout_constraintBottom_toBottomOf="@+id/iv_am_logo"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/iv_am_logo"
-            app:srcCompat="@drawable/ic_light_user_icon"
-            android:contentDescription="@string/profile_icon"
-            android:onClick="@{clickHandler::onProfileClick}"
-            />
+            app:srcCompat="@drawable/ic_light_user_icon" />
 
         <TextView
             android:id="@+id/tv_am_lastexercise"
@@ -63,24 +64,24 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
             android:background="@android:color/transparent"
+            android:onClick="@{clickHandler::onActivitiesClick}"
             app:layout_constraintBottom_toBottomOf="@+id/tv_am_viewall"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/tv_am_viewall"
-            app:srcCompat="@drawable/ic_light_chevron_icon"
-            android:onClick="@{clickHandler::onActivitiesClick}"/>
+            app:srcCompat="@drawable/ic_light_chevron_icon" />
 
         <TextView
             android:id="@+id/tv_am_viewall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="4dp"
+            android:onClick="@{clickHandler::onActivitiesClick}"
             android:text="@string/view_all"
             android:textColor="@color/light_theme_accent"
             android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="@+id/tv_am_lastexercise"
             app:layout_constraintEnd_toStartOf="@+id/iv_am_arrow2actfrag"
-            app:layout_constraintTop_toTopOf="@+id/tv_am_lastexercise"
-            android:onClick="@{clickHandler::onActivitiesClick}"/>
+            app:layout_constraintTop_toTopOf="@+id/tv_am_lastexercise" />
 
         <TextView
             android:id="@+id/tv_am_choose"
@@ -165,30 +166,29 @@
             android:layout_width="115dp"
             android:layout_height="115dp"
             android:layout_marginStart="16dp"
-            app:progress_background_color="#9fffffff"
             app:layout_constraintBottom_toBottomOf="@+id/iv_am_bluerectangle"
             app:layout_constraintStart_toStartOf="@+id/iv_am_bluerectangle"
             app:layout_constraintTop_toTopOf="@+id/iv_am_bluerectangle"
             app:layout_constraintVertical_bias="0.478"
+            app:progress_background_color="#9fffffff"
             app:progress_end_color="@android:color/white"
             app:progress_shader="sweep"
             app:progress_start_color="@android:color/white"
             app:progress_stroke_width="5dp"
             app:progress_text_color="@android:color/white"
             app:progress_text_size="18sp"
-            app:style="solid_line"
-            />
+            app:style="solid_line" />
 
         <com.dinuscxj.progressbar.CircleProgressBar
             android:id="@+id/cpb_am_kmgoal2"
             android:layout_width="115dp"
             android:layout_height="115dp"
             android:layout_marginEnd="16dp"
-            app:progress_background_color="#9fffffff"
             app:layout_constraintBottom_toBottomOf="@+id/iv_am_bluerectangle"
             app:layout_constraintEnd_toEndOf="@+id/iv_am_bluerectangle"
             app:layout_constraintTop_toTopOf="@+id/iv_am_bluerectangle"
             app:layout_constraintVertical_bias="0.478"
+            app:progress_background_color="#9fffffff"
             app:progress_end_color="#9fffffff"
             app:progress_start_color="#9fffffff"
             app:progress_stroke_width="5dp"
@@ -232,8 +232,7 @@
             app:layout_constraintBottom_toBottomOf="@+id/iv_am_bluerectangle"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/iv_am_bluerectangle"
-            />
+            app:layout_constraintTop_toTopOf="@+id/iv_am_bluerectangle" />
 
         <TextView
             android:id="@+id/tv_am_progbar_act"
@@ -284,9 +283,9 @@
             android:layout_width="160dp"
             android:layout_height="45dp"
             android:layout_marginBottom="16dp"
+            android:background="@drawable/ic_button_layout"
             android:text="@string/get_ready"
             android:textAlignment="center"
-            android:background="@drawable/ic_button_layout"
             android:textAllCaps="false"
             android:textColor="@android:color/white"
             android:textSize="18sp"

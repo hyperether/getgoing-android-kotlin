@@ -42,84 +42,90 @@ class ActivitiesFragment : DialogFragment() {
     private lateinit var saveChanges: Button
     private lateinit var backBtn: ImageButton
     private lateinit var seekBar: SeekBar
-    private lateinit var tv_fa_pb_mileage1:TextView
-    private lateinit var iv_fa_rightarrow1:ImageView
-    private lateinit var tv_fa_pb_mileage2:TextView
-    private lateinit var iv_fa_rightarrow2:ImageView
-    private lateinit var tv_fa_pb_mileage3:TextView
-    private lateinit var iv_fa_rightarrow3:ImageView
-    private lateinit var prbWalk:ProgressBar
-    private lateinit var prbRun:ProgressBar
-    private lateinit var prbRide:ProgressBar
+    private lateinit var tv_fa_pb_mileage1: TextView
+    private lateinit var iv_fa_rightarrow1: ImageView
+    private lateinit var tv_fa_pb_mileage2: TextView
+    private lateinit var iv_fa_rightarrow2: ImageView
+    private lateinit var tv_fa_pb_mileage3: TextView
+    private lateinit var iv_fa_rightarrow3: ImageView
+    private lateinit var prbWalk: ProgressBar
+    private lateinit var prbRun: ProgressBar
+    private lateinit var prbRide: ProgressBar
     lateinit var routeViewModel: RouteViewModel
-    private lateinit var mileageWalk:TextView
-    private lateinit var mileageRun:TextView
-    private lateinit var mileageRide:TextView
+    private lateinit var mileageWalk: TextView
+    private lateinit var mileageRun: TextView
+    private lateinit var mileageRide: TextView
     private var settings: SharedPreferences? = null
     private lateinit var model: CBDataFrame
 
     companion object {
         fun newInstance() = ActivitiesFragment()
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.FullScreenDialogStyle)
         settings = activity?.getSharedPreferences(Constants.PREF_FILE, 0)
         model = CBDataFrame.getInstance()!!
     }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val view:View = inflater.inflate(R.layout.fragment_activities,container,false)
+        val view: View = inflater.inflate(R.layout.fragment_activities, container, false)
         setButtons(view)
         routeViewModel = ViewModelProviders.of(this).get(RouteViewModel::class.java)
         routeViewModel.getAllRoutes().observe(
             this
         ) { route ->
             fillProgBars(route)
-            initFragmentTranactions(view,route)
+            initFragmentTranactions(view, route)
         }
         return view
     }
+
     private fun fillProgBars(route: List<Route>?) {
-        val sharedPref:SharedPref = SharedPref.newInstance()
-        val goal:Int = sharedPref.getGoal()
-        var sumWalk:Double = 0.0
-        var sumRun:Double = 0.0
-        var sumRide:Double = 0.0
-        var walkPercentage:Int = 0
-        var runPercentage:Int = 0
-        var ridePercentage:Int = 0
+        val sharedPref: SharedPref = SharedPref.newInstance()
+        val goal: Int = sharedPref.getGoal()
+        var sumWalk: Double = 0.0
+        var sumRun: Double = 0.0
+        var sumRide: Double = 0.0
+        var walkPercentage: Int = 0
+        var runPercentage: Int = 0
+        var ridePercentage: Int = 0
         if (route != null) {
-            for (item in route){
-                if (item.activity_id == 1){
+            for (item in route) {
+                if (item.activity_id == 1) {
                     sumWalk += item.length
                 }
-                if (item.activity_id == 2){
+                if (item.activity_id == 2) {
                     sumRun += item.length
                 }
-                if (item.activity_id == 3){
+                if (item.activity_id == 3) {
                     sumRide += item.length
                 }
             }
-            Log.d(ActivitiesFragment::class.simpleName, "fillProgBars: $goal $sumWalk $sumRide $sumRun")
-            if (sumWalk != 0.0){
-                walkPercentage = ((sumWalk*100)/goal).toInt()
+            Log.d(
+                ActivitiesFragment::class.simpleName,
+                "fillProgBars: $goal $sumWalk $sumRide $sumRun"
+            )
+            if (sumWalk != 0.0) {
+                walkPercentage = ((sumWalk * 100) / goal).toInt()
             }
-            if (sumRun != 0.0){
-                runPercentage = ((sumRun*100)/goal).toInt()
+            if (sumRun != 0.0) {
+                runPercentage = ((sumRun * 100) / goal).toInt()
             }
             if (sumRide != 0.0) {
-                ridePercentage = ((sumRide*100)/goal).toInt()
+                ridePercentage = ((sumRide * 100) / goal).toInt()
             }
             prbWalk.progress = walkPercentage
             prbRun.progress = runPercentage
             prbRide.progress = ridePercentage
-            val df:DecimalFormat = DecimalFormat("#.##")
-            mileageWalk.setText(df.format(sumWalk/1000)+"km")
-            mileageRun.setText(df.format(sumRun/1000)+"km")
-            mileageRide.setText(df.format(sumRide/1000)+"km")
+            val df: DecimalFormat = DecimalFormat("#.##")
+            mileageWalk.setText(df.format(sumWalk / 1000) + "km")
+            mileageRun.setText(df.format(sumRun / 1000) + "km")
+            mileageRide.setText(df.format(sumRide / 1000) + "km")
         }
     }
 
@@ -150,20 +156,20 @@ class ActivitiesFragment : DialogFragment() {
         initListeners()
     }
 
-    private fun initFragmentTranactions(view: View?, route:List<Route>) {
-        val sharedPref:SharedPref = SharedPref.newInstance()
+    private fun initFragmentTranactions(view: View?, route: List<Route>) {
+        val sharedPref: SharedPref = SharedPref.newInstance()
         Log.d(ActivitiesFragment::class.simpleName, "Route: $route size ${route.size}")
         var routesWalk = 0
         var routesRun = 0
         var routesCycle = 0
-        for (x in route){
-            if (x.activity_id == Constants.WALK_ID){
+        for (x in route) {
+            if (x.activity_id == Constants.WALK_ID) {
                 routesWalk += 1
             }
-            if (x.activity_id == Constants.RUN_ID){
+            if (x.activity_id == Constants.RUN_ID) {
                 routesRun += 1
             }
-            if (x.activity_id == Constants.RIDE_ID){
+            if (x.activity_id == Constants.RIDE_ID) {
                 routesCycle += 1
             }
         }
@@ -171,18 +177,18 @@ class ActivitiesFragment : DialogFragment() {
             tv_fa_pb_mileage1 = view.findViewById(R.id.tv_fa_pb_mileage1)
             tv_fa_pb_mileage1.setOnClickListener(View.OnClickListener {
                 sharedPref.setClickedTypeShowData(Constants.WALK_ID)
-                if (routesWalk > 0){
+                if (routesWalk > 0) {
                     startAct();
-                }else{
-                    dialogMethod("No Walk Routes to show!",view);
+                } else {
+                    dialogMethod("No Walk Routes to show!", view);
                 }
             })
             iv_fa_rightarrow1 = view.findViewById(R.id.iv_fa_rightarrow1)
             iv_fa_rightarrow1.setOnClickListener(View.OnClickListener {
                 sharedPref.setClickedTypeShowData(Constants.WALK_ID)
-                if (routesWalk > 0){
+                if (routesWalk > 0) {
                     startAct();
-                }else{
+                } else {
                     dialogMethod("No Walk Routes to show!", view);
 
                 }
@@ -190,9 +196,9 @@ class ActivitiesFragment : DialogFragment() {
             tv_fa_pb_mileage2 = view.findViewById(R.id.tv_fa_pb_mileage2)
             tv_fa_pb_mileage2.setOnClickListener(View.OnClickListener {
                 sharedPref.setClickedTypeShowData(Constants.RUN_ID)
-                if (routesRun > 0){
+                if (routesRun > 0) {
                     startAct();
-                }else{
+                } else {
                     dialogMethod("No Run Routes to show!", view);
 
                 }
@@ -200,9 +206,9 @@ class ActivitiesFragment : DialogFragment() {
             iv_fa_rightarrow2 = view.findViewById(R.id.iv_fa_rightarrow2)
             iv_fa_rightarrow2.setOnClickListener(View.OnClickListener {
                 sharedPref.setClickedTypeShowData(Constants.RUN_ID)
-                if (routesRun > 0){
+                if (routesRun > 0) {
                     startAct();
-                }else{
+                } else {
                     dialogMethod("No Run Routes to show!", view);
 
                 }
@@ -211,18 +217,18 @@ class ActivitiesFragment : DialogFragment() {
             tv_fa_pb_mileage3 = view.findViewById(R.id.tv_fa_pb_mileage3)
             tv_fa_pb_mileage3.setOnClickListener(View.OnClickListener {
                 sharedPref.setClickedTypeShowData(Constants.RIDE_ID)
-                if (routesCycle > 0){
+                if (routesCycle > 0) {
                     startAct();
-                }else{
+                } else {
                     dialogMethod("No Cycle Routes to show!", view);
                 }
             })
             iv_fa_rightarrow3 = view.findViewById(R.id.iv_fa_rightarrow3)
             iv_fa_rightarrow3.setOnClickListener(View.OnClickListener {
                 sharedPref.setClickedTypeShowData(Constants.RIDE_ID)
-                if (routesCycle > 0){
+                if (routesCycle > 0) {
                     startAct();
-                }else{
+                } else {
                     dialogMethod("No Cycle Routes to show!", view);
                 }
             })
@@ -230,19 +236,22 @@ class ActivitiesFragment : DialogFragment() {
     }
 
     private fun dialogMethod(s: String, view: View) {
-        val snackbar = Snackbar.make(view, "$s",
-            Snackbar.LENGTH_LONG)
+        val snackbar = Snackbar.make(
+            view, "$s",
+            Snackbar.LENGTH_LONG
+        )
         snackbar.setTextColor(Color.WHITE)
         val snackbarView = snackbar.view
         snackbarView.setBackgroundColor(Color.BLACK)
-        val textView = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text) as TextView
+        val textView =
+            snackbarView.findViewById(com.google.android.material.R.id.snackbar_text) as TextView
         textView.textSize = 20f
         snackbar.show()
     }
 
     private fun startAct() {
-        activity?.let{
-            val intent = Intent (it, ShowDataActivity::class.java)
+        activity?.let {
+            val intent = Intent(it, ShowDataActivity::class.java)
             it.startActivity(intent)
         }
     }
@@ -281,7 +290,7 @@ class ActivitiesFragment : DialogFragment() {
         minutesWalking.text = timeEstimates[0].toString() + " min"
         minutesRunning.text = timeEstimates[1].toString() + " min"
         minutesCycling.text = timeEstimates[2].toString() + " min"
-        val sharedPref:SharedPref = SharedPref.newInstance()
+        val sharedPref: SharedPref = SharedPref.newInstance()
         sharedPref.setTimeEstimateWalk(timeEstimates[0])
         sharedPref.setTimeEstimateRun(timeEstimates[1])
         sharedPref.setTimeEstimateCycle(timeEstimates[2])
@@ -338,6 +347,7 @@ class ActivitiesFragment : DialogFragment() {
                 kcal.text = "About " + (progressVar * 0.00112 *
                         settings!!.getInt("weight", 0)).toInt().toShort() + "kcal"
             }
+
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}
             override fun onStopTrackingTouch(seekBar: SeekBar?) {}
         })
@@ -350,7 +360,7 @@ class ActivitiesFragment : DialogFragment() {
             sharedPref.test("test String")
             val fragmentSentCode = sharedPref.getSentFromFragmentCode()
             Log.d(ActivitiesFragment::class.simpleName, "initListeners: $fragmentSentCode")
-            if (seekBar.progress == 0){
+            if (seekBar.progress == 0) {
                 val builder: AlertDialog.Builder? = activity?.let {
                     AlertDialog.Builder(it)
                 }
@@ -361,14 +371,17 @@ class ActivitiesFragment : DialogFragment() {
                         })
                 builder?.create()
                 builder?.show() //ok
-            }else{
+            } else {
                 SharedPref.newInstance().setGoal(seekBar.progress)
                 Toast.makeText(context, "Your goal is updated", Toast.LENGTH_SHORT).show()
-                val i:Int = 501
-                if (i == fragmentSentCode){
-                    Log.d(ActivitiesFragment::class.simpleName, "initListeners: $i $fragmentSentCode")
+                val i: Int = 501
+                if (i == fragmentSentCode) {
+                    Log.d(
+                        ActivitiesFragment::class.simpleName,
+                        "initListeners: $i $fragmentSentCode"
+                    )
                     //k switch back to location activity
-                    val intent = Intent(context,LocationActivity::class.java)
+                    val intent = Intent(context, LocationActivity::class.java)
                     startActivity(intent)
                 }
             }

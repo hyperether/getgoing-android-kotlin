@@ -34,8 +34,8 @@ class ProfileFragment : DialogFragment() {
     private lateinit var tvWeight: TextView
     private lateinit var genderBtn: ImageButton
     lateinit var routeViewModel: RouteViewModel
-    lateinit var totalMileage:TextView
-    lateinit var totalCalories:TextView
+    lateinit var totalMileage: TextView
+    lateinit var totalCalories: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -103,13 +103,13 @@ class ProfileFragment : DialogFragment() {
             totalRoute[0] = 0.0
             totalKcal[0] = 0.0
             if (route != null) {
-                for (item in route){
-                    totalRoute[0] += item.length /1000
+                for (item in route) {
+                    totalRoute[0] += item.length / 1000
                     totalKcal[0] += item.energy
                 }
                 activity?.runOnUiThread(Runnable {
-                    totalMileage.text = String.format("%.02f km",totalRoute[0])
-                    val s:Double = Math.round(totalKcal[0]*100.0)/100.0.toDouble()
+                    totalMileage.text = String.format("%.02f km", totalRoute[0])
+                    val s: Double = Math.round(totalKcal[0] * 100.0) / 100.0.toDouble()
                     totalCalories.text = "$s Kcal"
                 })
             }
@@ -145,7 +145,7 @@ class ProfileFragment : DialogFragment() {
             val id = "weight"
             createDialog(id, view).also { it?.show() }
         }
-        ib_fp_backbutton.setOnClickListener {this.dialog!!.dismiss()}
+        ib_fp_backbutton.setOnClickListener { this.dialog!!.dismiss() }
     }
 
     private fun createDialog(pID: String, pView: View): AlertDialog.Builder? {
@@ -218,21 +218,28 @@ class ProfileFragment : DialogFragment() {
                 val toInflate = inflater.inflate(R.layout.alertdialog_age, rootViewGroup)
                 ageBuilder.setView(toInflate)
                 val ageSpinner: Spinner = toInflate.findViewById(R.id.dialog_spinner_age)
-                val arAdapter = ArrayAdapter<String>(pView.context,
-                    android.R.layout.simple_list_item_1, ageList)
+                val arAdapter = ArrayAdapter<String>(
+                    pView.context,
+                    android.R.layout.simple_list_item_1, ageList
+                )
                 ageSpinner.adapter = arAdapter
                 ageSpinner.setSelection(settings!!.getInt("age", 0) - 1)
-                ageBuilder.setPositiveButton("Confirm") { _, _ -> {
-                    tvAge.text = ageSpinner.selectedItem.toString() +
-                            resources.getString(R.string.textview_age_end)
-                    val editor = settings!!.edit()
-                    editor.putInt("age",
-                        Integer.valueOf((ageSpinner.selectedItem as String)))
-                    editor.apply()
-                    model!!.age = Integer.valueOf((ageSpinner.selectedItem as String))
-                }()}
+                ageBuilder.setPositiveButton("Confirm") { _, _ ->
+                    {
+                        tvAge.text = ageSpinner.selectedItem.toString() +
+                                resources.getString(R.string.textview_age_end)
+                        val editor = settings!!.edit()
+                        editor.putInt(
+                            "age",
+                            Integer.valueOf((ageSpinner.selectedItem as String))
+                        )
+                        editor.apply()
+                        model!!.age = Integer.valueOf((ageSpinner.selectedItem as String))
+                    }()
+                }
                     .setNegativeButton("Cancel") { dialogInterface, _ ->
-                        dialogInterface.cancel()}
+                        dialogInterface.cancel()
+                    }
                     .setTitle("How old are you?")
                 return ageBuilder
             }
@@ -246,18 +253,25 @@ class ProfileFragment : DialogFragment() {
                 val toInflate = inflater.inflate(R.layout.alertdialog_height, rootViewGroup)
                 heightBuilder.setView(toInflate)
                 val heightSpinner: Spinner = toInflate.findViewById(R.id.dialog_spinner_height)
-                val arAdapter = ArrayAdapter<String>(pView.context,
-                    android.R.layout.simple_list_item_1, heightList)
+                val arAdapter = ArrayAdapter<String>(
+                    pView.context,
+                    android.R.layout.simple_list_item_1, heightList
+                )
                 heightSpinner.adapter = arAdapter
                 heightSpinner.setSelection(settings!!.getInt("height", 0) - 110)
-                heightBuilder.setPositiveButton("Confirm") { _, _ -> {
-                    tvHeight.text = heightSpinner.selectedItem.toString() + " cm"
-                    val editor = settings!!.edit()
-                    editor.putInt("height", Integer.valueOf(heightSpinner.selectedItem as String))
-                    editor.apply()
-                    model?.height = Integer.valueOf(heightSpinner.selectedItem as String)
-                }()}
-                    .setNegativeButton("Cancel") {dialogInterface, _ -> dialogInterface.cancel()}
+                heightBuilder.setPositiveButton("Confirm") { _, _ ->
+                    {
+                        tvHeight.text = heightSpinner.selectedItem.toString() + " cm"
+                        val editor = settings!!.edit()
+                        editor.putInt(
+                            "height",
+                            Integer.valueOf(heightSpinner.selectedItem as String)
+                        )
+                        editor.apply()
+                        model?.height = Integer.valueOf(heightSpinner.selectedItem as String)
+                    }()
+                }
+                    .setNegativeButton("Cancel") { dialogInterface, _ -> dialogInterface.cancel() }
                     .setTitle("Enter your height:")
                 return heightBuilder
             }
@@ -271,18 +285,25 @@ class ProfileFragment : DialogFragment() {
                 val toInflate = inflater.inflate(R.layout.alertdialog_weight, rootViewGroup)
                 weightBuilder.setView(toInflate)
                 val weightSpinner: Spinner = toInflate.findViewById(R.id.dialog_spinner_weight)
-                val arAdapter = ArrayAdapter<String>(pView.context,
-                    android.R.layout.simple_list_item_1, weightList)
+                val arAdapter = ArrayAdapter<String>(
+                    pView.context,
+                    android.R.layout.simple_list_item_1, weightList
+                )
                 weightSpinner.adapter = arAdapter
                 weightSpinner.setSelection(settings!!.getInt("weight", 0) - 40)
-                weightBuilder.setPositiveButton("Confirm") {_, _ -> {
-                    tvWeight.text = weightSpinner.selectedItem.toString() + " kg"
-                    val editor = settings!!.edit()
-                    editor.putInt("weight", Integer.valueOf(weightSpinner.selectedItem as String))
-                    editor.apply()
-                    model?.weight = Integer.valueOf(weightSpinner.selectedItem as String)
-                }()}
-                    .setNegativeButton("Cancel") { dialogInterface, _ -> dialogInterface.cancel()}
+                weightBuilder.setPositiveButton("Confirm") { _, _ ->
+                    {
+                        tvWeight.text = weightSpinner.selectedItem.toString() + " kg"
+                        val editor = settings!!.edit()
+                        editor.putInt(
+                            "weight",
+                            Integer.valueOf(weightSpinner.selectedItem as String)
+                        )
+                        editor.apply()
+                        model?.weight = Integer.valueOf(weightSpinner.selectedItem as String)
+                    }()
+                }
+                    .setNegativeButton("Cancel") { dialogInterface, _ -> dialogInterface.cancel() }
                     .setTitle("Enter your weight:")
                 return weightBuilder
             }

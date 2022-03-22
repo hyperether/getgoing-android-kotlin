@@ -17,7 +17,8 @@ class App : Application() {
         fun appCtxt(): Context {
             return instance!!.applicationContext
         }
-        fun getHandler():Handler{
+
+        fun getHandler(): Handler {
             if (handler == null) {
                 val thread = HandlerThread("ggthread")
                 thread.start()

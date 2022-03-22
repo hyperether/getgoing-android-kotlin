@@ -53,7 +53,7 @@ class ShowDataActivity : AppCompatActivity(), OnMapReadyCallback, AdapterOnItemC
     private var routeCycle = mutableListOf<Route>()
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: DbRecyclerAdapter
-    private lateinit var imageViewType:ImageView
+    private lateinit var imageViewType: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,23 +79,23 @@ class ShowDataActivity : AppCompatActivity(), OnMapReadyCallback, AdapterOnItemC
             dialog.setPositiveButton("Ok", DialogInterface.OnClickListener { _, _ ->
                 val sharedPref: SharedPref = SharedPref.newInstance()
                 val type = sharedPref.getClickedTypeShowData2()
-                if (type == Constants.WALK_ID){
-                    Toast.makeText(this,"Its gone forever",Toast.LENGTH_SHORT).show()
-                    for (x in routeWalk){
+                if (type == Constants.WALK_ID) {
+                    Toast.makeText(this, "Its gone forever", Toast.LENGTH_SHORT).show()
+                    for (x in routeWalk) {
                         routeViewModel.removeRouteById(x.id)
                     }
                     adapter.notifyDataSetChanged()
                 }
-                if (type == Constants.RUN_ID){
-                    Toast.makeText(this,"Its gone forever",Toast.LENGTH_SHORT).show()
-                    for (x in routeRun){
+                if (type == Constants.RUN_ID) {
+                    Toast.makeText(this, "Its gone forever", Toast.LENGTH_SHORT).show()
+                    for (x in routeRun) {
                         routeViewModel.removeRouteById(x.id)
                     }
                     adapter.notifyDataSetChanged()
                 }
-                if (type == Constants.RIDE_ID){
-                    Toast.makeText(this,"Its gone forever",Toast.LENGTH_SHORT).show()
-                    for (x in routeCycle){
+                if (type == Constants.RIDE_ID) {
+                    Toast.makeText(this, "Its gone forever", Toast.LENGTH_SHORT).show()
+                    for (x in routeCycle) {
                         routeViewModel.removeRouteById(x.id)
                     }
                     adapter.notifyDataSetChanged()
@@ -106,9 +106,9 @@ class ShowDataActivity : AppCompatActivity(), OnMapReadyCallback, AdapterOnItemC
         }
     }
 
-    override fun onClick(route: Route,i:Int) {
+    override fun onClick(route: Route, i: Int) {
         Log.d(ShowDataActivity::class.simpleName, "FromAdapter $route")
-        Toast.makeText(this,"Its happy to be gone!",Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "Its happy to be gone!", Toast.LENGTH_SHORT).show()
         routeViewModel.removeRouteById(route.id)
         adapter.notifyItemRemoved(i)
     }
@@ -133,19 +133,19 @@ class ShowDataActivity : AppCompatActivity(), OnMapReadyCallback, AdapterOnItemC
         setIconType(type);
         Log.d(ShowDataActivity::class.simpleName, "type: $type")
         if (type == Constants.WALK_ID) {
-            adapter = DbRecyclerAdapter(routeWalk,this,this)
+            adapter = DbRecyclerAdapter(routeWalk, this, this)
             recyclerView.adapter = adapter
             recyclerView.layoutManager = LinearLayoutManager(this)
             recyclerView.setHasFixedSize(true)
         }
         if (type == Constants.RUN_ID) {
-            adapter = DbRecyclerAdapter(routeRun,this,this)
+            adapter = DbRecyclerAdapter(routeRun, this, this)
             recyclerView.adapter = adapter
             recyclerView.layoutManager = LinearLayoutManager(this)
             recyclerView.setHasFixedSize(true)
         }
         if (type == Constants.RIDE_ID) {
-            adapter = DbRecyclerAdapter(routeCycle,this,this)
+            adapter = DbRecyclerAdapter(routeCycle, this, this)
             recyclerView.adapter = adapter
             recyclerView.layoutManager = LinearLayoutManager(this)
             recyclerView.setHasFixedSize(true)
@@ -154,14 +154,17 @@ class ShowDataActivity : AppCompatActivity(), OnMapReadyCallback, AdapterOnItemC
 
     private fun setIconType(type: Int) {
         imageViewType = binding.typeImage
-        if (type == Constants.WALK_ID){
-            imageViewType.background =(AppCompatResources.getDrawable(this,R.drawable.ic_light_walking_icon_active))
+        if (type == Constants.WALK_ID) {
+            imageViewType.background =
+                (AppCompatResources.getDrawable(this, R.drawable.ic_light_walking_icon_active))
         }
-        if (type == Constants.RUN_ID){
-            imageViewType.background = (AppCompatResources.getDrawable(this,R.drawable.ic_light_running_icon_active))
+        if (type == Constants.RUN_ID) {
+            imageViewType.background =
+                (AppCompatResources.getDrawable(this, R.drawable.ic_light_running_icon_active))
         }
-        if (type == Constants.RIDE_ID){
-            imageViewType.background = (AppCompatResources.getDrawable(this,R.drawable.ic_light_bicycling_icon_active))
+        if (type == Constants.RIDE_ID) {
+            imageViewType.background =
+                (AppCompatResources.getDrawable(this, R.drawable.ic_light_bicycling_icon_active))
         }
     }
 
@@ -386,12 +389,14 @@ class ShowDataActivity : AppCompatActivity(), OnMapReadyCallback, AdapterOnItemC
         val center: LatLng = builder.build().center
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(center, 16f))
     }
+
     private fun setBackButton() {
         backButton = findViewById(R.id.ib_sd_back_btn)
         backButton.setOnClickListener(View.OnClickListener {
             super.onBackPressed()
         })
     }
+
     private fun fetchSharedPrefData(sharedPref: SharedPref) {
         typeClicked = sharedPref.getClickedTypeShowData()
         Log.d(ShowDataActivity::class.simpleName, "type: $typeClicked") // ok
@@ -412,6 +417,7 @@ class ShowDataActivity : AppCompatActivity(), OnMapReadyCallback, AdapterOnItemC
             activityId = 0
         }
     }
+
     override fun onMapReady(p0: GoogleMap) {
         mMap = p0
         mMap.uiSettings.isZoomControlsEnabled = true
