@@ -12,6 +12,11 @@ import com.hyperether.getgoing.repository.room.MapNode
 import com.hyperether.getgoing.repository.room.Route
 
 class RouteViewModel : ViewModel() {
+    private lateinit var routeList: LiveData<List<Route>>
+    private var routeId: MutableLiveData<Long> = MutableLiveData()
+    private var route: LiveData<Route> = Transformations.switchMap(
+        routeId,
+        Function { input -> GgRepository.getRouteByIdAsLiveData(input) })
 
     val currentRoute: MutableLiveData<Route> by lazy {
         MutableLiveData<Route>()
@@ -21,12 +26,7 @@ class RouteViewModel : ViewModel() {
         return GgRepository.getLastRoute()
     }
 
-    private lateinit var routeList:LiveData<List<Route>>
-    private var routeId:MutableLiveData<Long> = MutableLiveData()
-    private var route:LiveData<Route> = Transformations.switchMap(routeId, Function { input -> GgRepository.getRouteByIdAsLiveData(input)})
-
-
-    fun getRouteByIdAsLiveData(id:Long):LiveData<Route>{
+    fun getRouteByIdAsLiveData(id: Long): LiveData<Route> {
         return route
     }
 
@@ -34,22 +34,23 @@ class RouteViewModel : ViewModel() {
         routeId.setValue(id)
     }
 
-    fun getAllRoutes():LiveData<List<Route>>{
+    fun getAllRoutes(): LiveData<List<Route>> {
         routeList = GgRepository.getAllRoutes()
         return routeList
     }
 
-    fun getNodeListById(id:Long):LiveData<List<MapNode>>{
+    fun getNodeListById(id: Long): LiveData<List<MapNode>> {
         return GgRepository.getAllNodesById(id)
     }
 
-    fun removeRouteById(id:Long){
+    fun removeRouteById(id: Long) {
         GgRepository.deleteNodesByRouteId(id)
         GgRepository.deleteRouteById(id)
     }
-    fun continueTracking(activity:Activity){
+
+    fun continueTracking(activity: Activity) {
         App.getHandler().post(Runnable {
-            val id:Long = GgRepository.getLastRoute2()!!.id
+            val id: Long = GgRepository.getLastRoute2()!!.id
             activity.runOnUiThread(Runnable {
                 setRouteId(id)
                 getNodesById(id)
@@ -58,7 +59,7 @@ class RouteViewModel : ViewModel() {
         })
     }
 
-    private fun getNodesById(id: Long):LiveData<List<MapNode>> {
+    private fun getNodesById(id: Long): LiveData<List<MapNode>> {
         return GgRepository.getAllNodesById(id)
     }
 
@@ -66,5 +67,4 @@ class RouteViewModel : ViewModel() {
         routeId.value = id
 
     }
-
 }

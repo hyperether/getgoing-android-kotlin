@@ -16,8 +16,6 @@
         android:layout_height="match_parent"
         android:background="@color/color_background_new">
 
-        <!-- screen label -->
-
         <ImageButton
             android:id="@+id/ib_sd_back_btn"
             android:layout_width="0dp"
@@ -54,7 +52,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_material_delete_outline"
-            android:visibility="invisible"
             app:tint="@color/light_theme_accent" />
 
         <ImageView

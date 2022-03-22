@@ -24,18 +24,14 @@ class ProgressBarBitmap {
         paint.strokeWidth = stroke.toFloat()
         paint.style = Paint.Style.STROKE
         paint.strokeCap = Paint.Cap.ROUND
-
         val arc = RectF()
         arc[(stroke / 2 + padding).toFloat(), (stroke / 2 + padding).toFloat(), (width - padding - stroke / 2).toFloat()] =
             (height - padding - stroke / 2).toFloat()
-
         val bitmap:Bitmap = Bitmap.createBitmap(width,height,Bitmap.Config.ARGB_8888)
         val canvas:Canvas = Canvas(bitmap)
-
         paint.setColor(context.resources.getColor(R.color.color_button_background))
         canvas.drawArc(arc,startAngle,sweepAngle,false,paint)
         paint.setColor(context.resources.getColor(R.color.light_theme_accent))
-
         var temp = 0f
         if (scale<= 1 && scale >= 0){
             temp = sweepAngle *scale
@@ -45,8 +41,6 @@ class ProgressBarBitmap {
             temp = sweepAngle
         }
         canvas.drawArc(arc,startAngle,temp,false,paint)
-
         return bitmap
     }
-
 }

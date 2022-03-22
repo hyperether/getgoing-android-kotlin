@@ -69,10 +69,7 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
     private var sdf: SimpleDateFormat = SimpleDateFormat()
     private var profileId: Int = 0
     private var goalStore: Int = 0
-    private lateinit var chronoMeteres: Chronometer
-    private lateinit var chronoSpeed: Chronometer
     private lateinit var chronoMeterDuration: Chronometer
-    private lateinit var chronoCalories: Chronometer
     private var timeWhenStopped: Long = 0
     private var timeWhenStopedForStorage: Long = 0
     private var routeCurrentID: Long = 0;
@@ -82,7 +79,7 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
         cbDataFrameLocal = CBDataFrame.getInstance()!!
         dataBinding = DataBindingUtil.setContentView(this, R.layout.activity_location)
         val handler = LocationActivityClickHandler(this)
-        val serviceUtil:ServiceUtil = ServiceUtil.newInstance()
+        val serviceUtil: ServiceUtil = ServiceUtil.newInstance()
         mLocTrackingRunning = serviceUtil.isServiceActive(this)
         trackingStarted = serviceUtil.isServiceActive(this)
 
@@ -109,10 +106,8 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
             supportFragmentManager.findFragmentById(R.id.mapView) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
-
         setGoalButton = dataBinding.alBtnSetgoal
         setGoalButton.setOnClickListener(View.OnClickListener {
-            //Toast.makeText(this,"i dun been clicked",Toast.LENGTH_SHORT).show()
             SharedPref.newInstance().setSentFromFragmentCode(OPENED_FROM_LOCATION_ACT)
             MainActivityClickHandler(supportFragmentManager).onActivitiesClick(it)
         })
@@ -122,8 +117,8 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
         super.onStart()
         setVisibilities()
         clearData()
-        val serviceUtil:ServiceUtil = ServiceUtil.newInstance()
-        if (serviceUtil.isServiceActive(this)){
+        val serviceUtil: ServiceUtil = ServiceUtil.newInstance()
+        if (serviceUtil.isServiceActive(this)) {
             continueTracking()
         }
         showData(0.0, 0.0, 0.0)
@@ -135,21 +130,18 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
         dataBinding.ibAlReset.setOnClickListener(View.OnClickListener {
             resetServiceTracking()
         })
-
     }
 
     private fun continueTracking() {
         trackingInProgressViewChanges()
-        val time:Long = nodeListViewModel.getChronometerLastTime()
-        val backgroundStartTime:Long = nodeListViewModel.getBackgroundStartTime()
-        dataBinding.chrAlDuration.base = (SystemClock.elapsedRealtime() - time - (System.currentTimeMillis() - backgroundStartTime));
+        val time: Long = nodeListViewModel.getChronometerLastTime()
+        val backgroundStartTime: Long = nodeListViewModel.getBackgroundStartTime()
+        dataBinding.chrAlDuration.base =
+            (SystemClock.elapsedRealtime() - time - (System.currentTimeMillis() - backgroundStartTime));
         dataBinding.chrAlDuration.start()
         nodeListViewModel.continueTracking(this)
         routeViewModel.continueTracking(this)
-
-
     }
-
 
     private fun resetServiceTracking() {
         val dialog = AlertDialog.Builder(this)
@@ -176,7 +168,6 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
                     dialog.dismiss()
                 })
         dialog.show()
-
     }
 
     private fun clearData() {
@@ -205,7 +196,6 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
             sharedPref.setRideRouteExisting(true)
             Log.d(LocationActivity::class.simpleName, "saveRoute: $profileId")
         }
-
     }
 
     private fun stopTracking() {
@@ -430,7 +420,6 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
             chr_al_meters.text = String.format("%.02f ft", distance * 3.281) // present data in feet
         else
             chr_al_meters.text = String.format("%.02f m", distance)
-
         chr_al_speed.text = String.format("%.02f m/s", vel)
     }
 
@@ -447,10 +436,8 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
                     finish()
                 }()
             }
-
             dialog.setNegativeButton(getString(R.string.alert_dialog_negative_back_pressed)) { _, _ -> }
             dialog.show()
-
         } else {
             super.onBackPressed()
         }

@@ -46,18 +46,17 @@ class NodeListViewModel : ViewModel() {
         return SharedPref.newInstance().getLastTime()
     }
 
-    fun setRouteId(id:Long){
+    fun setRouteId(id: Long) {
         routeID.value = id
     }
 
-    fun continueTracking(activity:Activity){
+    fun continueTracking(activity: Activity) {
         App.getHandler().post(Runnable {
-            val id:Long = GgRepository.getLastRoute2()!!.id
+            val id: Long = GgRepository.getLastRoute2()!!.id
             activity.runOnUiThread(Runnable {
                 setRouteId(id)
                 getNodesById(id)
             })
         })
     }
-
 }

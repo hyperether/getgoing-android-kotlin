@@ -33,7 +33,6 @@ class HorizontalListAdapter(pData: SparseIntArray, pContext: Context) :
             in 595.0..605.0 -> mInflater.inflate(R.layout.hlist_row_item_600, parent, false)
             else -> mInflater.inflate(R.layout.hlist_row_item_410, parent, false)
         }
-
         return ViewHolder(view)
     }
 
@@ -49,7 +48,6 @@ class HorizontalListAdapter(pData: SparseIntArray, pContext: Context) :
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val positionInList = position % mData.size()
         val img = mData.keyAt(positionInList)
-
         holder.img.setImageDrawable(mContext.getDrawable(img))
         holder.img.tag = img
     }

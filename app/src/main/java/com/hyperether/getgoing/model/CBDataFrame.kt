@@ -8,7 +8,6 @@ data class CBDataFrame(
     var gender: Constants.gender = Constants.gender.Male, var age: Int = 0,
     var profileId: Int = 0, var profileName: String = ""
 ) {
-
     companion object {
         private var INSTANCE: CBDataFrame? = null
 
@@ -19,5 +18,4 @@ data class CBDataFrame(
             return INSTANCE.also { INSTANCE = it }
         }
     }
-
 }

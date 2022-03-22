@@ -4,8 +4,6 @@ import android.view.View
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 
-// google dun says i can just put them like this and they will be static
-
 @BindingAdapter("goal")
 fun displayGoalValue(view: View, pGoal: Double) {
     val goal = StringBuilder()

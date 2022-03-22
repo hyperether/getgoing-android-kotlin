@@ -17,7 +17,7 @@ import com.hyperether.getgoing.repository.room.Route
 import com.hyperether.getgoing.utils.Constants
 
 class DbRecyclerAdapter(
-    private val routes: List<Route>,val context:Context,
+    private val routes: List<Route>, val context: Context,
     private val adapterOnItemClickListener: AdapterOnItemClickListener
 ) : RecyclerView.Adapter<DbRecyclerAdapter.DbRecyclerAdapterViewHolder>() {
 
@@ -36,7 +36,7 @@ class DbRecyclerAdapter(
     }
 
     override fun onBindViewHolder(holder: DbRecyclerAdapterViewHolder, position: Int) {
-        var route: Route = routes.get(position)
+        val route: Route = routes[position]
         Log.d(DbRecyclerAdapter::class.simpleName, "fromAdapter: $route")
         holder.txtCard.text = route.date
         if (route.activity_id == Constants.WALK_ID) {
@@ -54,7 +54,6 @@ class DbRecyclerAdapter(
                     R.drawable.ic_light_running_icon_active
                 )
             )
-
         }
         if (route.activity_id == Constants.RIDE_ID) {
             holder.imgView.setImageDrawable(
@@ -64,14 +63,18 @@ class DbRecyclerAdapter(
                 )
             )
         }
-
-        holder.imgDeleteButton.setImageDrawable(AppCompatResources.getDrawable(context,R.drawable.delete_button_icon))
+        holder.imgDeleteButton.setImageDrawable(
+            AppCompatResources.getDrawable(
+                context,
+                R.drawable.delete_button_icon
+            )
+        )
         holder.imgDeleteButton.setOnClickListener {
             val dialog = AlertDialog.Builder(context)
             dialog.setCancelable(false)
             dialog.setMessage("Delete this route ?")
             dialog.setPositiveButton("Yes", DialogInterface.OnClickListener { dialog, which ->
-                adapterOnItemClickListener.onClick(route,position)
+                adapterOnItemClickListener.onClick(route, position)
             })
             dialog.setNegativeButton("No", DialogInterface.OnClickListener { dialog, which ->
                 dialog.dismiss()
@@ -87,5 +90,4 @@ class DbRecyclerAdapter(
     override fun getItemCount(): Int {
         return routes.size
     }
-
 }

@@ -21,9 +21,9 @@ import com.hyperether.toolbox.location.HyperLocationService
 class GGLocationService : HyperLocationService() {
 
     private val ACCURACY_MIN = 20.0
-    private var nodeIndex:Long = 0
+    private var nodeIndex: Long = 0
     private var routeID: Long = 0
-    private var previousLocation:Location? = null
+    private var previousLocation: Location? = null
     private var secondsCumulative: Int = 0
     private var timeCumulative: Long = 0
     private var distanceCumulative: Double = 0.0
@@ -35,13 +35,13 @@ class GGLocationService : HyperLocationService() {
     private var profileID: Int = 0
     private var kcalCumulative = 0.0
     private var velocityAvg = 0.0
-    private var currentRoute:Route? = null
-    private lateinit var calculator:CaloriesCalculation
+    private var currentRoute: Route? = null
+    private lateinit var calculator: CaloriesCalculation
     // add calculator
 
     override fun onCreate() {
         super.onCreate()
-        var sharedPref: SharedPref = SharedPref.newInstance()
+        val sharedPref: SharedPref = SharedPref.newInstance()
         calculator = CaloriesCalculation.newInstance()
         weight = sharedPref.getWeight().toDouble()
         timeCumulative = SystemClock.elapsedRealtime()
@@ -54,23 +54,18 @@ class GGLocationService : HyperLocationService() {
                 kcalCumulative = currentRoute!!.energy
                 velocityAvg = currentRoute!!.avgSpeed
                 timeCumulative = currentRoute!!.duration
-                secondsCumulative = timeCumulative.toInt()/1000
+                secondsCumulative = timeCumulative.toInt() / 1000
             }
         })
-
-        //calculator.calculate(50.0,15.0,1,15.0) ok checked
-
     }
 
     override fun startForeground() {
         super.startForeground()
-
         val intent = Intent(this, LocationActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(
             this, 0, intent,
             PendingIntent.FLAG_UPDATE_CURRENT
         )
-
         startForeground(
             1123, HyperNotification.getInstance().getForegroundServiceNotification(
                 this,
@@ -81,7 +76,6 @@ class GGLocationService : HyperLocationService() {
                 pendingIntent
             )
         )
-
         thread = HandlerThread("ggthread")
         thread.start()
         handler = Handler(thread.looper)
@@ -89,29 +83,37 @@ class GGLocationService : HyperLocationService() {
 
     override fun onLocationUpdate(location: Location?) {
         handler.post {
-            if (location!=null && location.accuracy < ACCURACY_MIN){
-                if (previousLocation == null){
+            if (location != null && location.accuracy < ACCURACY_MIN) {
+                if (previousLocation == null) {
                     previousTimeStamp = System.currentTimeMillis()
                     GgRepository.daoInsertNode(createNode(location)) // ok
-                }else{
-                    var elapsedTime:Long = System.currentTimeMillis() - previousTimeStamp
+                } else {
+                    val elapsedTime: Long = System.currentTimeMillis() - previousTimeStamp
                     previousTimeStamp = System.currentTimeMillis()
                     timeCumulative += elapsedTime
                     secondsCumulative = timeCumulative.toInt() / 1000
-                    var distance:Float = location.distanceTo(previousLocation)
-                    if (distance > 0){
+                    val distance: Float = location.distanceTo(previousLocation)
+                    if (distance > 0) {
                         distanceCumulative += distance
                         velocityAvg = distanceCumulative / secondsCumulative
-                        var velocity:Float = (location.speed+(distance/elapsedTime))/2
-                        var kcalCurrent = calculator.calculate(distance.toDouble(),velocity.toDouble(),profileID,weight)
+                        val velocity: Float = (location.speed + (distance / elapsedTime)) / 2
+                        val kcalCurrent = calculator.calculate(
+                            distance.toDouble(),
+                            velocity.toDouble(),
+                            profileID,
+                            weight
+                        )
                         kcalCumulative += kcalCurrent
                         GgRepository.daoInsertNode(createNode(location)) // ok
-                        currentRoute?.duration = timeCumulative/1000   // its ok in seconds now
+                        currentRoute?.duration = timeCumulative / 1000   // its ok in seconds now
                         currentRoute?.length = distanceCumulative
                         currentRoute?.energy = kcalCumulative
                         currentRoute?.currentSpeed = velocity.toDouble()
                         currentRoute?.avgSpeed = velocityAvg
-                        Log.d("From Service", "vals $distanceCumulative $kcalCumulative ${velocity.toDouble()}: $velocityAvg")
+                        Log.d(
+                            "From Service",
+                            "vals $distanceCumulative $kcalCumulative ${velocity.toDouble()}: $velocityAvg"
+                        )
                         currentRoute?.let { GgRepository.updateRoute(it) }
                     }
 
@@ -121,9 +123,14 @@ class GGLocationService : HyperLocationService() {
         }
     }
 
-
-    fun createNode(location:Location):MapNode{
-        return MapNode(0, location.latitude, location.longitude, location.speed, nodeIndex++,routeID)
+    fun createNode(location: Location): MapNode {
+        return MapNode(
+            0,
+            location.latitude,
+            location.longitude,
+            location.speed,
+            nodeIndex++,
+            routeID
+        )
     }
-
 }

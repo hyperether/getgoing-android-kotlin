@@ -22,8 +22,7 @@ class ServiceUtil {
                 Log.d("Serv", "item name: ${item.service.className} GGname: ${GGLocationService::class.qualifiedName}")
                 return true
             }
-        } // ok checked
+        }
         return false
     }
-
 }

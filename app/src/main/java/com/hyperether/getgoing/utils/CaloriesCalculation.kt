@@ -35,8 +35,7 @@ class CaloriesCalculation {
         Log.d(CaloriesCalculation::class.java.simpleName, "calculate: $dis $vel $pId $weight")
 
         val sharedPref:SharedPref = SharedPref.newInstance()
-        var weight2 = weight * 0.4536 // changed this java version has no clear point where it sets measurementSystemId to something else then 0
-
+        val weight2 = weight * 0.4536 // changed this java version has no clear point where it sets measurementSystemId to something else then 0
         if (pId == 1 || pId == 2){  // walking and running
             if (vel < kcalMatrix[0][0]){
                 // uses first entry in matrix if speed is less then it
@@ -60,7 +59,6 @@ class CaloriesCalculation {
             } else {
                 dis * (0.001071 * weight) // riding velocity higher than 16 km/h
             }
-
         }
         return energySpent
     }

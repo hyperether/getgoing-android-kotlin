@@ -11,18 +11,16 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun routeDao(): RouteDao
 
     companion object {
-
         @Volatile
         private var instance: AppDatabase? = null
-
         fun getInstance(context: Context): AppDatabase {
             return instance ?: synchronized(this) {
                 instance ?: buildDb(context).also { instance = it }
             }
         }
-
         private fun buildDb(context: Context): AppDatabase {
-            return Room.databaseBuilder(context, AppDatabase::class.java, "ggDb").fallbackToDestructiveMigration().build()
+            return Room.databaseBuilder(context, AppDatabase::class.java, "ggDb")
+                .fallbackToDestructiveMigration().build()
         }
     }
 }

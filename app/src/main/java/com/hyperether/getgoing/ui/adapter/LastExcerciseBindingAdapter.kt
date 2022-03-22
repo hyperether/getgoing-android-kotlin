@@ -58,14 +58,11 @@ fun displayActivityProgress(view: View, lastRoute: Route?) {
         }else{
             progress = 100
         }
-
         val dpf:DistanceProgressFormatter = DistanceProgressFormatter.newInstance(distance)
         (view as CircleProgressBar).setProgressFormatter(dpf)
         (view as CircleProgressBar).progress = progress
-
     }
 }
-
 
 @BindingAdapter("progress_time")
 fun displayTimeProgress(view: View, pDuration: Long) {

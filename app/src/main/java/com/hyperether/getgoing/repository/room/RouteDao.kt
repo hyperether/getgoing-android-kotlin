@@ -31,5 +31,4 @@ interface RouteDao {
 
     @Query("SELECT * FROM routes WHERE goal > 0 ORDER BY id DESC LIMIT 1")
     fun getLatestRoute(): Route?
-
 }

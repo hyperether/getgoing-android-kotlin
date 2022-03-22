@@ -25,9 +25,7 @@ class App : Application() {
             }
             return handler as Handler
         }
-
     }
-
 
     override fun onCreate() {
         super.onCreate()
