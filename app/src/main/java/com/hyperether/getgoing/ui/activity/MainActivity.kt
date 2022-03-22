@@ -149,6 +149,9 @@ class MainActivity : AppCompatActivity() {
         if (r.activity_id == Constants.WALK_ID){
             x = sharedPref.getTimeEstimateWalk()
             secondX = x * 60
+            if (secondX == 0){
+                secondX = 1
+            }
             val percentage = (timeSpent/secondX)*100
             Log.d(MainActivity::class.simpleName, "estimateTime: $x $secondX $percentage")
         }
@@ -164,6 +167,9 @@ class MainActivity : AppCompatActivity() {
         if (r.activity_id == Constants.RIDE_ID){
             x = sharedPref.getTimeEstimateCycle()
             secondX = x * 60
+            if (secondX == 0){
+                secondX = 1
+            }
             val percentage = (timeSpent.toDouble()/secondX.toDouble())*100 // checked ok
             Log.d(MainActivity::class.simpleName, "estimateTime: $x $secondX $percentage")
             Log.d(MainActivity::class.simpleName, "estimateTime: $timeSpent $secondX")
