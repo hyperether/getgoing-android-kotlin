@@ -3,7 +3,6 @@ package com.hyperether.getgoing.utils
 import android.util.Log
 import com.hyperether.getgoing.SharedPref
 
-//love this class
 class CaloriesCalculation {
     val kcalMatrix = arrayOf(
         doubleArrayOf(0.89, 0.00078),
@@ -33,12 +32,10 @@ class CaloriesCalculation {
     fun calculate(dis:Double,vel:Double,pId:Int,weight:Double):Double{
         var energySpent:Double = 0.0
         Log.d(CaloriesCalculation::class.java.simpleName, "calculate: $dis $vel $pId $weight")
-
         val sharedPref:SharedPref = SharedPref.newInstance()
-        val weight2 = weight * 0.4536 // changed this java version has no clear point where it sets measurementSystemId to something else then 0
-        if (pId == 1 || pId == 2){  // walking and running
+        val weight2 = weight * 0.4536
+        if (pId == 1 || pId == 2){
             if (vel < kcalMatrix[0][0]){
-                // uses first entry in matrix if speed is less then it
                 energySpent = dis * (kcalMatrix[0][1]*weight2)
                 Log.d(CaloriesCalculation::class.java.simpleName, "velocity less: $energySpent")
             }else if(vel > kcalMatrix[11][0]){
@@ -53,7 +50,7 @@ class CaloriesCalculation {
                 }
             }
 
-        }else{ // cycling
+        }else{
             energySpent = if (vel < 4.47) {
                 dis * (0.000779 * weight) // riding velocity lower than 16 km/h
             } else {
@@ -62,6 +59,4 @@ class CaloriesCalculation {
         }
         return energySpent
     }
-
-
 }
