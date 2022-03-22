@@ -144,7 +144,7 @@ class MainActivity : AppCompatActivity() {
         mainBinding.cpbAmKmgoal.progress = percentageDistance.toInt() // ok
         val sharedPref:SharedPref = SharedPref.newInstance()
         var x:Int = 0
-        var secondX:Int
+        var secondX:Int = 0
         val timeSpent = r.duration.toInt()
         if (r.activity_id == Constants.WALK_ID){
             x = sharedPref.getTimeEstimateWalk()
@@ -155,6 +155,9 @@ class MainActivity : AppCompatActivity() {
         if (r.activity_id == Constants.RUN_ID){
             x = sharedPref.getTimeEstimateRun()
             secondX = x * 60
+            if (secondX == 0){
+                secondX = 1
+            }
             val percentage = (timeSpent/secondX)*100
             Log.d(MainActivity::class.simpleName, "estimateTime: $x $secondX $percentage")
         }
