@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.hyperether.getgoing.App
 import com.hyperether.getgoing.repository.callback.ZeroNodeInsertCallback
+import java.util.concurrent.atomic.AtomicLong
 
 
 object GgRepository {
@@ -14,7 +15,8 @@ object GgRepository {
 
     private var nodeDao: NodeDao
     private val routeDao: RouteDao
-
+    private lateinit var allNodes: LiveData<List<MapNode>>
+    private lateinit var allNodesById: LiveData<List<MapNode>>
     private var nodeListLiveData: LiveData<List<MapNode>>? = null
 
     private var mHandler: Handler? = null
@@ -29,6 +31,19 @@ object GgRepository {
         nodeDao.insert(mapNode)
     }
 
+
+    fun daoInsertNode(node: MapNode?) {
+        getRepoHandler()!!.post { nodeDao.insertNode(node) }
+    }
+
+    fun insertRoute(route: Route, listener: RouteAddedCallback) {
+        val routeId = AtomicLong()
+        getRepoHandler()?.post(Runnable {
+            routeId.set((routeDao.insertRoute(route)))
+            listener.onRouteAdded(routeId.get())
+        })
+    }
+
     fun getNodesLiveData(): LiveData<List<MapNode>>? {
         return nodeListLiveData
     }
@@ -41,11 +56,25 @@ object GgRepository {
         return data
     }
 
+    fun getLastRoute2(): Route? {
+        return routeDao.getLatestRoute()
+    }
+
+    fun updateRoute(route: Route) {
+        getRepoHandler()?.post(Runnable {
+            routeDao.updateRoute(route)
+        })
+    }
+
     fun getNodesById(id: Long): LiveData<List<MapNode>> {
         return nodeDao.getAllByRouteId(id)
     }
 
-    fun insertRouteInit(dbRoute: Route?, nodeList: List<MapNode>, callback: ZeroNodeInsertCallback) {
+    fun insertRouteInit(
+        dbRoute: Route?,
+        nodeList: List<MapNode>,
+        callback: ZeroNodeInsertCallback
+    ) {
         getRepoHandler()!!.post {
             val routeId: Long = routeDao.insertRoute(dbRoute!!)
             val route: LiveData<Route?>? = routeDao.getRouteByIdAsLiveData(routeId)
@@ -66,6 +95,23 @@ object GgRepository {
         }
     }
 
+    fun insertRouteInitMainActivity(route: Route, nodeList: List<MapNode>) {
+        getRepoHandler()!!.post(Runnable {
+            var routeId: Long
+            routeId = routeDao.insertRoute(route)
+            var route: LiveData<Route?>? = routeDao.getRouteByIdAsLiveData(routeId)
+            if (route != null) {
+                for (item in nodeList) {
+                    daoInsertNode(
+                        MapNode(
+                            0, item.latitude, item.longitude, item.velocity, item.number, routeId
+                        )
+                    )
+                }
+            }
+        })
+    }
+
     private fun getRepoHandler(): Handler? { //possible refactor
         if (mHandler == null) {
             val mThread = HandlerThread("db-thread")
@@ -73,6 +119,29 @@ object GgRepository {
             mHandler = Handler(mThread.looper)
         }
         return mHandler
+    }
+
+    fun getRouteByIdAsLiveData(id: Long): LiveData<Route?>? {
+        return routeDao.getRouteByIdAsLiveData(id)
+    }
+
+    fun getAllRoutes(): LiveData<List<Route>> {
+        return routeDao.getAll()
+    }
+
+
+    fun getAllNodesById(id: Long): LiveData<List<MapNode>> {
+        allNodesById = nodeDao.getAllByRouteIdAsLiveData(id)
+        return allNodesById
+    }
+
+
+    fun deleteNodesByRouteId(id: Long) {
+        getRepoHandler()!!.post(Runnable { nodeDao.deleteAllByRouteId(id) })
+    }
+
+    fun deleteRouteById(id: Long) {
+        getRepoHandler()!!.post(Runnable { routeDao.deleteRouteById(id) })
     }
 
 }

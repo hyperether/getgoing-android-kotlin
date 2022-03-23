@@ -5,10 +5,8 @@ import androidx.fragment.app.FragmentManager
 import com.hyperether.getgoing.ui.fragment.ActivitiesFragment
 import com.hyperether.getgoing.ui.fragment.ProfileFragment
 
-
 class MainActivityClickHandler(pManager: FragmentManager) {
     private val mManager = pManager
-
     fun onProfileClick(view: View) {
         val profileFragment = ProfileFragment()
         profileFragment.show(mManager, "ProfileFragment")

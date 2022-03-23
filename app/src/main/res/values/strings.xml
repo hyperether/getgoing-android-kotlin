@@ -19,7 +19,6 @@
     <string name="metric_spinner">Metric</string>
     <string name="energyLabel1">Energy:</string>
     <string name="energyLabel2">kcal</string>
-
     <string name="SettingsActivityTitle" translatable="false">Settings</string>
     <string name="ShowMap" translatable="false">Map</string>
     <string name="action_reset_settings" translatable="false">Reset</string>
@@ -38,7 +37,7 @@
     <string name="dialog_set_number" translatable="false">Set</string>
     <string name="dialog_cancel" translatable="false">Cancel</string>
     <string name="dialog_picker_title" translatable="false">Choose a number</string>
-    <string name="descImageViewEmpty" translatable="false"></string>
+    <string name="descImageViewEmpty" translatable="false"> </string>
     <string name="dialog_message" translatable="false">No saved data. Press OK to continue.</string>
     <string name="confirm" translatable="false">OK</string>
     <string name="tag" translatable="false">Activity image</string>
@@ -53,44 +52,28 @@
         <item>Imperial</item>
         <item>US</item>
     </string-array>
-
-    <!-- High accuracy mode alert dialog -->
     <string name="alert_dialog_title">Enable devices\'s GPS</string>
     <string name="alert_dialog_message">Turn on your device\'s GPS.</string>
     <string name="alert_dialog_positive_button">Settings</string>
     <string name="alert_dialog_negative_button">Cancel</string>
-
-    <!-- Save button alert dialog -->
     <string name="alert_dialog_title_save_btn">Save route</string>
     <string name="alert_dialog_message_save_btn">Your route is successfully saved.</string>
     <string name="alert_dialog_positive_button_save_btn">OK</string>
     <string name="alert_dialog_negative_button_save_btn">Cancel</string>
-
-    <!-- Reset button alert dialog -->
     <string name="alert_dialog_title_reset_btn">Clear route data</string>
-    <string name="alert_dialog_message_reset_btn">Clear map and rout data.</string>
+    <string name="alert_dialog_message_reset_btn">Clear map and route data.</string>
     <string name="alert_dialog_positive_reset_save_btn">OK</string>
     <string name="alert_dialog_negative_reset_save_btn">Cancel</string>
-
-    <!-- Back pressed alert dialog -->
     <string name="alert_dialog_title_back_pressed">Leave map</string>
     <string name="alert_dialog_message_back_pressed">All your unsaved data will be lost.</string>
     <string name="alert_dialog_positive_back_pressed">OK</string>
     <string name="alert_dialog_negative_back_pressed">Cancel</string>
-
-    <!-- ShowData empty list alert dialog -->
     <string name="alert_dialog_empty_title">You don\'t have any saved route yet!</string>
-
-    <!-- Notification when app is tracking in background -->
     <string name="notification_title">GetGoing</string>
     <string name="notification_text">Tracking…</string>
-
-    <!-- BarChart labels -->
     <string name="chart_label_walk">Walk</string>
     <string name="chart_label_run">Run</string>
     <string name="chart_label_ride">Ride</string>
-
-    <!-- new strings -->
     <string name="my_profile">My profile</string>
     <string name="my_data">MY DATA</string>
     <string name="placeholder_male">Male</string>
@@ -106,18 +89,27 @@
     <string name="choose_your_exercise">Choose your exercise</string>
     <string name="can_we_burn_our_legs">Can we burn our legs?</string>
     <string name="kcal">kcal</string>
+    <string name="alert_dialog_no_routes">No routes to display</string>
+    <string name="cycling">Bicycling</string>
     <string name="running">Running</string>
     <string name="min">min</string>
     <string name="textview_age_end">" years"</string>
-
-    <!-- alertdialog radiogroup-->
+    <string name="com_facebook_share_button_text">Share</string>
+    <string name="progress_bar_img">progress bar image</string>
+    <string name="progress_bar_goal_img">progress bar goal icon</string>
+    <string name="distance">Distance</string>
+    <string name="energy_unit">kcal</string>
+    <string name="speed_unit">m/s</string>
+    <string name="dist_unit">km</string>
+    <string name="toggle_map_button">Toggle map button</string>
+    <string name="goal">Goal</string>
+    <string name="alert_dialog_delete_route">Delete permanently this route?</string>
+    <string name="route_deleted_msg">Route deleted</string>
     <string-array name="genders">
         <item>Male</item>
         <item>Female</item>
         <item>Other</item>
     </string-array>
-
-    <!-- genders -->
     <string name="gender_male">Male</string>
     <string name="gender_female">Female</string>
     <string name="gender_other">Other</string>
@@ -144,7 +136,15 @@
     <string name="activity_walking">Walking</string>
     <string name="activity_running">Running</string>
     <string name="activity_cycling">Cycling</string>
-
+    <string name="title_activity_show_data">ShowData</string>
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="card_icon_for_recycler">card icon for recycler</string>
+    <string name="image_to_show_the_type_of_activity">image to show the type of activity</string>
 </resources>
 
 

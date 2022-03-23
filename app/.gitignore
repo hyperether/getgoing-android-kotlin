@@ -1,4 +1,4 @@
 /build
-/src/main/res/values/facebook_api.xml
-/src/main/res/values/google_maps_api.xml
+/src/main/res/values/facebook.xml
+/src/main/res/values/googlemaps.xml
 
