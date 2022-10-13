@@ -1,5 +1,6 @@
 package com.hyperether.getgoing.location
 
+import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.content.Intent
 import android.location.Location
@@ -59,13 +60,23 @@ class GGLocationService : HyperLocationService() {
         })
     }
 
+    @SuppressLint("UnspecifiedImmutableFlag")
     override fun startForeground() {
         super.startForeground()
         val intent = Intent(this, LocationActivity::class.java)
-        val pendingIntent = PendingIntent.getActivity(
-            this, 0, intent,
-            PendingIntent.FLAG_UPDATE_CURRENT
-        )
+        val pendingIntent: PendingIntent =
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+                PendingIntent.getActivity(
+                    this, 0, intent,
+                    PendingIntent.FLAG_MUTABLE
+                )
+            } else {
+                PendingIntent.getActivity(
+                    this,
+                    0,
+                    intent, PendingIntent.FLAG_UPDATE_CURRENT
+                )
+            }
         startForeground(
             1123, HyperNotification.getInstance().getForegroundServiceNotification(
                 this,
@@ -92,7 +103,7 @@ class GGLocationService : HyperLocationService() {
                     previousTimeStamp = System.currentTimeMillis()
                     timeCumulative += elapsedTime
                     secondsCumulative = timeCumulative.toInt() / 1000
-                    val distance: Float = location.distanceTo(previousLocation)
+                    val distance: Float = location.distanceTo(previousLocation!!)
                     if (distance > 0) {
                         distanceCumulative += distance
                         velocityAvg = distanceCumulative / secondsCumulative
