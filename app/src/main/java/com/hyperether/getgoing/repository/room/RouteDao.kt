@@ -2,6 +2,7 @@ package com.hyperether.getgoing.repository.room
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import kotlinx.coroutines.flow.MutableStateFlow
 
 @Dao
 interface RouteDao {

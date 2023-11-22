@@ -16,6 +16,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
@@ -69,7 +70,7 @@ class MainActivity : AppCompatActivity() {
         zeroNodeInit()
         mainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         mainBinding.clickHandler = MainActivityClickHandler(supportFragmentManager)
-        routeViewModel = ViewModelProviders.of(this).get(RouteViewModel::class.java)
+        routeViewModel = ViewModelProvider(this).get(RouteViewModel::class.java)
         routeViewModel.getAllRoutes().observe(this, Observer { it ->
             route = it
             initProgressBars()

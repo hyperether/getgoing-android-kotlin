@@ -14,10 +14,12 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.snackbar.Snackbar
 import com.hyperether.getgoing.R
 import com.hyperether.getgoing.SharedPref
+import com.hyperether.getgoing.databinding.ActivityMainBinding
+import com.hyperether.getgoing.databinding.FragmentActivitiesBinding
 import com.hyperether.getgoing.model.CBDataFrame
 import com.hyperether.getgoing.repository.room.Route
 import com.hyperether.getgoing.ui.activity.LocationActivity
@@ -57,6 +59,7 @@ class ActivitiesFragment : DialogFragment() {
     private lateinit var mileageRide: TextView
     private var settings: SharedPreferences? = null
     private lateinit var model: CBDataFrame
+    private lateinit var binding: FragmentActivitiesBinding
 
     companion object {
         fun newInstance() = ActivitiesFragment()
@@ -64,7 +67,9 @@ class ActivitiesFragment : DialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setStyle(STYLE_NORMAL, R.style.FullScreenDialogStyle)
+        setStyle(STYLE_NO_TITLE, R.style.FullScreenDialogStyle)
+        dialog?.window?.statusBarColor = ContextCompat.getColor(requireContext(), R.color.mat_gray)
+
         settings = activity?.getSharedPreferences(Constants.PREF_FILE, 0)
         model = CBDataFrame.getInstance()!!
     }
@@ -75,7 +80,7 @@ class ActivitiesFragment : DialogFragment() {
     ): View {
         val view: View = inflater.inflate(R.layout.fragment_activities, container, false)
         setButtons(view)
-        routeViewModel = ViewModelProviders.of(this).get(RouteViewModel::class.java)
+        routeViewModel = ViewModelProvider(this)[RouteViewModel::class.java]
         routeViewModel.getAllRoutes().observe(
             this
         ) { route ->

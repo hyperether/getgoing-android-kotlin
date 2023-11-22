@@ -18,10 +18,6 @@ class NodeListViewModel : ViewModel() {
             routeID
         ) { input -> GgRepository.getAllNodesById(input) }
 
-    val currentNodeList: LiveData<List<MapNode>> by lazy {
-        MutableLiveData<List<MapNode>>()
-    }
-
     fun getNodes(): LiveData<List<MapNode>>? {
         return GgRepository.getNodesLiveData()
     }

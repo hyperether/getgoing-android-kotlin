@@ -2,10 +2,12 @@ package com.hyperether.getgoing.repository.room
 
 import android.os.Handler
 import android.os.HandlerThread
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.hyperether.getgoing.App
 import com.hyperether.getgoing.repository.callback.ZeroNodeInsertCallback
+import kotlinx.coroutines.flow.StateFlow
 import java.util.concurrent.atomic.AtomicLong
 
 
@@ -78,6 +80,8 @@ object GgRepository {
         getRepoHandler()!!.post {
             val routeId: Long = routeDao.insertRoute(dbRoute!!)
             val route: LiveData<Route?>? = routeDao.getRouteByIdAsLiveData(routeId)
+            Log.d("routeIdGgRepository",routeId.toString())
+            // TODO: Ne radi ovo ovde ne dobijam routeId
 
             if (route != null) {
                 for (currentNode in nodeList) {
@@ -89,10 +93,10 @@ object GgRepository {
                         )
                     )
                 }
-
                 callback.onAdded()
             }
         }
+
     }
 
     fun insertRouteInitMainActivity(route: Route, nodeList: List<MapNode>) {

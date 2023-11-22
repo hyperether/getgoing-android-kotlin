@@ -1,5 +1,6 @@
 package com.hyperether.getgoing.ui.activity
-
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
@@ -12,20 +13,24 @@ import android.location.LocationManager
 import android.os.Bundle
 import android.os.SystemClock
 import android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS
+import android.util.AttributeSet
 import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.Chronometer
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.MapFragment
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
@@ -59,7 +64,7 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
     lateinit var routeViewModel: RouteViewModel
     lateinit var nodeListViewModel: NodeListViewModel
     lateinit var route: Route
-    lateinit var nodeList: List<MapNode>
+    var nodeList: List<MapNode> = emptyList()
     lateinit var dataBinding: ActivityLocationBinding
     private lateinit var cbDataFrameLocal: CBDataFrame
     private lateinit var setGoalButton: Button
@@ -87,7 +92,7 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
         dataBinding.clickHandler = handler
         dataBinding.locationViewModel = handler
 
-        routeViewModel = ViewModelProviders.of(this).get(RouteViewModel::class.java)
+        routeViewModel = ViewModelProvider(this)[RouteViewModel::class.java]
         val routeObserver = Observer<Route> { newRoute ->
             route = newRoute
             Log.d("Observer", "$newRoute")
@@ -95,7 +100,7 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
         }
         routeViewModel.getRouteByIdAsLiveData(routeCurrentID).observe(this, routeObserver)
 
-        nodeListViewModel = ViewModelProviders.of(this).get(NodeListViewModel::class.java)
+        nodeListViewModel = ViewModelProvider(this)[NodeListViewModel::class.java]
         nodeListViewModel.getNodes()?.observe(this, Observer { newList ->
             nodeList = newList
             mMap.clear()
@@ -106,12 +111,14 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
             supportFragmentManager.findFragmentById(R.id.mapView) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
+
         setGoalButton = dataBinding.alBtnSetgoal
         setGoalButton.setOnClickListener(View.OnClickListener {
             SharedPref.newInstance().setSentFromFragmentCode(OPENED_FROM_LOCATION_ACT)
             MainActivityClickHandler(supportFragmentManager).onActivitiesClick(it)
         })
     }
+
 
     override fun onStart() {
         super.onStart()
@@ -200,7 +207,7 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
 
     private fun stopTracking() {
         Log.d(LocationActivity::class.simpleName, "$route")
-        val intent: Intent = Intent(this, GGLocationService::class.java)
+        val intent = Intent(this, GGLocationService::class.java)
         this.stopService(intent)
         timeWhenStopedForStorage =
             TimeUtils.newInstance().chronometerToMills(dataBinding.chrAlDuration)
@@ -248,10 +255,12 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
     }
 
     private fun startTrackingService(context: Context) {
-        val intent: Intent = Intent(this, GGLocationService::class.java)
-        intent.putExtra(HyperConst.LOC_INTERVAL, Constants.UPDATE_INTERVAL)
-        intent.putExtra(HyperConst.LOC_FASTEST_INTERVAL, Constants.FASTEST_INTERVAL)
-        intent.putExtra(HyperConst.LOC_DISTANCE, Constants.LOCATION_DISTANCE)
+        val intent = Intent(this, GGLocationService::class.java)
+        intent.let {
+            it.putExtra(HyperConst.LOC_INTERVAL, Constants.UPDATE_INTERVAL)
+            it.putExtra(HyperConst.LOC_FASTEST_INTERVAL, Constants.FASTEST_INTERVAL)
+            it.putExtra(HyperConst.LOC_DISTANCE, Constants.LOCATION_DISTANCE)
+        }
         this.startService(intent)
         trackingInProgressViewChanges();
         mLocTrackingRunning = true
@@ -259,30 +268,36 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
     }
 
     private fun trackingInProgressViewChanges() {
-        runOnUiThread(Runnable {
+        lifecycleScope.launch(Dispatchers.Main) {
             chronoMeterDuration = dataBinding.chrAlDuration
             chronoMeterDuration.base = SystemClock.elapsedRealtime() + timeWhenStopped
             chronoMeterDuration.start()
-            dataBinding.alBtnStart.visibility = View.GONE
-            dataBinding.alBtnPause.visibility = View.VISIBLE
+            dataBinding.alBtnStart.visibility =
+                View.GONE.also { dataBinding.alBtnPause.visibility = View.VISIBLE }
+        }
             if (mLocTrackingRunning) {
                 val drawable1: Drawable? =
-                    AppCompatResources.getDrawable(this, R.drawable.ic_light_save_icon)
+                    AppCompatResources.getDrawable(baseContext, R.drawable.ic_light_save_icon)
                 val drawable2: Drawable? =
-                    AppCompatResources.getDrawable(this, R.drawable.ic_light_replay_icon)
-                dataBinding.ibAlSave.setImageDrawable(drawable1)
-                dataBinding.ibAlSave.isClickable = false
-                dataBinding.ibAlReset.setImageDrawable(drawable2)
-                dataBinding.ibAlReset.isClickable = false
+                    AppCompatResources.getDrawable(baseContext, R.drawable.ic_light_replay_icon)
+                dataBinding.ibAlSave.let {
+                    it.setImageDrawable(drawable1)
+                    it.isClickable=false
+                }
+                dataBinding.ibAlReset.let {
+                    it.setImageDrawable(drawable2)
+                    it.isClickable=false
+                }
             }
-        })
-    }
+        }
+
 
     override fun onMapReady(p0: GoogleMap) {
         if (((ActivityCompat.checkSelfPermission(
                 this, android.Manifest.permission
                     .ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED) && (ActivityCompat.checkSelfPermission(
+            ) == PackageManager.PERMISSION_GRANTED) || (ActivityCompat.checkSelfPermission(
+
                 this, android.Manifest.permission
                     .ACCESS_COARSE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED))
@@ -302,24 +317,24 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
             val gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
             if (!gpsEnabled) {
                 val dialog = AlertDialog.Builder(this)
-                dialog.setCancelable(false)
-                dialog.setTitle(R.string.alert_dialog_title)
-                dialog.setMessage(getString(R.string.alert_dialog_message))
-                dialog.setPositiveButton(
-                    R.string.alert_dialog_positive_button
-                ) { _, _ ->
-                    val i = Intent(ACTION_LOCATION_SOURCE_SETTINGS)
-                    startActivityForResult(i, REQUEST_GPS_SETTINGS)
+
+                dialog.let {
+                    it.setCancelable(false)
+                    it.setTitle("Enable device's GPS")
+                    it.setMessage("Turn on your device's GPS.")
+                    it.setPositiveButton(
+                        R.string.alert_dialog_positive_button
+                    ) { _, _ ->
+                        val i = Intent(ACTION_LOCATION_SOURCE_SETTINGS)
+                        startActivityForResult(i, REQUEST_GPS_SETTINGS)
+                    }
+                    it.setNegativeButton("Cancel"){_, _ -> finish()}
+                    it.show()
                 }
-
-                dialog.setNegativeButton(R.string.alert_dialog_negative_button) { _, _ -> finish() }
-
-                dialog.show()
             }
 
             val criteria = Criteria()
-            criteria.accuracy = Criteria.ACCURACY_FINE
-            criteria.powerRequirement = Criteria.POWER_LOW
+            criteria.accuracy = Criteria.ACCURACY_FINE.also { criteria.powerRequirement=Criteria.POWER_LOW }
             val bestProvider = locationManager.getBestProvider(criteria, false)
             val location = bestProvider?.let { locationManager.getLastKnownLocation(it) }
             // throws error because of authorization error had to kill this method
@@ -337,7 +352,7 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
      */
     private fun zoomOverCurrentLocation(googleMap: GoogleMap, location: Location?) {
         val latLng = location?.let { LatLng(it.latitude, location.longitude) }
-        latLng?.let { CameraUpdateFactory.newLatLngZoom(it, 15F) }?.let { googleMap.moveCamera(it) }
+        latLng?.let { CameraUpdateFactory.newLatLngZoom(it, 18F) }?.let { googleMap.moveCamera(it) }
     }
 
     /**
@@ -371,9 +386,10 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
      * @param secondNode second point of the rout
      */
     private fun drawSegment(firstNode: MapNode, secondNode: MapNode) {
+        Log.d("PROVERA RUTR","${firstNode.latitude != null && firstNode.longitude != null && secondNode.latitude != null && secondNode.longitude != null}")
         if (firstNode.latitude != null && firstNode.longitude != null &&
             secondNode.latitude != null && secondNode.longitude != null
-        )
+        ){
             mMap.addPolyline(
                 PolylineOptions().geodesic(true)
                     .add(LatLng(firstNode.latitude, firstNode.longitude))
@@ -381,34 +397,37 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
                     .width(10f)
                     .color(Color.rgb(0, 255, 0))
             )
+        }
     }
-
     private fun setVisibilities() {
         val sharedPref = SharedPref.newInstance()
         if (!sharedPref.isGoalSet()) {
-            al_btn_setgoal.visibility = View.VISIBLE
-            ib_al_save.visibility = View.GONE
-            ib_al_reset.visibility = View.GONE
-            al_btn_start.isClickable = false
-            chr_al_meters.visibility = View.GONE
-            chr_al_duration.visibility = View.GONE
-            chr_al_kcal.visibility = View.GONE
-            chr_al_speed.visibility = View.GONE
-            tv_al_kcal.visibility = View.GONE
-            tv_al_duration.visibility = View.GONE
-            tv_al_speed.visibility = View.GONE
-        } else {
-            al_btn_setgoal.visibility = View.GONE
-            ib_al_save.visibility = View.INVISIBLE
-            ib_al_reset.visibility = View.VISIBLE
-            al_btn_start.isClickable = true
-            chr_al_meters.visibility = View.VISIBLE
-            chr_al_duration.visibility = View.VISIBLE
-            chr_al_kcal.visibility = View.VISIBLE
-            chr_al_speed.visibility = View.VISIBLE
-            tv_al_kcal.visibility = View.VISIBLE
-            tv_al_duration.visibility = View.VISIBLE
-            tv_al_speed.visibility = View.VISIBLE
+            with(dataBinding){
+                alBtnSetgoal.visibility = View.VISIBLE
+                ibAlSave.visibility = View.GONE
+                ibAlReset.visibility = View.GONE
+                alBtnStart.isClickable = false
+                chrAlMeters.visibility = View.GONE
+                chrAlDuration.visibility = View.GONE
+                chrAlKcal.visibility = View.GONE
+                chrAlSpeed.visibility = View.GONE
+                tvAlKcal.visibility = View.GONE
+                tvAlDuration.visibility = View.GONE
+                tvAlSpeed.visibility = View.GONE
+            }
+        } else
+        with(dataBinding){
+            alBtnSetgoal.visibility = View.GONE
+            ibAlSave.visibility = View.INVISIBLE
+            ibAlReset.visibility = View.VISIBLE
+            alBtnStart.isClickable = true
+            chrAlMeters.visibility = View.VISIBLE
+            chrAlDuration.visibility = View.VISIBLE
+            chrAlKcal.visibility = View.VISIBLE
+            chrAlSpeed.visibility = View.VISIBLE
+            tvAlKcal.visibility = View.VISIBLE
+            tvAlDuration.visibility = View.VISIBLE
+            tvAlSpeed.visibility = View.VISIBLE
         }
     }
 
@@ -454,11 +473,20 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
 
     override fun onRouteAdded(id: Long) {
         routeCurrentID = id
-        runOnUiThread(Runnable {
+
+        lifecycleScope.launch(Dispatchers.Main) {
             nodeListViewModel.setRouteId(routeCurrentID)
             routeViewModel.setRouteID(routeCurrentID)
-        })
-        Log.d(LocationActivity::class.simpleName, "onRouteAdded: from listener")
+        }
         startTrackingService(this)
+
+
+//        runOnUiThread(Runnable {
+//            nodeListViewModel.setRouteId(routeCurrentID)
+//            routeViewModel.setRouteID(routeCurrentID)
+//        })
+//        Log.d(LocationActivity::class.simpleName, "onRouteAdded: from listener")
+//        startTrackingService(this)
     }
+
 }
