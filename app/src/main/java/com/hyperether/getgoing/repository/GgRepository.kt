@@ -3,6 +3,7 @@ package com.hyperether.getgoing.repository.room
 import android.os.Handler
 import android.os.HandlerThread
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.hyperether.getgoing.App
@@ -79,8 +80,8 @@ object GgRepository {
     ) {
         getRepoHandler()!!.post {
             val routeId: Long = routeDao.insertRoute(dbRoute!!)
+            Log.d("PROVERA STA IMA OVDE", routeId.toString())
             val route: LiveData<Route?>? = routeDao.getRouteByIdAsLiveData(routeId)
-            Log.d("routeIdGgRepository",routeId.toString())
             // TODO: Ne radi ovo ovde ne dobijam routeId
 
             if (route != null) {

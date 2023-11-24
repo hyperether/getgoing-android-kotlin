@@ -55,6 +55,8 @@ import com.hyperether.getgoing.viewmodel.NodeListViewModel
 import com.hyperether.getgoing.viewmodel.RouteViewModel
 import com.hyperether.toolbox.HyperConst
 import kotlinx.android.synthetic.main.activity_location.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -101,15 +103,24 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
         routeViewModel.getRouteByIdAsLiveData(routeCurrentID).observe(this, routeObserver)
 
         nodeListViewModel = ViewModelProvider(this)[NodeListViewModel::class.java]
+        val fakeNodeList = listOf(
+            MapNode(1, 45.2607018, 19.8322138),
+            MapNode(2, 45.2598868, 19.83247),
+            MapNode(3, 45.2591983, 19.8328342),
+            MapNode(4, 45.2569956, 19.8340746)
+        )
+
         nodeListViewModel.getNodes()?.observe(this, Observer { newList ->
+            if (!newList.isNullOrEmpty())
             nodeList = newList
+            Log.d("lista",nodeList.toString())
             mMap.clear()
-            drawRoute(nodeList)
+            GlobalScope.launch(Dispatchers.Main){
+                delay(5000)
+                drawRouteOnMap(nodeList)
+            }
         })
 
-        val mapFragment =
-            supportFragmentManager.findFragmentById(R.id.mapView) as SupportMapFragment
-        mapFragment.getMapAsync(this)
 
 
         setGoalButton = dataBinding.alBtnSetgoal
@@ -137,6 +148,13 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
         dataBinding.ibAlReset.setOnClickListener(View.OnClickListener {
             resetServiceTracking()
         })
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val mapFragment =
+            supportFragmentManager.findFragmentById(R.id.mapView) as SupportMapFragment
+        mapFragment.getMapAsync(this)
     }
 
     private fun continueTracking() {
@@ -305,6 +323,12 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
 
             mMap = p0
             mMap.isMyLocationEnabled = true
+
+            mMap.setOnMyLocationChangeListener { location ->
+                val latLng = LatLng(location.latitude, location.longitude)
+                mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng))
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18f))
+            }
             mMap.isTrafficEnabled = false
             mMap.isIndoorEnabled = true
             mMap.isBuildingsEnabled = true
@@ -338,7 +362,6 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
             val bestProvider = locationManager.getBestProvider(criteria, false)
             val location = bestProvider?.let { locationManager.getLastKnownLocation(it) }
             // throws error because of authorization error had to kill this method
-            zoomOverCurrentLocation(mMap, location)
         } else {
             finish()
         }
@@ -350,34 +373,31 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
      *
      * @param googleMap google map v2
      */
-    private fun zoomOverCurrentLocation(googleMap: GoogleMap, location: Location?) {
-        val latLng = location?.let { LatLng(it.latitude, location.longitude) }
-        latLng?.let { CameraUpdateFactory.newLatLngZoom(it, 18F) }?.let { googleMap.moveCamera(it) }
-    }
-
     /**
      * This method draws a route.
      * @param mRoute list of nodes
      */
-    private fun drawRoute(mRoute: List<MapNode>) {
-        var drFirstPass = true
-        var firstNode: MapNode? = null
-        var secondNode: MapNode? = null
+    private fun drawRouteOnMap(route: List<MapNode>) {
+            mMap.clear() // Očisti prethodno iscrtane rute
+            var drFirstPass = true
+            var firstNode: MapNode? = null
+            var secondNode: MapNode? = null
 
-        // Redraw the whole route
-        val it = mRoute.iterator()
-        while (it.hasNext()) {
-            if (drFirstPass) {
-                secondNode = it.next()
-                firstNode = secondNode
-                drFirstPass = false
-            } else {
-                firstNode = secondNode
-                secondNode = it.next()
+            // Ponovno iscrtavanje cele rute
+            val it = route.iterator()
+            while (it.hasNext()) {
+                if (drFirstPass) {
+                    secondNode = it.next()
+                    firstNode = secondNode
+                    drFirstPass = false
+                } else {
+                    firstNode = secondNode
+                    secondNode = it.next()
+                }
+                if (firstNode != null)
+                    drawSegment(firstNode, secondNode)
             }
-            if (firstNode != null)
-                drawSegment(firstNode, secondNode)
-        }
+
     }
 
     /**
@@ -387,7 +407,7 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
      */
     private fun drawSegment(firstNode: MapNode, secondNode: MapNode) {
         Log.d("PROVERA RUTR","${firstNode.latitude != null && firstNode.longitude != null && secondNode.latitude != null && secondNode.longitude != null}")
-        if (firstNode.latitude != null && firstNode.longitude != null &&
+        if (::mMap.isInitialized && firstNode.latitude != null && firstNode.longitude != null &&
             secondNode.latitude != null && secondNode.longitude != null
         ){
             mMap.addPolyline(
@@ -402,32 +422,29 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
     private fun setVisibilities() {
         val sharedPref = SharedPref.newInstance()
         if (!sharedPref.isGoalSet()) {
-            with(dataBinding){
-                alBtnSetgoal.visibility = View.VISIBLE
-                ibAlSave.visibility = View.GONE
-                ibAlReset.visibility = View.GONE
-                alBtnStart.isClickable = false
-                chrAlMeters.visibility = View.GONE
-                chrAlDuration.visibility = View.GONE
-                chrAlKcal.visibility = View.GONE
-                chrAlSpeed.visibility = View.GONE
-                tvAlKcal.visibility = View.GONE
-                tvAlDuration.visibility = View.GONE
-                tvAlSpeed.visibility = View.GONE
-            }
-        } else
-        with(dataBinding){
-            alBtnSetgoal.visibility = View.GONE
-            ibAlSave.visibility = View.INVISIBLE
-            ibAlReset.visibility = View.VISIBLE
-            alBtnStart.isClickable = true
-            chrAlMeters.visibility = View.VISIBLE
-            chrAlDuration.visibility = View.VISIBLE
-            chrAlKcal.visibility = View.VISIBLE
-            chrAlSpeed.visibility = View.VISIBLE
-            tvAlKcal.visibility = View.VISIBLE
-            tvAlDuration.visibility = View.VISIBLE
-            tvAlSpeed.visibility = View.VISIBLE
+            al_btn_setgoal.visibility = View.VISIBLE
+            ib_al_save.visibility = View.GONE
+            ib_al_reset.visibility = View.GONE
+            al_btn_start.isClickable = false
+            chr_al_meters.visibility = View.GONE
+            chr_al_duration.visibility = View.GONE
+            chr_al_kcal.visibility = View.GONE
+            chr_al_speed.visibility = View.GONE
+            tv_al_kcal.visibility = View.GONE
+            tv_al_duration.visibility = View.GONE
+            tv_al_speed.visibility = View.GONE
+        } else {
+            al_btn_setgoal.visibility = View.GONE
+            ib_al_save.visibility = View.INVISIBLE
+            ib_al_reset.visibility = View.VISIBLE
+            al_btn_start.isClickable = true
+            chr_al_meters.visibility = View.VISIBLE
+            chr_al_duration.visibility = View.VISIBLE
+            chr_al_kcal.visibility = View.VISIBLE
+            chr_al_speed.visibility = View.VISIBLE
+            tv_al_kcal.visibility = View.VISIBLE
+            tv_al_duration.visibility = View.VISIBLE
+            tv_al_speed.visibility = View.VISIBLE
         }
     }
 

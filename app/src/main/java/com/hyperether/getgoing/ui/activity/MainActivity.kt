@@ -102,7 +102,7 @@ class MainActivity : AppCompatActivity() {
             val dbRoute = Route(0, 0, 0.0, 0.0, "null", 0.0, 1.0, 0, 0)
             GgRepository.insertRouteInit(dbRoute, tmpRoute, object : ZeroNodeInsertCallback {
                 override fun onAdded() {
-                    rvm = ViewModelProviders.of(this@MainActivity).get(RouteViewModel::class.java)
+                    rvm = ViewModelProvider(this@MainActivity)[RouteViewModel::class.java]
                 }
             })
             val edit = currentSettings.edit()

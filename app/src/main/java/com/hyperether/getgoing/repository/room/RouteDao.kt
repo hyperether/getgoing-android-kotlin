@@ -9,7 +9,7 @@ interface RouteDao {
     @Query("SELECT * from routes")
     abstract fun getAll(): LiveData<List<Route>>
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     abstract fun insertRoute(route: Route): Long
 
     @Query("SELECT * FROM routes WHERE id = :id")
@@ -32,4 +32,7 @@ interface RouteDao {
 
     @Query("SELECT * FROM routes WHERE goal > 0 ORDER BY id DESC LIMIT 1")
     fun getLatestRoute(): Route?
+
+//    @Query("SELECT id FROM routes WHERE id = :id")
+//    fun getRoutesId(idRoute: Long): Long
 }
