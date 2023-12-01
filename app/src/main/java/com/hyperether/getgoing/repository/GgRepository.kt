@@ -3,12 +3,10 @@ package com.hyperether.getgoing.repository.room
 import android.os.Handler
 import android.os.HandlerThread
 import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.hyperether.getgoing.App
 import com.hyperether.getgoing.repository.callback.ZeroNodeInsertCallback
-import kotlinx.coroutines.flow.StateFlow
 import java.util.concurrent.atomic.AtomicLong
 
 
@@ -38,6 +36,7 @@ object GgRepository {
     fun daoInsertNode(node: MapNode?) {
         getRepoHandler()!!.post { nodeDao.insertNode(node) }
     }
+
 
     fun insertRoute(route: Route, listener: RouteAddedCallback) {
         val routeId = AtomicLong()
@@ -79,10 +78,10 @@ object GgRepository {
         callback: ZeroNodeInsertCallback
     ) {
         getRepoHandler()!!.post {
-            val routeId: Long = routeDao.insertRoute(dbRoute!!)
+            var routeId: Long?
+            routeId = routeDao.insertRoute(dbRoute!!)
             Log.d("PROVERA STA IMA OVDE", routeId.toString())
             val route: LiveData<Route?>? = routeDao.getRouteByIdAsLiveData(routeId)
-            // TODO: Ne radi ovo ovde ne dobijam routeId
 
             if (route != null) {
                 for (currentNode in nodeList) {
