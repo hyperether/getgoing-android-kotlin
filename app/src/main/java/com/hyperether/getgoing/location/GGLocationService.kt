@@ -32,7 +32,6 @@ class GGLocationService : HyperLocationService() {
     private lateinit var handler: Handler
     private var weight: Double = 0.0;
     private var previousTimeStamp: Long = 0;
-    private var routeId: Long = 0
     private var profileID: Int = 0
     private var kcalCumulative = 0.0
     private var velocityAvg = 0.0
@@ -49,7 +48,7 @@ class GGLocationService : HyperLocationService() {
         App.getHandler().post(Runnable {
             currentRoute = GgRepository.getLastRoute2()
             if (currentRoute != null) {
-                routeId = currentRoute!!.id
+                routeID = currentRoute!!.id
                 profileID = currentRoute!!.activity_id
                 distanceCumulative = currentRoute!!.length
                 kcalCumulative = currentRoute!!.energy

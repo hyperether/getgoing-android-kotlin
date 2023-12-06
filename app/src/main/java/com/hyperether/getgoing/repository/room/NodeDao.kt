@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 
 @Dao
@@ -14,7 +15,7 @@ interface NodeDao {
     @Query("SELECT * FROM nodes WHERE routeId = :id")
     fun getAllByRouteId(id: Long): LiveData<List<MapNode>>
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(mapNode: MapNode)
 
     @Delete

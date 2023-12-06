@@ -23,7 +23,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -49,9 +49,19 @@ import com.hyperether.getgoing.utils.TimeUtils
 import com.hyperether.getgoing.viewmodel.NodeListViewModel
 import com.hyperether.getgoing.viewmodel.RouteViewModel
 import com.hyperether.toolbox.HyperConst
-import kotlinx.android.synthetic.main.activity_location.*
+import kotlinx.android.synthetic.main.activity_location.al_btn_setgoal
+import kotlinx.android.synthetic.main.activity_location.al_btn_start
+import kotlinx.android.synthetic.main.activity_location.chr_al_duration
+import kotlinx.android.synthetic.main.activity_location.chr_al_kcal
+import kotlinx.android.synthetic.main.activity_location.chr_al_meters
+import kotlinx.android.synthetic.main.activity_location.chr_al_speed
+import kotlinx.android.synthetic.main.activity_location.ib_al_reset
+import kotlinx.android.synthetic.main.activity_location.ib_al_save
+import kotlinx.android.synthetic.main.activity_location.tv_al_duration
+import kotlinx.android.synthetic.main.activity_location.tv_al_kcal
+import kotlinx.android.synthetic.main.activity_location.tv_al_speed
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
 
 class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCallback {
     val REQUEST_GPS_SETTINGS = 100
@@ -83,23 +93,19 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
         mLocTrackingRunning = serviceUtil.isServiceActive(this)
         trackingStarted = serviceUtil.isServiceActive(this)
 
-        Log.d(ServiceUtil::class.simpleName, "onCreate: $mLocTrackingRunning")
         dataBinding.clickHandler = handler
         dataBinding.locationViewModel = handler
 
-        routeViewModel = ViewModelProviders.of(this).get(RouteViewModel::class.java)
+        routeViewModel = ViewModelProvider(this).get(RouteViewModel::class.java)
         val routeObserver = Observer<Route> { newRoute ->
             route = newRoute
-            Log.d("Observer", "$newRoute")
             showData(route.length, route.energy, route.avgSpeed)
         }
         routeViewModel.getRouteByIdAsLiveData(routeCurrentID).observe(this, routeObserver)
-
-        nodeListViewModel = ViewModelProviders.of(this).get(NodeListViewModel::class.java)
-        nodeListViewModel.getNodes()?.observe(this, Observer { newList ->
-            nodeList = newList
+        nodeListViewModel = ViewModelProvider(this).get(NodeListViewModel::class.java)
+        nodeListViewModel.getNodeById()?.observe(this, Observer { newList ->
             mMap.clear()
-            drawRoute(nodeList)
+            drawRoute(newList)
         })
 
         val mapFragment =
@@ -311,9 +317,7 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
                     val i = Intent(ACTION_LOCATION_SOURCE_SETTINGS)
                     startActivityForResult(i, REQUEST_GPS_SETTINGS)
                 }
-
                 dialog.setNegativeButton(R.string.alert_dialog_negative_button) { _, _ -> finish() }
-
                 dialog.show()
             }
 
@@ -323,7 +327,16 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
             val bestProvider = locationManager.getBestProvider(criteria, false)
             val location = bestProvider?.let { locationManager.getLastKnownLocation(it) }
             // throws error because of authorization error had to kill this method
+            val long =
+                bestProvider?.let { locationManager.getLastKnownLocation(it)!!.longitude.toLong() }
+            val lati =
+                bestProvider?.let { locationManager.getLastKnownLocation(it)!!.latitude.toLong() }
             zoomOverCurrentLocation(mMap, location)
+            mMap.setOnMyLocationChangeListener { location ->
+                val latLng = LatLng(location.latitude, location.longitude)
+                mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng))
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18f))
+            }
         } else {
             finish()
         }
@@ -339,7 +352,6 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
         val latLng = location?.let { LatLng(it.latitude, location.longitude) }
         latLng?.let { CameraUpdateFactory.newLatLngZoom(it, 15F) }?.let { googleMap.moveCamera(it) }
     }
-
     /**
      * This method draws a route.
      * @param mRoute list of nodes
@@ -382,7 +394,6 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
                     .color(Color.rgb(0, 255, 0))
             )
     }
-
     private fun setVisibilities() {
         val sharedPref = SharedPref.newInstance()
         if (!sharedPref.isGoalSet()) {
@@ -455,10 +466,9 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
     override fun onRouteAdded(id: Long) {
         routeCurrentID = id
         runOnUiThread(Runnable {
-            nodeListViewModel.setRouteId(routeCurrentID)
+            nodeListViewModel.setRouteID(routeCurrentID)
             routeViewModel.setRouteID(routeCurrentID)
         })
-        Log.d(LocationActivity::class.simpleName, "onRouteAdded: from listener")
         startTrackingService(this)
     }
 }

@@ -13,19 +13,25 @@ import com.hyperether.getgoing.repository.room.MapNode
 class NodeListViewModel : ViewModel() {
 
     private val routeID = MutableLiveData<Long>()
+    private val nodeByRouteId: MutableLiveData<List<MapNode>> = MutableLiveData<List<MapNode>>()
     private val nodesByRouteId: LiveData<List<MapNode>> =
         Transformations.switchMap<Long, List<MapNode>>(
             routeID
         ) { input -> GgRepository.getAllNodesById(input) }
 
-    val currentNodeList: LiveData<List<MapNode>> by lazy {
-        MutableLiveData<List<MapNode>>()
+    fun setRouteID(id: Long) {
+        routeID.value = id
+        GgRepository.getNodesById(id).observeForever { dbNodes ->
+            nodeByRouteId.postValue(dbNodes)
+        }
     }
-
     fun getNodes(): LiveData<List<MapNode>>? {
         return GgRepository.getNodesLiveData()
     }
 
+    fun getNodeById(): LiveData<List<MapNode>>? {
+        return nodeByRouteId
+    }
     fun getNodesById(id: Long): LiveData<List<MapNode>> {
         return GgRepository.getNodesById(id)
     }

@@ -7,10 +7,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
-import android.widget.*
+import android.widget.ArrayAdapter
+import android.widget.ImageButton
+import android.widget.ImageView
+import android.widget.Spinner
+import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.hyperether.getgoing.App
 import com.hyperether.getgoing.R
 import com.hyperether.getgoing.model.CBDataFrame
@@ -19,7 +23,10 @@ import com.hyperether.getgoing.ui.activity.MainActivity
 import com.hyperether.getgoing.utils.Constants
 import com.hyperether.getgoing.utils.Constants.gender
 import com.hyperether.getgoing.viewmodel.RouteViewModel
-import kotlinx.android.synthetic.main.fragment_profile.*
+import kotlinx.android.synthetic.main.fragment_profile.ib_fp_age
+import kotlinx.android.synthetic.main.fragment_profile.ib_fp_backbutton
+import kotlinx.android.synthetic.main.fragment_profile.ib_fp_height
+import kotlinx.android.synthetic.main.fragment_profile.ib_fp_weight
 
 
 class ProfileFragment : DialogFragment() {
@@ -49,10 +56,11 @@ class ProfileFragment : DialogFragment() {
         savedInstanceState: Bundle?
     ): View {
         super.onCreateView(inflater, container, savedInstanceState)
+        dialog?.window?.statusBarColor = ContextCompat.getColor(requireContext(), R.color.mat_gray)
         rootViewGroup = container
         val rootView: View = inflater.inflate(R.layout.fragment_profile, container, false)
         genderImg = rootView.findViewById(R.id.iv_fp_gender)
-        routeViewModel = ViewModelProviders.of(this).get(RouteViewModel::class.java)
+        routeViewModel = ViewModelProvider(this)[RouteViewModel::class.java]
         totalMileage = rootView.findViewById(R.id.tv_fp_mileage)
         totalCalories = rootView.findViewById(R.id.tv_fp_calories)
         when (settings!!.getInt("gender", 0)) {

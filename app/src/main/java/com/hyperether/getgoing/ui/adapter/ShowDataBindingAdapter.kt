@@ -47,5 +47,5 @@ fun displayKcal(view: View, pKcal: Double) {
     } else {
         Math.round(pKcal)
     }
-    (view as TextView).text = kcal.toString() + ""
+    (view as TextView).text = kcal.toString() + " kcal"
 }

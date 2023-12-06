@@ -1,6 +1,7 @@
 package com.hyperether.getgoing.ui.activity
 
 import android.Manifest
+import android.Manifest.permission.POST_NOTIFICATIONS
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
@@ -16,7 +17,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.OrientationHelper
@@ -37,7 +38,16 @@ import com.hyperether.getgoing.utils.Constants.RIDE_ID
 import com.hyperether.getgoing.utils.Constants.RUN_ID
 import com.hyperether.getgoing.utils.Constants.WALK_ID
 import com.hyperether.getgoing.viewmodel.RouteViewModel
-import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_main.cpb_am_kmgoal
+import kotlinx.android.synthetic.main.activity_main.imageView2
+import kotlinx.android.synthetic.main.activity_main.iv_am_activity
+import kotlinx.android.synthetic.main.activity_main.iv_am_bluerectangle
+import kotlinx.android.synthetic.main.activity_main.materialButton
+import kotlinx.android.synthetic.main.activity_main.recyclerViewId
+import kotlinx.android.synthetic.main.activity_main.tv_am_burn
+import kotlinx.android.synthetic.main.activity_main.tv_am_lastexercise
+import kotlinx.android.synthetic.main.activity_main.tv_am_progbar_act
+import kotlinx.android.synthetic.main.activity_main.tv_ma_mainact
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
@@ -69,7 +79,7 @@ class MainActivity : AppCompatActivity() {
         zeroNodeInit()
         mainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         mainBinding.clickHandler = MainActivityClickHandler(supportFragmentManager)
-        routeViewModel = ViewModelProviders.of(this).get(RouteViewModel::class.java)
+        routeViewModel = ViewModelProvider(this).get(RouteViewModel::class.java)
         routeViewModel.getAllRoutes().observe(this, Observer { it ->
             route = it
             initProgressBars()
@@ -83,7 +93,8 @@ class MainActivity : AppCompatActivity() {
                 this,
                 arrayOf(
                     Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.ACCESS_FINE_LOCATION
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    POST_NOTIFICATIONS
                 ), PERMISSION_CODE
             )
         }
@@ -101,7 +112,7 @@ class MainActivity : AppCompatActivity() {
             val dbRoute = Route(0, 0, 0.0, 0.0, "null", 0.0, 1.0, 0, 0)
             GgRepository.insertRouteInit(dbRoute, tmpRoute, object : ZeroNodeInsertCallback {
                 override fun onAdded() {
-                    rvm = ViewModelProviders.of(this@MainActivity).get(RouteViewModel::class.java)
+                    rvm = ViewModelProvider(this@MainActivity)[RouteViewModel::class.java]
                 }
             })
             val edit = currentSettings.edit()

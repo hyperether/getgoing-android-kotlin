@@ -2,6 +2,7 @@ package com.hyperether.getgoing.repository.room
 
 import android.os.Handler
 import android.os.HandlerThread
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.hyperether.getgoing.App
@@ -76,9 +77,9 @@ object GgRepository {
         callback: ZeroNodeInsertCallback
     ) {
         getRepoHandler()!!.post {
-            val routeId: Long = routeDao.insertRoute(dbRoute!!)
+            var routeId: Long?
+            routeId = routeDao.insertRoute(dbRoute!!)
             val route: LiveData<Route?>? = routeDao.getRouteByIdAsLiveData(routeId)
-
             if (route != null) {
                 for (currentNode in nodeList) {
                     nodeDao.insert(
@@ -89,7 +90,6 @@ object GgRepository {
                         )
                     )
                 }
-
                 callback.onAdded()
             }
         }

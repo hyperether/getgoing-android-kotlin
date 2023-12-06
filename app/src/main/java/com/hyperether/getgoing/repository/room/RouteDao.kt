@@ -15,7 +15,10 @@ interface RouteDao {
     abstract fun getRouteById(id: Long): Route
 
     @Query("SELECT * FROM routes WHERE id = :id")
-    fun getRouteByIdAsLiveData(id: Long): LiveData<Route?>?
+    fun getRouteByIdAsLiveData(id: Long): LiveData<Route?>
+
+    @Query("SELECT id FROM routes WHERE id = :id")
+    fun getRouteIdLiveData(id: Long): LiveData<Long?>
 
     @Delete
     abstract fun deleteRoutes(vararg routes: Route)
