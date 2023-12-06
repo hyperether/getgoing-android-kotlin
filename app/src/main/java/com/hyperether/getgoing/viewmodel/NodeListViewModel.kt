@@ -14,12 +14,10 @@ class NodeListViewModel : ViewModel() {
 
     private val routeID = MutableLiveData<Long>()
     private val nodeByRouteId: MutableLiveData<List<MapNode>> = MutableLiveData<List<MapNode>>()
-
     private val nodesByRouteId: LiveData<List<MapNode>> =
         Transformations.switchMap<Long, List<MapNode>>(
             routeID
         ) { input -> GgRepository.getAllNodesById(input) }
-
 
     fun setRouteID(id: Long) {
         routeID.value = id
@@ -27,7 +25,6 @@ class NodeListViewModel : ViewModel() {
             nodeByRouteId.postValue(dbNodes)
         }
     }
-
     fun getNodes(): LiveData<List<MapNode>>? {
         return GgRepository.getNodesLiveData()
     }
@@ -35,8 +32,6 @@ class NodeListViewModel : ViewModel() {
     fun getNodeById(): LiveData<List<MapNode>>? {
         return nodeByRouteId
     }
-
-
     fun getNodesById(id: Long): LiveData<List<MapNode>> {
         return GgRepository.getNodesById(id)
     }
