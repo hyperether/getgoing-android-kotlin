@@ -4,7 +4,7 @@ import android.content.Context
 import android.view.View
 import com.hyperether.getgoing.R
 import com.hyperether.getgoing.model.CBDataFrame
-import com.hyperether.getgoing.ui.activity.LocationActivity
+import com.hyperether.getgoing.ui.activity.HomeActivity
 
 class LocationActivityClickHandler(pContext: Context) {
     private val mContext = pContext
@@ -16,6 +16,6 @@ class LocationActivityClickHandler(pContext: Context) {
     }
 
     fun onBackPressed(view: View) {
-        (LocationActivity::onBackPressed).invoke(mContext as LocationActivity)
+        (HomeActivity::onBackPressed).invoke(mContext as HomeActivity)
     }
 }

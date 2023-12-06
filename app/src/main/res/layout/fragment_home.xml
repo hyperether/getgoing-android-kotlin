@@ -16,25 +16,12 @@
             name="fragment"
             type="com.hyperether.getgoing.ui.fragment.homefragment.HomeFragment" />
 
-        <variable
-            name="clickHandler"
-            type="com.hyperether.getgoing.ui.handler.MainActivityClickHandler" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/color_background_new">
-
-        <Button
-            android:id="@+id/btn_all_routes_fragment"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-        </Button>
 
         <ImageView
             android:id="@+id/iv_am_logo"
@@ -81,7 +68,6 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
             android:background="@android:color/transparent"
-            android:onClick="@{clickHandler::onActivitiesClick}"
             app:layout_constraintBottom_toBottomOf="@+id/tv_am_viewall"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/tv_am_viewall"
@@ -92,7 +78,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="4dp"
-            android:onClick="@{clickHandler::onActivitiesClick}"
             android:text="@string/view_all"
             android:textColor="@color/light_theme_accent"
             android:textSize="18sp"
@@ -227,7 +212,6 @@
             android:textColor="@android:color/white"
             android:textSize="18sp"
             app:layout_constraintBottom_toTopOf="@+id/tv_am_kcalval"
-            app:layout_constraintEnd_toStartOf="@+id/cpb_am_kmgoal1"
             app:layout_constraintStart_toEndOf="@+id/cpb_am_kmgoal"
             app:layout_constraintTop_toBottomOf="@+id/tv_am_kcalval" />
 

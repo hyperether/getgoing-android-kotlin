@@ -29,8 +29,7 @@ import com.hyperether.getgoing.SharedPref
 import com.hyperether.getgoing.databinding.FragmentMyActivitiesBinding
 import com.hyperether.getgoing.model.CBDataFrame
 import com.hyperether.getgoing.repository.room.Route
-import com.hyperether.getgoing.ui.activity.ShowDataActivity
-import com.hyperether.getgoing.ui.fragment.ActivitiesFragment
+import com.hyperether.getgoing.ui.activity.HomeActivity
 import com.hyperether.getgoing.utils.Constants
 import com.hyperether.getgoing.viewmodel.RouteViewModel
 import java.text.DecimalFormat
@@ -118,10 +117,8 @@ class FragmentMyActivities : Fragment() {
                     sumRide += item.length
                 }
             }
-            Log.d(
-                ActivitiesFragment::class.simpleName,
                 "fillProgBars: $goal $sumWalk $sumRide $sumRun"
-            )
+
             if (sumWalk != 0.0) {
                 walkPercentage = ((sumWalk * 100) / goal).toInt()
             }
@@ -168,7 +165,6 @@ class FragmentMyActivities : Fragment() {
 
     private fun initFragmentTranactions(view: View?, route: List<Route>) {
         val sharedPref: SharedPref = SharedPref.newInstance()
-        Log.d(ActivitiesFragment::class.simpleName, "Route: $route size ${route.size}")
         var routesWalk = 0
         var routesRun = 0
         var routesCycle = 0
@@ -261,7 +257,7 @@ class FragmentMyActivities : Fragment() {
 
     private fun startAct() {
         activity?.let {
-            val intent = Intent(it, ShowDataActivity::class.java)
+            val intent = Intent(it, HomeActivity::class.java)
             it.startActivity(intent)
         }
     }
@@ -352,7 +348,6 @@ class FragmentMyActivities : Fragment() {
             val sharedPref: SharedPref = SharedPref.newInstance()
             sharedPref.test("test String")
             val fragmentSentCode = sharedPref.getSentFromFragmentCode()
-            Log.d(ActivitiesFragment::class.simpleName, "initListeners: $fragmentSentCode")
             if (seekBar.progress == 0) {
                 val builder: AlertDialog.Builder? = activity?.let {
                     AlertDialog.Builder(it)
@@ -377,7 +372,7 @@ class FragmentMyActivities : Fragment() {
 //                    val intent = Intent(context, LocationActivity::class.java)
 //                    startActivity(intent)
 //                }
-                findNavController().navigate(R.id.action_fragmentMyActivities2_to_trackingFragment2)
+                findNavController().navigate(R.id.action_fragmentMyActivities_to_trackingFragment)
             }
         }
     }

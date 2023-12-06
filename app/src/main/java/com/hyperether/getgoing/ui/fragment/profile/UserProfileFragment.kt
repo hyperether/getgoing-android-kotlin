@@ -25,9 +25,6 @@ import com.hyperether.getgoing.model.CBDataFrame
 import com.hyperether.getgoing.repository.room.Route
 import com.hyperether.getgoing.utils.Constants
 import com.hyperether.getgoing.viewmodel.RouteViewModel
-import kotlinx.android.synthetic.main.fragment_profile.ib_fp_age
-import kotlinx.android.synthetic.main.fragment_profile.ib_fp_height
-import kotlinx.android.synthetic.main.fragment_profile.ib_fp_weight
 
 class UserProfileFragment : Fragment() {
     private lateinit var binding: FragmentUserProfileBinding
@@ -131,15 +128,15 @@ class UserProfileFragment : Fragment() {
             val id = "gender"
             createAlertDialog(id, view).also { it?.show() }
         }
-        ib_fp_age.setOnClickListener { view ->
+        binding.ibFpAge.setOnClickListener { view ->
             val id = "age"
             createAlertDialog(id, view).also { it?.show() }
         }
-        ib_fp_height.setOnClickListener { view ->
+        binding.ibFpHeight.setOnClickListener { view ->
             val id = "height"
             createAlertDialog(id, view).also { it?.show() }
         }
-        ib_fp_weight.setOnClickListener { view ->
+        binding.ibFpWeight.setOnClickListener { view ->
             val id = "weight"
             createAlertDialog(id, view).also { it?.show() }
         }

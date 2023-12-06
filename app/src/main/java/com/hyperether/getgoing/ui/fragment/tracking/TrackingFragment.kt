@@ -106,7 +106,7 @@ class TrackingFragment : Fragment(), OnMapReadyCallback, RouteAddedCallback {
 
         setGoalButton = binding.alBtnSetgoal
         setGoalButton.setOnClickListener(View.OnClickListener {
-            findNavController().navigate(R.id.action_trackingFragment2_to_fragmentMyActivities2)
+            findNavController().navigate(R.id.action_trackingFragment_to_fragmentMyActivities)
         })
 
         val mapFragment = childFragmentManager.findFragmentById(R.id.mapView) as SupportMapFragment

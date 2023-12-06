@@ -145,6 +145,8 @@
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
     <string name="card_icon_for_recycler">card icon for recycler</string>
     <string name="image_to_show_the_type_of_activity">image to show the type of activity</string>
+    <string name="ms">m/s</string>
+    <string name="km">km</string>
 </resources>
 
 

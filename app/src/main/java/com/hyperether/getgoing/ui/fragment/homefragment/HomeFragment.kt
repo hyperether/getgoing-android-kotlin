@@ -99,9 +99,6 @@ class HomeFragment : Fragment() {
         initRecyclerView()
         initListeners()
         initModel()
-        binding.btnAllRoutesFragment.setOnClickListener {
-            openAllButtonFramgnets()
-        }
 
     }
     private fun zeroNodeInit() {
@@ -385,8 +382,7 @@ class HomeFragment : Fragment() {
         blueButton = binding.ivAmBluerectangle
         blueButton.setOnClickListener(View.OnClickListener {
             Toast.makeText(requireContext(), "EEEEE", Toast.LENGTH_SHORT).show()
-            findNavController().navigate(R.id.action_homeFragment2_to_userProfileFragment2)
-//            MainActivityClickHandler(supportFragmentManager).onActivitiesClick(it)
+            findNavController().navigate(R.id.action_homeFragment_to_userProfileFragment)
         })
 
 
@@ -435,10 +431,10 @@ class HomeFragment : Fragment() {
                 sharedPref.setClickedTypeShowData2(0)
             }
             this.model.profileId = id
-            findNavController().navigate(R.id.action_homeFragment2_to_trackingFragment2)
+            findNavController().navigate(R.id.action_homeFragment_to_trackingFragment)
         } else {
             Toast.makeText(requireContext(), "You must enter your data first!", Toast.LENGTH_LONG).show()
-            findNavController().navigate(R.id.action_homeFragment2_to_userProfileFragment2)
+            findNavController().navigate(R.id.action_homeFragment_to_userProfileFragment)
         }
     }
 
@@ -447,9 +443,5 @@ class HomeFragment : Fragment() {
                 || (cbDataFrameLocal.weight == 0))
     }
 
-    // TODO: Obrisi posle ovo
-    private fun openAllButtonFramgnets(){
-        findNavController().navigate(R.id.action_homeFragment2_to_fragmentAllRoutes2)
-    }
 
 }

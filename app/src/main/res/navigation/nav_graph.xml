@@ -3,26 +3,43 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/FirstFragment">
-
+    app:startDestination="@id/homeFragment">
     <fragment
-        android:id="@+id/FirstFragment"
-        android:name="com.hyperether.getgoing.ui.activity.FirstFragment"
-        android:label="@string/first_fragment_label"
-        tools:layout="@layout/fragment_first">
-
+        android:id="@+id/homeFragment"
+        android:name="com.hyperether.getgoing.ui.fragment.homefragment.HomeFragment"
+        android:label="HomeFragment" >
         <action
-            android:id="@+id/action_FirstFragment_to_SecondFragment"
-            app:destination="@id/SecondFragment" />
+            android:id="@+id/action_homeFragment_to_userProfileFragment"
+            app:destination="@id/userProfileFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_trackingFragment"
+            app:destination="@id/trackingFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_fragmentAllRoutes"
+            app:destination="@id/fragmentAllRoutes" />
     </fragment>
     <fragment
-        android:id="@+id/SecondFragment"
-        android:name="com.hyperether.getgoing.ui.activity.SecondFragment"
-        android:label="@string/second_fragment_label"
-        tools:layout="@layout/fragment_second">
-
+        android:id="@+id/fragmentAllRoutes"
+        android:name="com.hyperether.getgoing.ui.fragment.showdata.FragmentAllRoutes"
+        android:label="FragmentAllRoutes" />
+    <fragment
+        android:id="@+id/fragmentMyActivities"
+        android:name="com.hyperether.getgoing.ui.fragment.activities.FragmentMyActivities"
+        android:label="FragmentMyActivities" >
         <action
-            android:id="@+id/action_SecondFragment_to_FirstFragment"
-            app:destination="@id/FirstFragment" />
+            android:id="@+id/action_fragmentMyActivities_to_trackingFragment"
+            app:destination="@id/trackingFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/userProfileFragment"
+        android:name="com.hyperether.getgoing.ui.fragment.profile.UserProfileFragment"
+        android:label="UserProfileFragment" />
+    <fragment
+        android:id="@+id/trackingFragment"
+        android:name="com.hyperether.getgoing.ui.fragment.tracking.TrackingFragment"
+        android:label="TrackingFragment" >
+        <action
+            android:id="@+id/action_trackingFragment_to_fragmentMyActivities"
+            app:destination="@id/fragmentMyActivities" />
     </fragment>
 </navigation>

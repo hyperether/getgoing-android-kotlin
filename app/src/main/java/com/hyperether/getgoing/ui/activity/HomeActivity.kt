@@ -12,8 +12,7 @@ class HomeActivity : AppCompatActivity() {
         setContentView(R.layout.content_home)
 
         //Navigation between fragments
-        val navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.nav_host_fragment_content_home) as NavHostFragment
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragment_container_view) as NavHostFragment
         val navController = navHostFragment.navController
     }
 

@@ -14,7 +14,7 @@ import com.hyperether.getgoing.SharedPref
 import com.hyperether.getgoing.repository.room.GgRepository
 import com.hyperether.getgoing.repository.room.MapNode
 import com.hyperether.getgoing.repository.room.Route
-import com.hyperether.getgoing.ui.activity.LocationActivity
+import com.hyperether.getgoing.ui.activity.HomeActivity
 import com.hyperether.getgoing.utils.CaloriesCalculation
 import com.hyperether.toolbox.HyperNotification
 import com.hyperether.toolbox.location.HyperLocationService
@@ -62,7 +62,7 @@ class GGLocationService : HyperLocationService() {
     @SuppressLint("UnspecifiedImmutableFlag")
     override fun startForeground() {
         super.startForeground()
-        val intent = Intent(this, LocationActivity::class.java)
+        val intent = Intent(this, HomeActivity::class.java)
         val pendingIntent: PendingIntent =
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
                 PendingIntent.getActivity(

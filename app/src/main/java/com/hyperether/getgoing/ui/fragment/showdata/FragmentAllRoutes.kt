@@ -1,7 +1,6 @@
 package com.hyperether.getgoing.ui.fragment.showdata
 
 import android.content.DialogInterface
-import android.content.res.Resources
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
@@ -14,13 +13,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapFragment
 import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.CircleOptions
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
@@ -31,13 +28,7 @@ import com.hyperether.getgoing.SharedPref
 import com.hyperether.getgoing.databinding.FragmentAllRoutesBinding
 import com.hyperether.getgoing.repository.room.MapNode
 import com.hyperether.getgoing.repository.room.Route
-import com.hyperether.getgoing.ui.activity.ShowDataActivity
-import com.hyperether.getgoing.ui.adapter.DbRecyclerAdapter
 import com.hyperether.getgoing.utils.Constants
-import com.hyperether.getgoing.utils.Constants.ACTIVITY_RIDE_ID
-import com.hyperether.getgoing.utils.Constants.ACTIVITY_RUN_ID
-import com.hyperether.getgoing.utils.Constants.ACTIVITY_WALK_ID
-import com.hyperether.getgoing.utils.Constants.DATA_DETAILS_LABEL
 import com.hyperether.getgoing.utils.ProgressBarBitmap
 import com.hyperether.getgoing.viewmodel.RouteViewModel
 
@@ -117,10 +108,6 @@ class FragmentAllRoutes : Fragment(), OnMapReadyCallback {
                 }
             }
             val sharedPref: SharedPref = SharedPref.newInstance()
-            Log.d(
-                ShowDataActivity::class.simpleName,
-                "Type: ${sharedPref.getClickedTypeShowData2()}"
-            )
             val type = sharedPref.getClickedTypeShowData2()
             if (type == Constants.WALK_ID) {
                 if (routeWalk.isEmpty()) {
