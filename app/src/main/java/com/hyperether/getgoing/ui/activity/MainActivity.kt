@@ -138,7 +138,6 @@ class MainActivity : AppCompatActivity() {
                     )
                 )
             }
-
             2 -> {
                 tv_am_progbar_act.text = getString(R.string.activity_running)
                 iv_am_activity.setImageDrawable(
@@ -148,7 +147,6 @@ class MainActivity : AppCompatActivity() {
                     )
                 )
             }
-
             3 -> {
                 tv_am_progbar_act.text = getString(R.string.activity_cycling)
                 iv_am_activity.setImageDrawable(
@@ -263,10 +261,8 @@ class MainActivity : AppCompatActivity() {
                 when {
                     centralImg.tag?.equals(R.drawable.ic_light_bicycling_icon_inactive)!! -> tv_ma_mainact.text =
                         "Cycling"
-
                     centralImg.tag == R.drawable.ic_light_running_icon_inactive -> tv_ma_mainact.text =
                         "Running"
-
                     centralImg.tag == R.drawable.ic_light_walking_icon -> tv_ma_mainact.text =
                         "Walking"
                 }
@@ -286,7 +282,6 @@ class MainActivity : AppCompatActivity() {
                             )
                             centralImg.tag = R.drawable.ic_light_bicycling_icon_active
                         }
-
                         R.drawable.ic_light_running_icon_inactive -> {
                             centralImg.setImageDrawable(
                                 ContextCompat.getDrawable(
@@ -296,7 +291,6 @@ class MainActivity : AppCompatActivity() {
                             )
                             centralImg.tag = R.drawable.ic_light_running_icon_active
                         }
-
                         R.drawable.ic_light_walking_icon -> {
                             centralImg.setImageDrawable(
                                 ContextCompat.getDrawable(
@@ -323,7 +317,6 @@ class MainActivity : AppCompatActivity() {
                             )
                             leftImg.tag = R.drawable.ic_light_bicycling_icon_inactive
                         }
-
                         R.drawable.ic_light_running_icon_active -> {
                             leftImg.setImageDrawable(
                                 ContextCompat.getDrawable(
@@ -333,7 +326,6 @@ class MainActivity : AppCompatActivity() {
                             )
                             leftImg.tag = R.drawable.ic_light_running_icon_inactive
                         }
-
                         R.drawable.ic_light_walking_icon_active -> {
                             leftImg.setImageDrawable(
                                 ContextCompat.getDrawable(
@@ -361,7 +353,6 @@ class MainActivity : AppCompatActivity() {
                             )
                             rightImg.tag = R.drawable.ic_light_bicycling_icon_inactive
                         }
-
                         R.drawable.ic_light_running_icon_active -> {
                             rightImg.setImageDrawable(
                                 ContextCompat.getDrawable(
@@ -371,7 +362,6 @@ class MainActivity : AppCompatActivity() {
                             )
                             rightImg.tag = R.drawable.ic_light_running_icon_inactive
                         }
-
                         R.drawable.ic_light_walking_icon_active -> {
                             rightImg.setImageDrawable(
                                 ContextCompat.getDrawable(

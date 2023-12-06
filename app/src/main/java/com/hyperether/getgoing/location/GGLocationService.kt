@@ -133,7 +133,6 @@ class GGLocationService : HyperLocationService() {
         }
     }
 
-
     fun createNode(location: Location): MapNode {
         return MapNode(
             0,

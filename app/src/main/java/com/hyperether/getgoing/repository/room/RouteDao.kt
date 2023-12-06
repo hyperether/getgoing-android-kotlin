@@ -2,13 +2,11 @@ package com.hyperether.getgoing.repository.room
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
-import kotlinx.coroutines.flow.MutableStateFlow
 
 @Dao
 interface RouteDao {
     @Query("SELECT * from routes")
     abstract fun getAll(): LiveData<List<Route>>
-
 
     @Insert
     abstract fun insertRoute(route: Route): Long
@@ -16,10 +14,8 @@ interface RouteDao {
     @Query("SELECT * FROM routes WHERE id = :id")
     abstract fun getRouteById(id: Long): Route
 
-
     @Query("SELECT * FROM routes WHERE id = :id")
     fun getRouteByIdAsLiveData(id: Long): LiveData<Route?>
-
 
     @Query("SELECT id FROM routes WHERE id = :id")
     fun getRouteIdLiveData(id: Long): LiveData<Long?>
@@ -38,5 +34,4 @@ interface RouteDao {
 
     @Query("SELECT * FROM routes WHERE goal > 0 ORDER BY id DESC LIMIT 1")
     fun getLatestRoute(): Route?
-
 }

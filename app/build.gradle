@@ -37,8 +37,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
         }
-    }
+        debug {
 
+        }
+    }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -49,14 +51,12 @@ android {
     dataBinding {
         enabled = true
     }
-
     buildFeatures {
         viewBinding true
     }
     lintOptions {
         abortOnError false
     }
-
 }
 def room_version = '2.4.3'
 dependencies {
