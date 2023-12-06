@@ -10,7 +10,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
-import android.widget.*
+import android.widget.Button
+import android.widget.ImageButton
+import android.widget.ImageView
+import android.widget.ProgressBar
+import android.widget.SeekBar
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
@@ -18,7 +24,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.snackbar.Snackbar
 import com.hyperether.getgoing.R
 import com.hyperether.getgoing.SharedPref
-import com.hyperether.getgoing.databinding.ActivityMainBinding
 import com.hyperether.getgoing.databinding.FragmentActivitiesBinding
 import com.hyperether.getgoing.model.CBDataFrame
 import com.hyperether.getgoing.repository.room.Route
@@ -69,7 +74,6 @@ class ActivitiesFragment : DialogFragment() {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NO_TITLE, R.style.FullScreenDialogStyle)
         dialog?.window?.statusBarColor = ContextCompat.getColor(requireContext(), R.color.mat_gray)
-
         settings = activity?.getSharedPreferences(Constants.PREF_FILE, 0)
         model = CBDataFrame.getInstance()!!
     }
@@ -324,6 +328,7 @@ class ActivitiesFragment : DialogFragment() {
                         medium.setTextColor(ContextCompat.getColor(context!!, R.color.mat_gray))
                         high.setTextColor(ContextCompat.getColor(context!!, R.color.mat_gray))
                     }
+
                     in 3334..6666 -> {
                         low.setTextColor(ContextCompat.getColor(context!!, R.color.mat_gray))
                         medium.setTextColor(
@@ -334,6 +339,7 @@ class ActivitiesFragment : DialogFragment() {
                         )
                         high.setTextColor(ContextCompat.getColor(context!!, R.color.mat_gray))
                     }
+
                     in 6667..10000 -> {
                         low.setTextColor(ContextCompat.getColor(context!!, R.color.mat_gray))
                         medium.setTextColor(ContextCompat.getColor(context!!, R.color.mat_gray))
@@ -409,6 +415,7 @@ class ActivitiesFragment : DialogFragment() {
                 medium.setTextColor(ContextCompat.getColor(requireContext(), R.color.mat_gray))
                 high.setTextColor(ContextCompat.getColor(requireContext(), R.color.mat_gray))
             }
+
             in 3334..6666 -> {
                 low.setTextColor(ContextCompat.getColor(requireContext(), R.color.mat_gray))
                 medium.setTextColor(
@@ -419,6 +426,7 @@ class ActivitiesFragment : DialogFragment() {
                 )
                 high.setTextColor(ContextCompat.getColor(requireContext(), R.color.mat_gray))
             }
+
             in 6667..10000 -> {
                 low.setTextColor(ContextCompat.getColor(requireContext(), R.color.mat_gray))
                 medium.setTextColor(ContextCompat.getColor(requireContext(), R.color.mat_gray))

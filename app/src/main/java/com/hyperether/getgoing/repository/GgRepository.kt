@@ -79,9 +79,7 @@ object GgRepository {
         getRepoHandler()!!.post {
             var routeId: Long?
             routeId = routeDao.insertRoute(dbRoute!!)
-            Log.d("PROVERA STA IMA OVDE", routeId.toString())
             val route: LiveData<Route?>? = routeDao.getRouteByIdAsLiveData(routeId)
-
             if (route != null) {
                 for (currentNode in nodeList) {
                     nodeDao.insert(
@@ -95,7 +93,6 @@ object GgRepository {
                 callback.onAdded()
             }
         }
-
     }
 
     fun insertRouteInitMainActivity(route: Route, nodeList: List<MapNode>) {

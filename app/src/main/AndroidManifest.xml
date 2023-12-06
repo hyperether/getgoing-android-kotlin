@@ -53,5 +53,5 @@
             android:name="com.hyperether.getgoing.location.GGLocationService"
             android:foregroundServiceType="location"/>
     </application>
-
 </manifest>
+

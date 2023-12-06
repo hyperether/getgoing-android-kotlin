@@ -30,8 +30,7 @@ class ProgressBarBitmap {
             scale = (lenght / goal).toFloat()
         }
 
-        val paint =
-            Paint(Paint.FILTER_BITMAP_FLAG or Paint.DITHER_FLAG or Paint.ANTI_ALIAS_FLAG)
+        val paint = Paint(Paint.FILTER_BITMAP_FLAG or Paint.DITHER_FLAG or Paint.ANTI_ALIAS_FLAG)
         paint.strokeWidth = stroke.toFloat()
         paint.style = Paint.Style.STROKE
         paint.strokeCap = Paint.Cap.ROUND

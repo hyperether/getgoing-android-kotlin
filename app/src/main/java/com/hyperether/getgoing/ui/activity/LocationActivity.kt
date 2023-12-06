@@ -93,20 +93,16 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
         mLocTrackingRunning = serviceUtil.isServiceActive(this)
         trackingStarted = serviceUtil.isServiceActive(this)
 
-        Log.d(ServiceUtil::class.simpleName, "onCreate: $mLocTrackingRunning")
         dataBinding.clickHandler = handler
         dataBinding.locationViewModel = handler
 
         routeViewModel = ViewModelProvider(this).get(RouteViewModel::class.java)
         val routeObserver = Observer<Route> { newRoute ->
             route = newRoute
-            Log.d("Observer", "$newRoute")
             showData(route.length, route.energy, route.avgSpeed)
         }
         routeViewModel.getRouteByIdAsLiveData(routeCurrentID).observe(this, routeObserver)
-
         nodeListViewModel = ViewModelProvider(this).get(NodeListViewModel::class.java)
-        Log.d("CURRENT ID", routeCurrentID.toString())
         nodeListViewModel.getNodeById()?.observe(this, Observer { newList ->
             mMap.clear()
             drawRoute(newList)
@@ -335,7 +331,6 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
                 bestProvider?.let { locationManager.getLastKnownLocation(it)!!.longitude.toLong() }
             val lati =
                 bestProvider?.let { locationManager.getLastKnownLocation(it)!!.latitude.toLong() }
-
             zoomOverCurrentLocation(mMap, location)
             mMap.setOnMyLocationChangeListener { location ->
                 val latLng = LatLng(location.latitude, location.longitude)
@@ -474,7 +469,6 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, RouteAddedCall
             nodeListViewModel.setRouteID(routeCurrentID)
             routeViewModel.setRouteID(routeCurrentID)
         })
-        Log.d(LocationActivity::class.simpleName, "onRouteAdded: from listener")
         startTrackingService(this)
     }
 }
